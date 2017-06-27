@@ -7,13 +7,16 @@
 //
 
 import UIKit
+import pop
 
 private let DefaultTitleFontSize: CGFloat = 36.0
 private let DefaultTitleUnselectedFontSize: CGFloat = 16.0
 private let DefaultNavigationItemFontSize: CGFloat = 14.0
 
 private class _NavigationItemButton: UIButton { /* Custom view hooks. */ }
-private class _NavigationTitleItemButton: UIButton { /* Custom view hooks. */ }
+private class _NavigationTitleItemButton: UIButton { // Custom view hooks.
+    weak var _titleItem: NavigationTitleItem?
+}
 
 private class _NavigationItemView: UIView {
     var title: String? {
@@ -112,22 +115,27 @@ public class NavigationTitleItem: NSObject {
     }
     
     public func setSelected(_ selected: Bool, animated: Bool) {
-        if selected {
-            // self._button.titleLabel?.font = UIFont(name: "PingFangTC-Semibold", size: DefaultTitleFontSize)
-            let animator = UIViewPropertyAnimator(duration: 0.5, dampingRatio: 0.9, animations: {
-                self._button.titleLabel?.font = UIFont(name: "PingFangTC-Semibold", size: DefaultTitleFontSize)
-            })
-            animator.startAnimation()
+        if animated {
+            let _fontSizeAnimation = POPSpringAnimation()
+            _fontSizeAnimation.property = POPAnimatableProperty.labelFontSize(named: "PingFangTC-Semibold")
+            _fontSizeAnimation.toValue = selected ? DefaultTitleFontSize : DefaultTitleUnselectedFontSize
+            _fontSizeAnimation.removedOnCompletion = true
+            self._button.titleLabel?.pop_add(_fontSizeAnimation, forKey: "FONT")
             
-            self._button.tintColor = UIColor(hex: "4A4A4A")
-            self._button.setTitleColor(UIColor(hex: "4A4A4A"), for: .normal)
+            let _titleColorAnimation = POPSpringAnimation()
+            _titleColorAnimation.property = POPAnimatableProperty.buttonTitleColor(for: . normal)
+            _titleColorAnimation.toValue = selected ? UIColor(hex: "4A4A4A") : UIColor(hex: "CCCCCC")
+            _titleColorAnimation.removedOnCompletion = true
+            self._button.pop_add(_titleColorAnimation, forKey: "COLOR")
+            
+            let _tintColorAnimation = POPSpringAnimation(propertyNamed: kPOPViewTintColor)
+            _tintColorAnimation?.toValue = selected ? UIColor(hex: "4A4A4A") : UIColor(hex: "CCCCCC")
+            _tintColorAnimation?.removedOnCompletion = true
+            self._button.pop_add(_tintColorAnimation, forKey: "TINTCOLOR")
         } else {
-            self._button.titleLabel?.font = UIFont(name: "PingFangTC-Semibold", size: DefaultTitleUnselectedFontSize)
-            let duration = 0.25
-            
-            UIView.animateKeyframes(withDuration: <#T##TimeInterval#>, delay: <#T##TimeInterval#>, options: <#T##UIViewKeyframeAnimationOptions#>, animations: <#T##() -> Void#>, completion: <#T##((Bool) -> Void)?##((Bool) -> Void)?##(Bool) -> Void#>)
-            self._button.tintColor = UIColor(hex: "CCCCCC")
-            self._button.setTitleColor(UIColor(hex: "CCCCCC"), for: .normal)
+            self._button.titleLabel?.font = UIFont(name: "PingFangTC-Semibold", size: selected ? DefaultTitleFontSize : DefaultTitleUnselectedFontSize)
+            self._button.tintColor = selected ? UIColor(hex: "4A4A4A") : UIColor(hex: "CCCCCC")
+            self._button.setTitleColor(selected ? UIColor(hex: "4A4A4A") : UIColor(hex: "CCCCCC"), for: .normal)
         }
     }
     
@@ -145,6 +153,7 @@ public class NavigationTitleItem: NSObject {
         selected = false
         super.init()
         _button.setTitle(title, for: .normal)
+        _button._titleItem = self
     }
 }
 
@@ -152,6 +161,16 @@ public class NavigationTitleItem: NSObject {
 public class NavigationBar: UIView, UIBarPositioning {
     // MARK: - Public Properties.
     // MARK: - Private Properties.
+    private lazy var __titleAlignmentLabel: UILabel = { () -> UILabel in
+        let label = UILabel()
+        label.text = "_|_"
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = UIFont(name: "PingFangTC-Semibold", size: DefaultTitleFontSize)
+        label.textColor = .clear
+        label.backgroundColor = .clear
+        return label
+    }()
+    
     private lazy var _scrollViewContainerView: UIView = { () -> UIView in
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -205,6 +224,18 @@ public class NavigationBar: UIView, UIBarPositioning {
         _setupContentScrollView()
     }
     
+    // MARK: - Actions.
+    @objc
+    private func _handleDidSelectTitleItem(_ sender: _NavigationTitleItemButton) {
+        guard let _titleItem = sender._titleItem else {
+            return
+        }
+        
+        if let index = _navigationTitleItems.index(of: _titleItem) {
+            setSelectedTitle(at: index, animated: true)
+        }
+    }
+    
     // MARK: - Private.
     private func _setupContainerViews() {
         addSubview(_scrollViewContainerView)
@@ -224,6 +255,10 @@ public class NavigationBar: UIView, UIBarPositioning {
         _scrollViewContainerView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[_contentScrollView]|", options: [], metrics: nil, views: ["_contentScrollView":_contentScrollView]))
         _scrollViewContainerView.addConstraint(NSLayoutConstraint(item: _scrollViewContainerView, attribute: .height, relatedBy: .equal, toItem: _contentScrollView, attribute: .height, multiplier: 1.0, constant: 0.0))
         _scrollViewContainerView.addConstraint(NSLayoutConstraint(item: _scrollViewContainerView, attribute: .width, relatedBy: .equal, toItem: _contentScrollView, attribute: .width, multiplier: 1.0, constant: 0.0))
+        
+        _contentScrollView.addSubview(__titleAlignmentLabel)
+        _contentScrollView.addConstraint(NSLayoutConstraint(item: _contentScrollView, attribute: .leading, relatedBy: .equal, toItem: __titleAlignmentLabel, attribute: .leading, multiplier: 1.0, constant: -15))
+        _contentScrollView.addConstraint(NSLayoutConstraint(item: _contentScrollView, attribute: .centerY, relatedBy: .equal, toItem: __titleAlignmentLabel, attribute: .centerY, multiplier: 1.0, constant: 0.0))
     }
     
     fileprivate func _addNavigationItemView(_ item: NavigationItem) {
@@ -247,23 +282,20 @@ public class NavigationBar: UIView, UIBarPositioning {
         _leadingConstraintOflastItemView = _leading
     }
     
-    fileprivate func _addNavigationTitleItemLabel(_ item: NavigationTitleItem) {
-        let _itemLabel = item._button
-        _itemLabel.translatesAutoresizingMaskIntoConstraints = false
+    fileprivate func _addNavigationTitleItemButton(_ item: NavigationTitleItem) {
+        let _itemButton = item._button
+        _itemButton.addTarget(self, action: #selector(_handleDidSelectTitleItem(_:)), for: .touchDown)
+        _itemButton.translatesAutoresizingMaskIntoConstraints = false
         
-        _contentScrollView.addSubview(_itemLabel)
+        _contentScrollView.addSubview(_itemButton)
         
-        _contentScrollView.addConstraint(NSLayoutConstraint(item: _itemLabel, attribute: .leading, relatedBy: .equal, toItem: _navigationTitleItems.last?._button ?? _contentScrollView, attribute: _navigationTitleItems.last?._button != nil ? .trailing : .leading, multiplier: 1.0, constant:15))
-        if let _lastItemLabel = _navigationTitleItems.last?._button {
-            _contentScrollView.addConstraint(NSLayoutConstraint(item: _lastItemLabel, attribute: .lastBaseline, relatedBy: .equal, toItem: _itemLabel, attribute: .lastBaseline, multiplier: 1.0, constant: 0.0))
-        } else {
-            _contentScrollView.addConstraint(NSLayoutConstraint(item: _contentScrollView, attribute: .centerY, relatedBy: .equal, toItem: _itemLabel, attribute: .centerY, multiplier: 1.0, constant: 0.0))
-        }
+        _contentScrollView.addConstraint(NSLayoutConstraint(item: _itemButton, attribute: .leading, relatedBy: .equal, toItem: _navigationTitleItems.last?._button ?? _contentScrollView, attribute: _navigationTitleItems.last?._button != nil ? .trailing : .leading, multiplier: 1.0, constant:15))
+        _contentScrollView.addConstraint(NSLayoutConstraint(item: __titleAlignmentLabel, attribute: .lastBaseline, relatedBy: .equal, toItem: _itemButton, attribute: .lastBaseline, multiplier: 1.0, constant: 0.0))
         
         if let _trailing = _trailingConstraintOflastTitleItemLabel {
             _contentScrollView.removeConstraint(_trailing)
         }
-        let _trailing = NSLayoutConstraint(item: _contentScrollView, attribute: .trailing, relatedBy: .equal, toItem: _itemLabel, attribute: .trailing, multiplier: 1.0, constant: 0.0)
+        let _trailing = NSLayoutConstraint(item: _contentScrollView, attribute: .trailing, relatedBy: .equal, toItem: _itemButton, attribute: .trailing, multiplier: 1.0, constant: 0.0)
         _contentScrollView.addConstraint(_trailing)
         _trailingConstraintOflastTitleItemLabel = _trailing
     }
@@ -300,7 +332,7 @@ extension NavigationBar {
     }
     
     public func addNavigationTitleItem(_ item: NavigationTitleItem) {
-        _addNavigationTitleItemLabel(item)
+        _addNavigationTitleItemButton(item)
         
         _navigationTitleItems.append(item)
     }
