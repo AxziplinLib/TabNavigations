@@ -7,78 +7,153 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		03335FD38C7CCCF0C989B5E49E07E7AD /* CAAnimation+Convertable.m in Sources */ = {isa = PBXBuildFile; fileRef = 548B6FB23EBEE42A8AABD8CFAC337C55 /* CAAnimation+Convertable.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		168A20E924481C3CF28ECAB3E5D92474 /* AXBreachedAnnulusIndicatorView.h in Headers */ = {isa = PBXBuildFile; fileRef = EBBCA57EC6AD603120F33DCE38A9AA1C /* AXBreachedAnnulusIndicatorView.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		020DCDA2D54FAC67BB079C2000AF1891 /* POPAnimationInternal.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B171C16BC6921AD99DBCF7A8CAE5927 /* POPAnimationInternal.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		021A47C09ED544F3DDE7A8076D9B38CA /* POPAnimationEventInternal.h in Headers */ = {isa = PBXBuildFile; fileRef = 795B96A9B35F7938BA3A384BAA78C702 /* POPAnimationEventInternal.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		03335FD38C7CCCF0C989B5E49E07E7AD /* CAAnimation+Convertable.m in Sources */ = {isa = PBXBuildFile; fileRef = 8721E6DF209C0C7379E27A02FB2D4CF1 /* CAAnimation+Convertable.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		045BA98FF16FAF29306EEC37372E5195 /* POPGeometry.h in Headers */ = {isa = PBXBuildFile; fileRef = EE4C6A57DC2F2256E7EC8FDC711A9282 /* POPGeometry.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		09E1E7A9CF716526A597467726942695 /* POP.h in Headers */ = {isa = PBXBuildFile; fileRef = 608347706D6656FD1DFF0C7EA22F88F9 /* POP.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		0E40E40AC75F6FD46FE14112891DDA10 /* POPDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = 045EA533A254534A564C7FA411E9818D /* POPDefines.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		11B9BC1150688F3560083EE37459F223 /* Pods-AxReminder-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = DE61C24FDC9D5D6AAB912872E39D14FF /* Pods-AxReminder-dummy.m */; };
+		12BCBBAF30228E715729FFB92AC9AEDF /* pop-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = FF59304FDD84C707BF36EE08F9F0E1BC /* pop-dummy.m */; };
+		143D47CAE165A97BF3E5E49643278CAB /* POPCustomAnimation.mm in Sources */ = {isa = PBXBuildFile; fileRef = D412D2626FDC5D577E0CBD110AD9A80C /* POPCustomAnimation.mm */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		168A20E924481C3CF28ECAB3E5D92474 /* AXBreachedAnnulusIndicatorView.h in Headers */ = {isa = PBXBuildFile; fileRef = ED69F36DDF2679BB86CFC47090D445C0 /* AXBreachedAnnulusIndicatorView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		16E6D29B1FFA40760ACBFF02604BA458 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 21DDA0D7EB8741084D43F723C488E807 /* UIKit.framework */; };
-		19961E718A8F4EAD390658585491D958 /* AXGradientProgressView.h in Headers */ = {isa = PBXBuildFile; fileRef = 1B353F2EF0FB2E1F2446511010314691 /* AXGradientProgressView.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A0A67A7E5F6B53FDC7D074EF2D2A8D1 /* CALayer+AnchorPoint.m in Sources */ = {isa = PBXBuildFile; fileRef = 4997654B76B98360EDC4C37E72C0DD26 /* CALayer+AnchorPoint.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		241D9678427E154F68113C82503765AF /* AXPracticalHUD-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 659B70032785C625F5612B73EF8B49FA /* AXPracticalHUD-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		27B332B23FD7D4EC4636AE39C26F6C04 /* AXBreachedAnnulusIndicatorView.m in Sources */ = {isa = PBXBuildFile; fileRef = 86612B05951756DFE62DA01F48B55C7D /* AXBreachedAnnulusIndicatorView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		2892731C656AEFAE1C41ADC82CD1520B /* AXDecayAnimation.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E58C2E997AD94786FE3ECB72B7A3BD4 /* AXDecayAnimation.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		19961E718A8F4EAD390658585491D958 /* AXGradientProgressView.h in Headers */ = {isa = PBXBuildFile; fileRef = 0173BC6538E7EA47E47E722784ECFAD2 /* AXGradientProgressView.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A0A67A7E5F6B53FDC7D074EF2D2A8D1 /* CALayer+AnchorPoint.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B2A23A515F30896D730D47D4C405021 /* CALayer+AnchorPoint.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		1E74692400FF9D46ED8A8171E8E9F423 /* POPAnimation.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8303746915CDFB33D4AC7518A5581CD1 /* POPAnimation.mm */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		241D9678427E154F68113C82503765AF /* AXPracticalHUD-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = B297CE378C7D535D3079ED5DF7D318D8 /* AXPracticalHUD-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		2642D39F167B110F0F014F5C4317197F /* POPAnimationRuntime.h in Headers */ = {isa = PBXBuildFile; fileRef = 436AF9AF89C3D7BB190B187AB65897EF /* POPAnimationRuntime.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		27B332B23FD7D4EC4636AE39C26F6C04 /* AXBreachedAnnulusIndicatorView.m in Sources */ = {isa = PBXBuildFile; fileRef = EE64F43F1959F1C443E33A71AA6BAE0A /* AXBreachedAnnulusIndicatorView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		2892731C656AEFAE1C41ADC82CD1520B /* AXDecayAnimation.h in Headers */ = {isa = PBXBuildFile; fileRef = 83119A82F432D7CAD58FFB83910D51A3 /* AXDecayAnimation.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2F10EEFD528924DD446127D99452B7CC /* AXIndicatorView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A15003DEC49F15E2786558DB9E40532 /* AXIndicatorView.framework */; };
-		3170034F1ACA016DD4C029C0FAE70764 /* AXChainAnimator.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D4D3F7AE262723A04592D7C841FD2F /* AXChainAnimator.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		334F1D20E2BB76BB4F191F64D41D549F /* UIView+AnimationChain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0576980D4E88CBBB1058319E27FF1449 /* UIView+AnimationChain.swift */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		33B10B26D96C6A44B0C0E8E640C09F2F /* AXDecayAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = D84CA801CCFEDB9FC1FB340FA872E842 /* AXDecayAnimation.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		3BC219C2940DB00CDC6AC56EA369986F /* AXCoreAnimation.h in Headers */ = {isa = PBXBuildFile; fileRef = 6A02100FAD6000EA7FD8E665813C7C3D /* AXCoreAnimation.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		3170034F1ACA016DD4C029C0FAE70764 /* AXChainAnimator.m in Sources */ = {isa = PBXBuildFile; fileRef = 924ECF8437E95FCE2BB62865E4ADA0ED /* AXChainAnimator.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		334F1D20E2BB76BB4F191F64D41D549F /* UIView+AnimationChain.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF46D8211A4CEC8446B52D16D1C79222 /* UIView+AnimationChain.swift */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		33B10B26D96C6A44B0C0E8E640C09F2F /* AXDecayAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = C350F93CB727BEE1495B6130B4771EA6 /* AXDecayAnimation.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		3A48510E58720080699936168750CCBA /* POPAnimation.h in Headers */ = {isa = PBXBuildFile; fileRef = 4E42679CE8845AF1345226485A0D044C /* POPAnimation.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		3A64AF7A94C0241CA06E1DBA81DA0C90 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 53D1144834303CE6E3FC93B6130160A7 /* Foundation.framework */; };
+		3AD99CE0925561DFEBB35FF6FF31804F /* POPMath.h in Headers */ = {isa = PBXBuildFile; fileRef = ABABC32F7B618EA2CB92DABC071A182B /* POPMath.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		3B99C429877D9127420318DABC06BCA3 /* UnitBezier.h in Headers */ = {isa = PBXBuildFile; fileRef = 16597D5DC784C06AF0A9CA786B396339 /* UnitBezier.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		3BC219C2940DB00CDC6AC56EA369986F /* AXCoreAnimation.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B99C4F7BC110C8E4A52C4237E43ECA0 /* AXCoreAnimation.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3C1C4A04779E2F1A16AD71582017DF9C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 53D1144834303CE6E3FC93B6130160A7 /* Foundation.framework */; };
-		3DA3CCE63A88249EB8659049A3F9121E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 53D1144834303CE6E3FC93B6130160A7 /* Foundation.framework */; };
-		3EFAFEAA4F0D9F731DC79C5FEF359F02 /* AXIndicatorView.h in Headers */ = {isa = PBXBuildFile; fileRef = 5D8C324A8693AB1A641975CA74612F01 /* AXIndicatorView.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		4123E435423832CFDECF0B776CEC79B8 /* AXCoreAnimations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31A72C8965996AA100770ED8786BC9E1 /* AXCoreAnimations.swift */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		42146BB2CE10032F99E65FD226ECEE44 /* CAAnimation+ImmediateValue.h in Headers */ = {isa = PBXBuildFile; fileRef = FB8E155EFB338F9ED882A737C74F453C /* CAAnimation+ImmediateValue.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		474FB694E45ADF7ED85661899F5D66B6 /* UIView+ChainAnimator.m in Sources */ = {isa = PBXBuildFile; fileRef = 01E490636946E04BCB99B6E7E9F23B4D /* UIView+ChainAnimator.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		3EFAFEAA4F0D9F731DC79C5FEF359F02 /* AXIndicatorView.h in Headers */ = {isa = PBXBuildFile; fileRef = CE181062D338DBAD6718F882488C9464 /* AXIndicatorView.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4123E435423832CFDECF0B776CEC79B8 /* AXCoreAnimations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BDCEE126587643BB50233052A7BD15 /* AXCoreAnimations.swift */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		419901FE02D0650B47DD352FEA9590F6 /* POPVector.mm in Sources */ = {isa = PBXBuildFile; fileRef = 46807037EBFD5CBC8AE6657505BE8F3F /* POPVector.mm */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		42146BB2CE10032F99E65FD226ECEE44 /* CAAnimation+ImmediateValue.h in Headers */ = {isa = PBXBuildFile; fileRef = 66D33185944923B42BDF2657840EF242 /* CAAnimation+ImmediateValue.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		474FB694E45ADF7ED85661899F5D66B6 /* UIView+ChainAnimator.m in Sources */ = {isa = PBXBuildFile; fileRef = FA4DBADD0C11AA46E45E43DC9AFBBF66 /* UIView+ChainAnimator.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		48427FD27ACFA7A2A9932ADE1030CB5A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 21DDA0D7EB8741084D43F723C488E807 /* UIKit.framework */; };
-		4AF26DC8497DDE93AD0DD1E5B30EC848 /* AXIndicatorView.bundle in Resources */ = {isa = PBXBuildFile; fileRef = CDE6D0C5ABDFC6C428B642100E6A667B /* AXIndicatorView.bundle */; };
-		4C207F258FEA7023D730020E268317D3 /* AXActivityIndicatorView.h in Headers */ = {isa = PBXBuildFile; fileRef = F418F691941CC1EF0889672770AB9455 /* AXActivityIndicatorView.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4AF26DC8497DDE93AD0DD1E5B30EC848 /* AXIndicatorView.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 9316B2992027629AC081D0451316F7A6 /* AXIndicatorView.bundle */; };
+		4C207F258FEA7023D730020E268317D3 /* AXActivityIndicatorView.h in Headers */ = {isa = PBXBuildFile; fileRef = BC61A7D95476281D5EB8394C3248E6C1 /* AXActivityIndicatorView.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4D3436DFAB9AB4E110CDC3557C75C1F9 /* POPSpringSolver.h in Headers */ = {isa = PBXBuildFile; fileRef = 99367D9BADF965E88EAC84BA3CBE63DA /* POPSpringSolver.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		4D478429C11D3746A04F22B3F2B48EA5 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 53D1144834303CE6E3FC93B6130160A7 /* Foundation.framework */; };
-		4FF6847B055589C93C3F59BB89C4B59F /* AXCircleProgressView.h in Headers */ = {isa = PBXBuildFile; fileRef = C00D27921D366CE87EA65049C01BA4E9 /* AXCircleProgressView.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		50B535573AF2F0DF5FD92D47F84E5EBA /* AXGradientProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = 462C8EF2F9AFF848CD2CE59BFD72FDFD /* AXGradientProgressView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		4FF6847B055589C93C3F59BB89C4B59F /* AXCircleProgressView.h in Headers */ = {isa = PBXBuildFile; fileRef = 082802B37DB5191324CB9C0E90A96F21 /* AXCircleProgressView.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		50B535573AF2F0DF5FD92D47F84E5EBA /* AXGradientProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = EC184C1B7DC00CF0413A682B57CBA699 /* AXGradientProgressView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		5473CD877531C9BFFE1ADAB4C4A2E8C8 /* POPDecayAnimation.mm in Sources */ = {isa = PBXBuildFile; fileRef = 48EF3BB2F5E4E5D2C66C6A92B34B5461 /* POPDecayAnimation.mm */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		55949F1A86745ED426A36C02B145E11D /* AXAnimationChainSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CD6D1999E34692889E85BBE4F071E60 /* AXAnimationChainSwift.framework */; };
-		5ED05BCFCD8881E28676B78D295B3BF8 /* CAAnimation+Convertable.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C931DF4E2126597F30619B2DFABDC4B /* CAAnimation+Convertable.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		5C8EE9BFFD12285ABAD37518CE3941A6 /* POPAnimationTracerInternal.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ED6D8E78F38FD2BF1EEB0323F1925A5 /* POPAnimationTracerInternal.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		5ED05BCFCD8881E28676B78D295B3BF8 /* CAAnimation+Convertable.h in Headers */ = {isa = PBXBuildFile; fileRef = C0A8A128B5059A8C37A1799CC120F626 /* CAAnimation+Convertable.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		5FF1BA6B5D2C0704D15DDAC8F2D5E213 /* POPBasicAnimationInternal.h in Headers */ = {isa = PBXBuildFile; fileRef = 84F38B689F0A17E8A540844ECDE54B01 /* POPBasicAnimationInternal.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		6150E1A5419DF03C4C20E02CED79A159 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B6A68343DD7A287F9413633AE9B3BC8 /* QuartzCore.framework */; };
-		6C0CB8B1EA0BF654FE690154427BCA09 /* AXPracticalHUDContentView.h in Headers */ = {isa = PBXBuildFile; fileRef = C8B2372F953AD523B6DC5C406C7DDCCE /* AXPracticalHUDContentView.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		6D3B59B7F5DD9FB270A0F54F8EEC0957 /* AXSpinningWaitCursor.m in Sources */ = {isa = PBXBuildFile; fileRef = F80811243713DCD932FE433D00901F12 /* AXSpinningWaitCursor.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		76A038A846D9C267287FC61DE439376A /* AXPracticalHUDContentView.m in Sources */ = {isa = PBXBuildFile; fileRef = A83FFA83FED131F7F97B470C172E2C1D /* AXPracticalHUDContentView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		798554DC826CDA8FFF2668C7D3DB5DD6 /* AXSpinningWaitCursor.h in Headers */ = {isa = PBXBuildFile; fileRef = 7FE1167A8B47D9E481C04DAF4705F4A3 /* AXSpinningWaitCursor.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		642AC161DAEEB0078B328893CE724CB9 /* POPAnimationEvent.mm in Sources */ = {isa = PBXBuildFile; fileRef = A0C6ABD55E646E7F8FCE31EAF6D828E5 /* POPAnimationEvent.mm */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		64CD3E56C6B074842DEE8E4FCDAF11FE /* POPAnimationTracer.h in Headers */ = {isa = PBXBuildFile; fileRef = 26CFC89325D04E19E13CCE59B1AD17DE /* POPAnimationTracer.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		6C0CB8B1EA0BF654FE690154427BCA09 /* AXPracticalHUDContentView.h in Headers */ = {isa = PBXBuildFile; fileRef = 552CEDCED05BF77CC27DFF5839DB4D52 /* AXPracticalHUDContentView.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		6D3B59B7F5DD9FB270A0F54F8EEC0957 /* AXSpinningWaitCursor.m in Sources */ = {isa = PBXBuildFile; fileRef = B8026EC4B35ACA5B82CCB9B121EE24A5 /* AXSpinningWaitCursor.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		6F5BF9FA8F12DEDEF07341E888A2A162 /* TransformationMatrix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3EF60D6A3EC453F137535DFB567209B4 /* TransformationMatrix.cpp */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		70319841CB94084CA43808AD3D8F4964 /* POPMath.mm in Sources */ = {isa = PBXBuildFile; fileRef = B20AF9950C9AEA8F2A18F8A37ABBAA0A /* POPMath.mm */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		7322C8DC3CA37AF9999D33ED4FC4FB79 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 53D1144834303CE6E3FC93B6130160A7 /* Foundation.framework */; };
+		76915436215451BC440EAE5EAC3D760B /* POPAnimationTracer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A66FBAEF89F6CDB0BF99BA8DC5D818C /* POPAnimationTracer.mm */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		76A038A846D9C267287FC61DE439376A /* AXPracticalHUDContentView.m in Sources */ = {isa = PBXBuildFile; fileRef = 534751BF46F20EFF0B3D53231D52F62D /* AXPracticalHUDContentView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		798554DC826CDA8FFF2668C7D3DB5DD6 /* AXSpinningWaitCursor.h in Headers */ = {isa = PBXBuildFile; fileRef = E922DA87A88F70D17D49BD0734184643 /* AXSpinningWaitCursor.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		7A25953F943B42185F319AAAD671CB24 /* POPPropertyAnimation.h in Headers */ = {isa = PBXBuildFile; fileRef = 61F9737398EA1FEAB7880457800A4404 /* POPPropertyAnimation.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		7AB578960F6918C43F06E58B7FB478BD /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 53D1144834303CE6E3FC93B6130160A7 /* Foundation.framework */; };
-		7E29A33609297F95618832962B1B4181 /* AXPracticalHUD.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E9AA8F99B0B3138C3B799E4CFAC5B7C /* AXPracticalHUD.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		882BF1CFE37E6C89FDD9902B7EA05D9E /* UIView+ChainAnimator.h in Headers */ = {isa = PBXBuildFile; fileRef = 8B5126EC273B8AD28D441C14C7EB272D /* UIView+ChainAnimator.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		8DDE45AC1341C7B370534ADA5A179FF9 /* AXPracticalHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = A619E05D43487CE90EBCBD67F2DE6A61 /* AXPracticalHUD.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		9CF05228FE282060377873A50B3F75A3 /* UIView+Effects.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1277463D9DE65FBBD84B829466700C37 /* UIView+Effects.swift */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		A0AB44634F7AC7335B3FEAF90CECC5E6 /* AXAnimationChainSwift-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 30D653027860C9F343679569E491B612 /* AXAnimationChainSwift-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		A198D7E2DD2320998B868F9C363CBB5D /* AXChainAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF1CB53B8AFB39F0B8E3351BE0D284F2 /* AXChainAnimator.swift */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		7CF04617049120CE4B5FD952DC7F47BC /* POPCustomAnimation.h in Headers */ = {isa = PBXBuildFile; fileRef = AA553A02A51828C8FBF7A405E55E3897 /* POPCustomAnimation.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		7E29A33609297F95618832962B1B4181 /* AXPracticalHUD.h in Headers */ = {isa = PBXBuildFile; fileRef = FDAD97C8CB0BFD2802CFA174A671CBDA /* AXPracticalHUD.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		7E4C1A3B7048D61CD39FC09C96687448 /* POPLayerExtras.mm in Sources */ = {isa = PBXBuildFile; fileRef = EDC1461E8D7511795C64B9B134159B5B /* POPLayerExtras.mm */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		7FA81ADD697D386D5DD3CA04D3D76668 /* POPAnimatorPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = EB4C479BD5342AC010763CF197BB0B94 /* POPAnimatorPrivate.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		80321E7BE9862CEF424B53349AB5733F /* POPPropertyAnimation.mm in Sources */ = {isa = PBXBuildFile; fileRef = 37058AF65CF1CE9AD65F24FDF0911E72 /* POPPropertyAnimation.mm */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		82455BD6B92A448A3928B7FC19357BBD /* POPCGUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 26FC6B0978EF2361AFF0BDE3322B95BD /* POPCGUtils.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		84BDA1A186A9493336F1DDE6DBB42D28 /* POPAction.h in Headers */ = {isa = PBXBuildFile; fileRef = E4A1675E83A5457FA734F10CC0C83634 /* POPAction.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		882BF1CFE37E6C89FDD9902B7EA05D9E /* UIView+ChainAnimator.h in Headers */ = {isa = PBXBuildFile; fileRef = 90C7DF3C3969855A3B89D9553434829F /* UIView+ChainAnimator.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		8CA2B4DFC69A790D96ACCE0C377F0E91 /* POPDecayAnimationInternal.h in Headers */ = {isa = PBXBuildFile; fileRef = CEFD98932DF254B5E2FE5017F158673F /* POPDecayAnimationInternal.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		8DA18583DADDE2C9F597BB9BF70D8C55 /* POPAnimatableProperty.h in Headers */ = {isa = PBXBuildFile; fileRef = 0721CD24E38958A5B1FD30EA65423B8F /* POPAnimatableProperty.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		8DDE45AC1341C7B370534ADA5A179FF9 /* AXPracticalHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 2951A3EC2E4D268A741D492733367B52 /* AXPracticalHUD.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		912961DCE5ABD5620758E952614FD451 /* POPBasicAnimation.h in Headers */ = {isa = PBXBuildFile; fileRef = 3C44609909570616019F73BC43D4BF74 /* POPBasicAnimation.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		9755336CD2E9D718E0571CF0C70A59E1 /* POPAnimatableProperty.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7B30D5F9F6DB0DFAF55CD4DAAF86975B /* POPAnimatableProperty.mm */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		999FF90C71B4EFF65B34857D09E89903 /* POPGeometry.mm in Sources */ = {isa = PBXBuildFile; fileRef = 6216155B10A9E2CB03892BB0777E1016 /* POPGeometry.mm */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		9CF05228FE282060377873A50B3F75A3 /* UIView+Effects.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F4617D0084F042C9355196BA338D505 /* UIView+Effects.swift */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		A0AB44634F7AC7335B3FEAF90CECC5E6 /* AXAnimationChainSwift-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 8BFFE179206AB5FC43D7254F57A467E1 /* AXAnimationChainSwift-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		A198D7E2DD2320998B868F9C363CBB5D /* AXChainAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 251DCEC73DA579C213B5A97420DB6931 /* AXChainAnimator.swift */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		A79F3DF6E52FA51C72FAFB0721E316E7 /* POPAnimationExtras.h in Headers */ = {isa = PBXBuildFile; fileRef = B886979E418E15CB0F9F7592797A11BD /* POPAnimationExtras.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A7EE1CFED43C62D869B210BA64440BAF /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 21DDA0D7EB8741084D43F723C488E807 /* UIKit.framework */; };
-		AD6147E479AFBE14EB72A29C17ED1E70 /* AXActivityIndicatorView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F45D2D99E453F82E5CAFBC2FCCF24A4 /* AXActivityIndicatorView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		B1EF6E9351D6811014B2EC23AF267952 /* CAMediaTimingFunction+Extends.m in Sources */ = {isa = PBXBuildFile; fileRef = EED58140D13A43C4606EE31ABBF2D519 /* CAMediaTimingFunction+Extends.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		AD6147E479AFBE14EB72A29C17ED1E70 /* AXActivityIndicatorView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A07DC3F8C8EC7E3FF25D6442B4432C /* AXActivityIndicatorView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		B1EF6E9351D6811014B2EC23AF267952 /* CAMediaTimingFunction+Extends.m in Sources */ = {isa = PBXBuildFile; fileRef = B8937B933643AC4BF0F32317D0D5C76C /* CAMediaTimingFunction+Extends.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		B39A30BDEC7A4C6CDCF085E998985B46 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B6A68343DD7A287F9413633AE9B3BC8 /* QuartzCore.framework */; };
-		BD7BF621F3A72F4564A34972C1CB23BC /* CALayer+AnchorPoint.h in Headers */ = {isa = PBXBuildFile; fileRef = 82C7471BD8838B5B9C26E7B2CD21CA1C /* CALayer+AnchorPoint.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		BFDBBE0E37CC83A8F0707919B5E6322E /* AXAnimationChainSwift-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CED4F961C3E6FD1742F660420316433 /* AXAnimationChainSwift-dummy.m */; };
-		C01614D52B5A5614EDABEE48BB86A8FF /* CAAnimation+ImmediateValue.m in Sources */ = {isa = PBXBuildFile; fileRef = 0D1CCDEC116596BFFC6D40E7FED30986 /* CAAnimation+ImmediateValue.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		B6496A55154EED6385EC14FB449E07F1 /* POPPropertyAnimationInternal.h in Headers */ = {isa = PBXBuildFile; fileRef = 36C4D0C4144DA5EE243877F8FCC20031 /* POPPropertyAnimationInternal.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		B688B84C9EAA2C885ADBF481A46AAE5A /* FloatConversion.h in Headers */ = {isa = PBXBuildFile; fileRef = 7C980C0AE2C90703E9D4F07A4EC8E4D8 /* FloatConversion.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		B9E7906E0AFD9E8B68F51FE653D003AD /* POPSpringAnimation.mm in Sources */ = {isa = PBXBuildFile; fileRef = E48712DFB5A4584E68CBFD8436E87035 /* POPSpringAnimation.mm */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		BB26A1D4266335FF5AA2639F1E3E13B1 /* POPBasicAnimation.mm in Sources */ = {isa = PBXBuildFile; fileRef = EB197D52C12202C3D2F2E8CD0DC1D225 /* POPBasicAnimation.mm */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		BD7BF621F3A72F4564A34972C1CB23BC /* CALayer+AnchorPoint.h in Headers */ = {isa = PBXBuildFile; fileRef = 805F2660330F2226954910A4B95B026E /* CALayer+AnchorPoint.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		BFDBBE0E37CC83A8F0707919B5E6322E /* AXAnimationChainSwift-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D9489E542B34A920FE11D358FE9186 /* AXAnimationChainSwift-dummy.m */; };
+		C01614D52B5A5614EDABEE48BB86A8FF /* CAAnimation+ImmediateValue.m in Sources */ = {isa = PBXBuildFile; fileRef = BFFECDDBF8D70B425930C195153638A2 /* CAAnimation+ImmediateValue.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		C0E0BBD591870E5AB3CE6C922A5A036F /* POPAnimationEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 853F2398B5A4BE66DD7B072760CC7D38 /* POPAnimationEvent.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C61F029DBA1D5246E330C3997849BBA6 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 21DDA0D7EB8741084D43F723C488E807 /* UIKit.framework */; };
-		C67F7F65601D6B158D07C5344EACDFB6 /* Pods-AxReminder-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = C958FD8AFB0A97CA5944918913BFBC6D /* Pods-AxReminder-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		CA18F5067BF670D665D7F985E68FEF85 /* AXAnimationChain-Swift-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D9C1C2E44E27A47DA1065175DD7FDD8 /* AXAnimationChain-Swift-dummy.m */; };
-		D28BABE5C4AB44EB6CEBD17416AF9A72 /* AXIndicatorView-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 75A404921EC2D72DF3D4408751A345D1 /* AXIndicatorView-dummy.m */; };
-		D652EF35EBEF131CB3DD9ED8B0ED3845 /* CAMediaTimingFunction+Extends.h in Headers */ = {isa = PBXBuildFile; fileRef = B4100ECADEFE9C4BD0993848E786E10A /* CAMediaTimingFunction+Extends.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D7A85599228BC76CB0117ABF0A55A30F /* AXAnimationChain-Swift-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 69439D359C5F7C338B00310EDBC4C30B /* AXAnimationChain-Swift-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		DA43390B4E8E0C637A640EA3C95F6622 /* AXIndicatorView-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 894E4FAEF62185BC30D011414CB9F881 /* AXIndicatorView-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		E32442E0D5760FF2934F678B9BBCF4FC /* AXCircleProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = 45681E6382A159EC81E9BEED8B175293 /* AXCircleProgressView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		E89BA3CF865DEAA0254E6D6C42560CF4 /* AXChainAnimator.h in Headers */ = {isa = PBXBuildFile; fileRef = 658228E1D8E7D6D0EF363749544D94BE /* AXChainAnimator.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		EE62036AEF8BAA1852C72625CBE4087A /* AXSpringAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DFD94D1413987F7D16C4309A6A28B7E /* AXSpringAnimation.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		F0F7A1620FBCF4194C28FAE53C035F2F /* AXBarProgressView.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D0542B17FAA3001463621BAC8B17F6F /* AXBarProgressView.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F27DFABDB89FF234539BD61B856AB199 /* AXBarProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5263F829639B1F72F6EBE425D9BBDE3B /* AXBarProgressView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		F31180316BF284ADA0657DB66A7CAE26 /* Pods-AxReminder-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = DE61C24FDC9D5D6AAB912872E39D14FF /* Pods-AxReminder-dummy.m */; };
+		C8F95DF1F0CA4B8CAF06415FA596FA1C /* Pods-AxReminder-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = C958FD8AFB0A97CA5944918913BFBC6D /* Pods-AxReminder-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		CA18F5067BF670D665D7F985E68FEF85 /* AXAnimationChain-Swift-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 135112B8561D4849D4A43639DF8D58C3 /* AXAnimationChain-Swift-dummy.m */; };
+		CE28D531EEA11C5F6F8D36FB3B615DF4 /* POPSpringAnimationInternal.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CD7BDE2EE33F991098C35CC33F0EE3C /* POPSpringAnimationInternal.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		D28BABE5C4AB44EB6CEBD17416AF9A72 /* AXIndicatorView-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 41321ECD9783947E25C7050C52333A54 /* AXIndicatorView-dummy.m */; };
+		D3D0DC095BE5F954741AE6FBF674101D /* POPAnimationPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = 17202DBF03A3565B7D71BF2BB5D43224 /* POPAnimationPrivate.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		D569C20BB93C2041BA446C813680E93B /* POPVector.h in Headers */ = {isa = PBXBuildFile; fileRef = 68BD10276268BC503D4AFC308AABDE82 /* POPVector.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		D61DDC36D2C78E62C568CABC8516F6B0 /* POPAnimator.h in Headers */ = {isa = PBXBuildFile; fileRef = F004FF681400409BCCDDB2AE54F2D87E /* POPAnimator.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D652EF35EBEF131CB3DD9ED8B0ED3845 /* CAMediaTimingFunction+Extends.h in Headers */ = {isa = PBXBuildFile; fileRef = EC3F13BB94F4DFBCF5CC0A180898C83C /* CAMediaTimingFunction+Extends.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D7A85599228BC76CB0117ABF0A55A30F /* AXAnimationChain-Swift-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 8024F9B6C6A1BBE9E64486E0326D3E31 /* AXAnimationChain-Swift-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		DA43390B4E8E0C637A640EA3C95F6622 /* AXIndicatorView-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 5DAC4D21869A9592879193DDCCB425BE /* AXIndicatorView-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		E165720CFE5AAF45E0694D0025585B5B /* POPAnimationRuntime.mm in Sources */ = {isa = PBXBuildFile; fileRef = 9A031D6AC923D3B0BA3302AD062C329D /* POPAnimationRuntime.mm */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		E32442E0D5760FF2934F678B9BBCF4FC /* AXCircleProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = A4A90A09C42A78B5AE9C71C4B1CEA798 /* AXCircleProgressView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		E5C67B81F4F42ADD2EFD3F392423BA84 /* POPAnimator.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A1F8CD73BB4445BF79A8BEADF49A4F3 /* POPAnimator.mm */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		E89BA3CF865DEAA0254E6D6C42560CF4 /* AXChainAnimator.h in Headers */ = {isa = PBXBuildFile; fileRef = 15A616C51C261BA81A9CEEF21B40A150 /* AXChainAnimator.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		EAE4AC0F18EF231DC57BD5EA7995AD1F /* pop-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = C8AB38CF43AB79018AD1E7A341FDE0B1 /* pop-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		EC1041850F31C543A9868FAB8B3FD8D7 /* POPCGUtils.mm in Sources */ = {isa = PBXBuildFile; fileRef = 060A231C5DE01E4654B9A1F55104A755 /* POPCGUtils.mm */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		ED0068077023F07440F6B6F651AC0674 /* POPDecayAnimation.h in Headers */ = {isa = PBXBuildFile; fileRef = 5DC74A27088244E568149A4F593806A7 /* POPDecayAnimation.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		EE62036AEF8BAA1852C72625CBE4087A /* AXSpringAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C9AA8E404F37DB8BE21D6BD6CFC40F4 /* AXSpringAnimation.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		F0BEC3E3B446AA291816DE31F37CA588 /* TransformationMatrix.h in Headers */ = {isa = PBXBuildFile; fileRef = 8C9D47CD8B3640DD6EA610067370A7D0 /* TransformationMatrix.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		F0F7A1620FBCF4194C28FAE53C035F2F /* AXBarProgressView.h in Headers */ = {isa = PBXBuildFile; fileRef = 209C095BE0E727D209693EECB31179C9 /* AXBarProgressView.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F27DFABDB89FF234539BD61B856AB199 /* AXBarProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5FCA6B24C8E3E23A1099DB1A4E2DD6AE /* AXBarProgressView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		F5C1ABA959E049708FA7D1AAEE602D26 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 53D1144834303CE6E3FC93B6130160A7 /* Foundation.framework */; };
-		FB9620A0B82B8F762C13E6D67198E25D /* AXPracticalHUD-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = FE1ECC8D2C81C6364A84DFF118E61AE0 /* AXPracticalHUD-dummy.m */; };
-		FD2FF4E2B1FE82699127D6CEE1973C1A /* AXPracticalHUD.bundle in Resources */ = {isa = PBXBuildFile; fileRef = FE19CF9DF9FA201966034F49FCF33953 /* AXPracticalHUD.bundle */; };
-		FEE737666BAAC5920A9FB75C9CD62BCC /* AXSpringAnimation.h in Headers */ = {isa = PBXBuildFile; fileRef = 81F6B9985F461009B7DE480013CF63BB /* AXSpringAnimation.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F8013C2B05EE903826466D0BE6C9A05A /* POPAnimationExtras.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0603FEA884C914F07549F66E8A1DE42A /* POPAnimationExtras.mm */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		FA1B125ABB2C86B00EF4DF4A8A31D044 /* POPSpringAnimation.h in Headers */ = {isa = PBXBuildFile; fileRef = E259CB515DC20075392E2F9B775BF790 /* POPSpringAnimation.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		FA6E2AB7D0C32CB48E2C600889FD933A /* POPLayerExtras.h in Headers */ = {isa = PBXBuildFile; fileRef = F1D91AC320EEF64E2F3F4652F42A1771 /* POPLayerExtras.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		FB9620A0B82B8F762C13E6D67198E25D /* AXPracticalHUD-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 30AD86E1C049321D12B29503DA320BF3 /* AXPracticalHUD-dummy.m */; };
+		FD2FF4E2B1FE82699127D6CEE1973C1A /* AXPracticalHUD.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 959D018BE43F4A0FDF68E7ADE8076767 /* AXPracticalHUD.bundle */; };
+		FEE737666BAAC5920A9FB75C9CD62BCC /* AXSpringAnimation.h in Headers */ = {isa = PBXBuildFile; fileRef = 14120009CB4A8DCDBD6787A90517918C /* AXSpringAnimation.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		63FD89408F5501E2F3647447F8F61FC4 /* PBXContainerItemProxy */ = {
+		2EEEB61FCC303E56BA6A3D5B1FE04E07 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8B74B139F8A1995AAAFC6F31D3AB9E2B;
+			remoteInfo = AXAnimationChainSwift;
+		};
+		4F802ED5B09D92B2AC238E0DC69EA324 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 060186B6B426DB3FDC91A01203682CB1;
 			remoteInfo = AXIndicatorView;
+		};
+		5945029018635CC5099D373BE755E95A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 0299A0C6C57AA315E6DFE9CCD26ABD9D;
+			remoteInfo = pop;
+		};
+		68C78B8B0817BD856A8159680500D410 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A7CA60F8C75DFD6F6921EC655C2B30FE;
+			remoteInfo = AXPracticalHUD;
 		};
 		6ABFF928B42D51ECEFD20DF8473BB887 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -87,12 +162,12 @@
 			remoteGlobalIDString = 8B74B139F8A1995AAAFC6F31D3AB9E2B;
 			remoteInfo = AXAnimationChainSwift;
 		};
-		A871F73720E294AB83A54B6D98C72DA0 /* PBXContainerItemProxy */ = {
+		81CB8439F07A5E10F014ACCBBFE70BCB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = A7CA60F8C75DFD6F6921EC655C2B30FE;
-			remoteInfo = AXPracticalHUD;
+			remoteGlobalIDString = 13A4E0D7FC39B118948A672573F2A05D;
+			remoteInfo = "AXAnimationChain-Swift";
 		};
 		ADDDE1927EB7F724A845DD315B950390 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -101,108 +176,152 @@
 			remoteGlobalIDString = 060186B6B426DB3FDC91A01203682CB1;
 			remoteInfo = AXIndicatorView;
 		};
-		D720A287706778D6D5B2F8924ED92C5A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 13A4E0D7FC39B118948A672573F2A05D;
-			remoteInfo = "AXAnimationChain-Swift";
-		};
-		FD2EE67EF7AD49369D3B17C2C9C10661 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 8B74B139F8A1995AAAFC6F31D3AB9E2B;
-			remoteInfo = AXAnimationChainSwift;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		01E490636946E04BCB99B6E7E9F23B4D /* UIView+ChainAnimator.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIView+ChainAnimator.m"; path = "AXAnimationChain/Classes/UIView+ChainAnimator.m"; sourceTree = "<group>"; };
-		0576980D4E88CBBB1058319E27FF1449 /* UIView+AnimationChain.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UIView+AnimationChain.swift"; path = "AXAnimationChain/Classes/Swifty/UIView+AnimationChain.swift"; sourceTree = "<group>"; };
-		075A606CD4C6C099726312DD85E1C46B /* AXAnimationChain-Swift-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "AXAnimationChain-Swift-prefix.pch"; sourceTree = "<group>"; };
-		0C931DF4E2126597F30619B2DFABDC4B /* CAAnimation+Convertable.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "CAAnimation+Convertable.h"; path = "AXAnimationChain/Classes/CoreAnimation/CAAnimation+Convertable.h"; sourceTree = "<group>"; };
-		0D1CCDEC116596BFFC6D40E7FED30986 /* CAAnimation+ImmediateValue.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "CAAnimation+ImmediateValue.m"; path = "AXAnimationChain/Classes/CoreAnimation/CAAnimation+ImmediateValue.m"; sourceTree = "<group>"; };
-		1277463D9DE65FBBD84B829466700C37 /* UIView+Effects.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UIView+Effects.swift"; path = "AXAnimationChain/Classes/Swifty/UIView+Effects.swift"; sourceTree = "<group>"; };
-		18D4D3F7AE262723A04592D7C841FD2F /* AXChainAnimator.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AXChainAnimator.m; path = AXAnimationChain/Classes/AXChainAnimator.m; sourceTree = "<group>"; };
-		1B353F2EF0FB2E1F2446511010314691 /* AXGradientProgressView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AXGradientProgressView.h; path = AXPracticalHUD/AXPracticalHUD/AXGradientProgressView.h; sourceTree = "<group>"; };
+		0173BC6538E7EA47E47E722784ECFAD2 /* AXGradientProgressView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AXGradientProgressView.h; path = AXPracticalHUD/AXPracticalHUD/AXGradientProgressView.h; sourceTree = "<group>"; };
+		045EA533A254534A564C7FA411E9818D /* POPDefines.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = POPDefines.h; path = pop/POPDefines.h; sourceTree = "<group>"; };
+		0603FEA884C914F07549F66E8A1DE42A /* POPAnimationExtras.mm */ = {isa = PBXFileReference; includeInIndex = 1; name = POPAnimationExtras.mm; path = pop/POPAnimationExtras.mm; sourceTree = "<group>"; };
+		060A231C5DE01E4654B9A1F55104A755 /* POPCGUtils.mm */ = {isa = PBXFileReference; includeInIndex = 1; name = POPCGUtils.mm; path = pop/POPCGUtils.mm; sourceTree = "<group>"; };
+		06B49EE849BDCB5376AB5367462258AA /* AXAnimationChain-Swift.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; path = "AXAnimationChain-Swift.modulemap"; sourceTree = "<group>"; };
+		0721CD24E38958A5B1FD30EA65423B8F /* POPAnimatableProperty.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = POPAnimatableProperty.h; path = pop/POPAnimatableProperty.h; sourceTree = "<group>"; };
+		082802B37DB5191324CB9C0E90A96F21 /* AXCircleProgressView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AXCircleProgressView.h; path = AXPracticalHUD/AXPracticalHUD/AXCircleProgressView.h; sourceTree = "<group>"; };
+		0C70683CE297ECFD1647F24985D58E07 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		135112B8561D4849D4A43639DF8D58C3 /* AXAnimationChain-Swift-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "AXAnimationChain-Swift-dummy.m"; sourceTree = "<group>"; };
+		14120009CB4A8DCDBD6787A90517918C /* AXSpringAnimation.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AXSpringAnimation.h; path = AXAnimationChain/Classes/CoreAnimation/AXSpringAnimation.h; sourceTree = "<group>"; };
+		14E47FF6B33DD239CE42360B0846D225 /* pop-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "pop-prefix.pch"; sourceTree = "<group>"; };
+		15A616C51C261BA81A9CEEF21B40A150 /* AXChainAnimator.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AXChainAnimator.h; path = AXAnimationChain/Classes/AXChainAnimator.h; sourceTree = "<group>"; };
+		16597D5DC784C06AF0A9CA786B396339 /* UnitBezier.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = UnitBezier.h; path = pop/WebCore/UnitBezier.h; sourceTree = "<group>"; };
+		17202DBF03A3565B7D71BF2BB5D43224 /* POPAnimationPrivate.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = POPAnimationPrivate.h; path = pop/POPAnimationPrivate.h; sourceTree = "<group>"; };
+		189939F59484A3E0AA3F684CC61860EA /* Pods_AxReminder.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Pods_AxReminder.framework; path = "Pods-AxReminder.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1B6A68343DD7A287F9413633AE9B3BC8 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS10.0.sdk/System/Library/Frameworks/QuartzCore.framework; sourceTree = DEVELOPER_DIR; };
-		1D4425B478EA4D917CACB315301779EB /* AXIndicatorView.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; path = AXIndicatorView.modulemap; sourceTree = "<group>"; };
-		1D9C1C2E44E27A47DA1065175DD7FDD8 /* AXAnimationChain-Swift-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "AXAnimationChain-Swift-dummy.m"; sourceTree = "<group>"; };
-		1E58C2E997AD94786FE3ECB72B7A3BD4 /* AXDecayAnimation.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AXDecayAnimation.h; path = AXAnimationChain/Classes/CoreAnimation/AXDecayAnimation.h; sourceTree = "<group>"; };
+		209C095BE0E727D209693EECB31179C9 /* AXBarProgressView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AXBarProgressView.h; path = AXPracticalHUD/AXPracticalHUD/AXBarProgressView.h; sourceTree = "<group>"; };
 		21DDA0D7EB8741084D43F723C488E807 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS10.0.sdk/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
+		2245CF20923BAECBE4E0145B93342B9D /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		251DCEC73DA579C213B5A97420DB6931 /* AXChainAnimator.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AXChainAnimator.swift; path = AXAnimationChain/Classes/Swifty/AXChainAnimator.swift; sourceTree = "<group>"; };
+		26CFC89325D04E19E13CCE59B1AD17DE /* POPAnimationTracer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = POPAnimationTracer.h; path = pop/POPAnimationTracer.h; sourceTree = "<group>"; };
+		26FC6B0978EF2361AFF0BDE3322B95BD /* POPCGUtils.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = POPCGUtils.h; path = pop/POPCGUtils.h; sourceTree = "<group>"; };
+		2951A3EC2E4D268A741D492733367B52 /* AXPracticalHUD.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AXPracticalHUD.m; path = AXPracticalHUD/AXPracticalHUD/AXPracticalHUD.m; sourceTree = "<group>"; };
+		2B171C16BC6921AD99DBCF7A8CAE5927 /* POPAnimationInternal.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = POPAnimationInternal.h; path = pop/POPAnimationInternal.h; sourceTree = "<group>"; };
 		2CD6D1999E34692889E85BBE4F071E60 /* AXAnimationChainSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = AXAnimationChainSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		2E9AA8F99B0B3138C3B799E4CFAC5B7C /* AXPracticalHUD.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AXPracticalHUD.h; path = AXPracticalHUD/AXPracticalHUD/AXPracticalHUD.h; sourceTree = "<group>"; };
-		2F45D2D99E453F82E5CAFBC2FCCF24A4 /* AXActivityIndicatorView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AXActivityIndicatorView.m; path = AXIndicatorView/Classes/AXActivityIndicatorView.m; sourceTree = "<group>"; };
-		30D653027860C9F343679569E491B612 /* AXAnimationChainSwift-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "AXAnimationChainSwift-umbrella.h"; sourceTree = "<group>"; };
-		31A72C8965996AA100770ED8786BC9E1 /* AXCoreAnimations.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AXCoreAnimations.swift; path = AXAnimationChain/Classes/Swifty/AXCoreAnimations.swift; sourceTree = "<group>"; };
-		34178D60216E0902150A55726DC0BEAD /* AXPracticalHUD.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = AXPracticalHUD.framework; path = AXPracticalHUD.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		3D0542B17FAA3001463621BAC8B17F6F /* AXBarProgressView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AXBarProgressView.h; path = AXPracticalHUD/AXPracticalHUD/AXBarProgressView.h; sourceTree = "<group>"; };
-		3DFD94D1413987F7D16C4309A6A28B7E /* AXSpringAnimation.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AXSpringAnimation.m; path = AXAnimationChain/Classes/CoreAnimation/AXSpringAnimation.m; sourceTree = "<group>"; };
+		2EA5D6B475C8FAC215220A0141265DDD /* AXAnimationChainSwift.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; path = AXAnimationChainSwift.modulemap; sourceTree = "<group>"; };
+		30AD86E1C049321D12B29503DA320BF3 /* AXPracticalHUD-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "AXPracticalHUD-dummy.m"; sourceTree = "<group>"; };
+		33B91AB70F0588F073F9AB79859304D1 /* AXPracticalHUD.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = AXPracticalHUD.framework; path = AXPracticalHUD.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		34D9489E542B34A920FE11D358FE9186 /* AXAnimationChainSwift-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "AXAnimationChainSwift-dummy.m"; sourceTree = "<group>"; };
+		36C4D0C4144DA5EE243877F8FCC20031 /* POPPropertyAnimationInternal.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = POPPropertyAnimationInternal.h; path = pop/POPPropertyAnimationInternal.h; sourceTree = "<group>"; };
+		37058AF65CF1CE9AD65F24FDF0911E72 /* POPPropertyAnimation.mm */ = {isa = PBXFileReference; includeInIndex = 1; name = POPPropertyAnimation.mm; path = pop/POPPropertyAnimation.mm; sourceTree = "<group>"; };
+		37BDCEE126587643BB50233052A7BD15 /* AXCoreAnimations.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AXCoreAnimations.swift; path = AXAnimationChain/Classes/Swifty/AXCoreAnimations.swift; sourceTree = "<group>"; };
+		3A1F8CD73BB4445BF79A8BEADF49A4F3 /* POPAnimator.mm */ = {isa = PBXFileReference; includeInIndex = 1; name = POPAnimator.mm; path = pop/POPAnimator.mm; sourceTree = "<group>"; };
+		3A66FBAEF89F6CDB0BF99BA8DC5D818C /* POPAnimationTracer.mm */ = {isa = PBXFileReference; includeInIndex = 1; name = POPAnimationTracer.mm; path = pop/POPAnimationTracer.mm; sourceTree = "<group>"; };
+		3C44609909570616019F73BC43D4BF74 /* POPBasicAnimation.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = POPBasicAnimation.h; path = pop/POPBasicAnimation.h; sourceTree = "<group>"; };
+		3EF60D6A3EC453F137535DFB567209B4 /* TransformationMatrix.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = TransformationMatrix.cpp; path = pop/WebCore/TransformationMatrix.cpp; sourceTree = "<group>"; };
+		3F4617D0084F042C9355196BA338D505 /* UIView+Effects.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UIView+Effects.swift"; path = "AXAnimationChain/Classes/Swifty/UIView+Effects.swift"; sourceTree = "<group>"; };
 		3FD0BAB3C2E5E8DD93047F23B107CDFD /* Pods-AxReminder.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-AxReminder.release.xcconfig"; sourceTree = "<group>"; };
-		45681E6382A159EC81E9BEED8B175293 /* AXCircleProgressView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AXCircleProgressView.m; path = AXPracticalHUD/AXPracticalHUD/AXCircleProgressView.m; sourceTree = "<group>"; };
-		462C8EF2F9AFF848CD2CE59BFD72FDFD /* AXGradientProgressView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AXGradientProgressView.m; path = AXPracticalHUD/AXPracticalHUD/AXGradientProgressView.m; sourceTree = "<group>"; };
-		4997654B76B98360EDC4C37E72C0DD26 /* CALayer+AnchorPoint.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "CALayer+AnchorPoint.m"; path = "AXAnimationChain/Classes/CALayer+AnchorPoint.m"; sourceTree = "<group>"; };
-		4CED4F961C3E6FD1742F660420316433 /* AXAnimationChainSwift-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "AXAnimationChainSwift-dummy.m"; sourceTree = "<group>"; };
-		5263F829639B1F72F6EBE425D9BBDE3B /* AXBarProgressView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AXBarProgressView.m; path = AXPracticalHUD/AXPracticalHUD/AXBarProgressView.m; sourceTree = "<group>"; };
+		41321ECD9783947E25C7050C52333A54 /* AXIndicatorView-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "AXIndicatorView-dummy.m"; sourceTree = "<group>"; };
+		436AF9AF89C3D7BB190B187AB65897EF /* POPAnimationRuntime.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = POPAnimationRuntime.h; path = pop/POPAnimationRuntime.h; sourceTree = "<group>"; };
+		44D89B06964BEAA2C548434A260F21E0 /* pop.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; path = pop.modulemap; sourceTree = "<group>"; };
+		460D30AF7E6E0852833A7BD6229B5A86 /* AXAnimationChainSwift-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "AXAnimationChainSwift-prefix.pch"; sourceTree = "<group>"; };
+		46807037EBFD5CBC8AE6657505BE8F3F /* POPVector.mm */ = {isa = PBXFileReference; includeInIndex = 1; name = POPVector.mm; path = pop/POPVector.mm; sourceTree = "<group>"; };
+		48EF3BB2F5E4E5D2C66C6A92B34B5461 /* POPDecayAnimation.mm */ = {isa = PBXFileReference; includeInIndex = 1; name = POPDecayAnimation.mm; path = pop/POPDecayAnimation.mm; sourceTree = "<group>"; };
+		4B2A23A515F30896D730D47D4C405021 /* CALayer+AnchorPoint.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "CALayer+AnchorPoint.m"; path = "AXAnimationChain/Classes/CALayer+AnchorPoint.m"; sourceTree = "<group>"; };
+		4B99C4F7BC110C8E4A52C4237E43ECA0 /* AXCoreAnimation.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AXCoreAnimation.h; path = AXAnimationChain/Classes/CoreAnimation/AXCoreAnimation.h; sourceTree = "<group>"; };
+		4CD7BDE2EE33F991098C35CC33F0EE3C /* POPSpringAnimationInternal.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = POPSpringAnimationInternal.h; path = pop/POPSpringAnimationInternal.h; sourceTree = "<group>"; };
+		4D192D9BBB95A2294DEE8D029AAA5FA1 /* AXPracticalHUD.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; path = AXPracticalHUD.modulemap; sourceTree = "<group>"; };
+		4E42679CE8845AF1345226485A0D044C /* POPAnimation.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = POPAnimation.h; path = pop/POPAnimation.h; sourceTree = "<group>"; };
+		534751BF46F20EFF0B3D53231D52F62D /* AXPracticalHUDContentView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AXPracticalHUDContentView.m; path = AXPracticalHUD/AXPracticalHUD/AXPracticalHUDContentView.m; sourceTree = "<group>"; };
 		53D1144834303CE6E3FC93B6130160A7 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS10.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
-		548B6FB23EBEE42A8AABD8CFAC337C55 /* CAAnimation+Convertable.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "CAAnimation+Convertable.m"; path = "AXAnimationChain/Classes/CoreAnimation/CAAnimation+Convertable.m"; sourceTree = "<group>"; };
-		5D8C324A8693AB1A641975CA74612F01 /* AXIndicatorView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AXIndicatorView.h; path = AXIndicatorView/Classes/AXIndicatorView.h; sourceTree = "<group>"; };
-		5DB46C18D7C8321BD87C60D3F3DD2DF3 /* AXPracticalHUD.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = AXPracticalHUD.xcconfig; sourceTree = "<group>"; };
-		658228E1D8E7D6D0EF363749544D94BE /* AXChainAnimator.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AXChainAnimator.h; path = AXAnimationChain/Classes/AXChainAnimator.h; sourceTree = "<group>"; };
-		659B70032785C625F5612B73EF8B49FA /* AXPracticalHUD-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "AXPracticalHUD-umbrella.h"; sourceTree = "<group>"; };
+		552CEDCED05BF77CC27DFF5839DB4D52 /* AXPracticalHUDContentView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AXPracticalHUDContentView.h; path = AXPracticalHUD/AXPracticalHUD/AXPracticalHUDContentView.h; sourceTree = "<group>"; };
+		564D80C1CC5AD4CD2F268ED4772AD145 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		5DAC4D21869A9592879193DDCCB425BE /* AXIndicatorView-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "AXIndicatorView-umbrella.h"; sourceTree = "<group>"; };
+		5DC74A27088244E568149A4F593806A7 /* POPDecayAnimation.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = POPDecayAnimation.h; path = pop/POPDecayAnimation.h; sourceTree = "<group>"; };
+		5E15582D5D5D18C0B274C88DDD03EFCE /* AXAnimationChain_Swift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = AXAnimationChain_Swift.framework; path = "AXAnimationChain-Swift.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
+		5FCA6B24C8E3E23A1099DB1A4E2DD6AE /* AXBarProgressView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AXBarProgressView.m; path = AXPracticalHUD/AXPracticalHUD/AXBarProgressView.m; sourceTree = "<group>"; };
+		608347706D6656FD1DFF0C7EA22F88F9 /* POP.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = POP.h; path = pop/POP.h; sourceTree = "<group>"; };
+		61F9737398EA1FEAB7880457800A4404 /* POPPropertyAnimation.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = POPPropertyAnimation.h; path = pop/POPPropertyAnimation.h; sourceTree = "<group>"; };
+		6216155B10A9E2CB03892BB0777E1016 /* POPGeometry.mm */ = {isa = PBXFileReference; includeInIndex = 1; name = POPGeometry.mm; path = pop/POPGeometry.mm; sourceTree = "<group>"; };
+		66D33185944923B42BDF2657840EF242 /* CAAnimation+ImmediateValue.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "CAAnimation+ImmediateValue.h"; path = "AXAnimationChain/Classes/CoreAnimation/CAAnimation+ImmediateValue.h"; sourceTree = "<group>"; };
 		66E152BD2E9BEABC23EDB61634D53A19 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		69439D359C5F7C338B00310EDBC4C30B /* AXAnimationChain-Swift-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "AXAnimationChain-Swift-umbrella.h"; sourceTree = "<group>"; };
-		6A02100FAD6000EA7FD8E665813C7C3D /* AXCoreAnimation.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AXCoreAnimation.h; path = AXAnimationChain/Classes/CoreAnimation/AXCoreAnimation.h; sourceTree = "<group>"; };
-		75A404921EC2D72DF3D4408751A345D1 /* AXIndicatorView-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "AXIndicatorView-dummy.m"; sourceTree = "<group>"; };
-		7959B0E3A20889CFE7CB1D56BF2E7833 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		68BD10276268BC503D4AFC308AABDE82 /* POPVector.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = POPVector.h; path = pop/POPVector.h; sourceTree = "<group>"; };
+		6DD85491FF83857612781186E1E7FD41 /* AXAnimationChain-Swift-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "AXAnimationChain-Swift-prefix.pch"; sourceTree = "<group>"; };
+		795B96A9B35F7938BA3A384BAA78C702 /* POPAnimationEventInternal.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = POPAnimationEventInternal.h; path = pop/POPAnimationEventInternal.h; sourceTree = "<group>"; };
 		7A15003DEC49F15E2786558DB9E40532 /* AXIndicatorView.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = AXIndicatorView.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		7FE1167A8B47D9E481C04DAF4705F4A3 /* AXSpinningWaitCursor.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AXSpinningWaitCursor.h; path = AXIndicatorView/Classes/AXSpinningWaitCursor.h; sourceTree = "<group>"; };
-		81F6B9985F461009B7DE480013CF63BB /* AXSpringAnimation.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AXSpringAnimation.h; path = AXAnimationChain/Classes/CoreAnimation/AXSpringAnimation.h; sourceTree = "<group>"; };
-		82C7471BD8838B5B9C26E7B2CD21CA1C /* CALayer+AnchorPoint.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "CALayer+AnchorPoint.h"; path = "AXAnimationChain/Classes/CALayer+AnchorPoint.h"; sourceTree = "<group>"; };
-		86612B05951756DFE62DA01F48B55C7D /* AXBreachedAnnulusIndicatorView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AXBreachedAnnulusIndicatorView.m; path = AXIndicatorView/Classes/AXBreachedAnnulusIndicatorView.m; sourceTree = "<group>"; };
-		894E4FAEF62185BC30D011414CB9F881 /* AXIndicatorView-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "AXIndicatorView-umbrella.h"; sourceTree = "<group>"; };
-		8B5126EC273B8AD28D441C14C7EB272D /* UIView+ChainAnimator.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIView+ChainAnimator.h"; path = "AXAnimationChain/Classes/UIView+ChainAnimator.h"; sourceTree = "<group>"; };
-		8BAF61536C26922DBA6C4BA9C692C97D /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		7B30D5F9F6DB0DFAF55CD4DAAF86975B /* POPAnimatableProperty.mm */ = {isa = PBXFileReference; includeInIndex = 1; name = POPAnimatableProperty.mm; path = pop/POPAnimatableProperty.mm; sourceTree = "<group>"; };
+		7C980C0AE2C90703E9D4F07A4EC8E4D8 /* FloatConversion.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FloatConversion.h; path = pop/WebCore/FloatConversion.h; sourceTree = "<group>"; };
+		7D0380822436DC9FAD6A4C25DE127B07 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		8024F9B6C6A1BBE9E64486E0326D3E31 /* AXAnimationChain-Swift-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "AXAnimationChain-Swift-umbrella.h"; sourceTree = "<group>"; };
+		805F2660330F2226954910A4B95B026E /* CALayer+AnchorPoint.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "CALayer+AnchorPoint.h"; path = "AXAnimationChain/Classes/CALayer+AnchorPoint.h"; sourceTree = "<group>"; };
+		8303746915CDFB33D4AC7518A5581CD1 /* POPAnimation.mm */ = {isa = PBXFileReference; includeInIndex = 1; name = POPAnimation.mm; path = pop/POPAnimation.mm; sourceTree = "<group>"; };
+		83119A82F432D7CAD58FFB83910D51A3 /* AXDecayAnimation.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AXDecayAnimation.h; path = AXAnimationChain/Classes/CoreAnimation/AXDecayAnimation.h; sourceTree = "<group>"; };
+		84F38B689F0A17E8A540844ECDE54B01 /* POPBasicAnimationInternal.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = POPBasicAnimationInternal.h; path = pop/POPBasicAnimationInternal.h; sourceTree = "<group>"; };
+		853F2398B5A4BE66DD7B072760CC7D38 /* POPAnimationEvent.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = POPAnimationEvent.h; path = pop/POPAnimationEvent.h; sourceTree = "<group>"; };
+		8721E6DF209C0C7379E27A02FB2D4CF1 /* CAAnimation+Convertable.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "CAAnimation+Convertable.m"; path = "AXAnimationChain/Classes/CoreAnimation/CAAnimation+Convertable.m"; sourceTree = "<group>"; };
+		8BFFE179206AB5FC43D7254F57A467E1 /* AXAnimationChainSwift-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "AXAnimationChainSwift-umbrella.h"; sourceTree = "<group>"; };
+		8C9AA8E404F37DB8BE21D6BD6CFC40F4 /* AXSpringAnimation.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AXSpringAnimation.m; path = AXAnimationChain/Classes/CoreAnimation/AXSpringAnimation.m; sourceTree = "<group>"; };
+		8C9D47CD8B3640DD6EA610067370A7D0 /* TransformationMatrix.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = TransformationMatrix.h; path = pop/WebCore/TransformationMatrix.h; sourceTree = "<group>"; };
+		8ED6D8E78F38FD2BF1EEB0323F1925A5 /* POPAnimationTracerInternal.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = POPAnimationTracerInternal.h; path = pop/POPAnimationTracerInternal.h; sourceTree = "<group>"; };
+		90C7DF3C3969855A3B89D9553434829F /* UIView+ChainAnimator.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIView+ChainAnimator.h"; path = "AXAnimationChain/Classes/UIView+ChainAnimator.h"; sourceTree = "<group>"; };
+		918BCC1DC0825BF74920FFD074790CDC /* AXIndicatorView.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; path = AXIndicatorView.modulemap; sourceTree = "<group>"; };
+		924ECF8437E95FCE2BB62865E4ADA0ED /* AXChainAnimator.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AXChainAnimator.m; path = AXAnimationChain/Classes/AXChainAnimator.m; sourceTree = "<group>"; };
 		9293549553E9FC9F1E99CB559030EC3B /* Pods-AxReminder-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-AxReminder-acknowledgements.plist"; sourceTree = "<group>"; };
+		92BBC721C4C165AD9F2A7FF7537158AB /* pop.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = pop.xcconfig; sourceTree = "<group>"; };
+		9316B2992027629AC081D0451316F7A6 /* AXIndicatorView.bundle */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "wrapper.plug-in"; name = AXIndicatorView.bundle; path = AXIndicatorView/Classes/AXIndicatorView.bundle; sourceTree = "<group>"; };
 		93A4A3777CF96A4AAC1D13BA6DCCEA73 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		9690792618D86C6116085C60A8B3A2FB /* AXAnimationChain_Swift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = AXAnimationChain_Swift.framework; path = "AXAnimationChain-Swift.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
-		996AB936C02FFB2DF65F52BC959FCCCE /* AXIndicatorView.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = AXIndicatorView.framework; path = AXIndicatorView.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		A289BBD21D1577CC8D09336AB89C5E48 /* AXIndicatorView.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = AXIndicatorView.xcconfig; sourceTree = "<group>"; };
+		9403D758A8E4DF0516CA93A193F812C2 /* AXIndicatorView-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "AXIndicatorView-prefix.pch"; sourceTree = "<group>"; };
+		959D018BE43F4A0FDF68E7ADE8076767 /* AXPracticalHUD.bundle */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "wrapper.plug-in"; name = AXPracticalHUD.bundle; path = AXPracticalHUD/AXPracticalHUD/AXPracticalHUD.bundle; sourceTree = "<group>"; };
+		99367D9BADF965E88EAC84BA3CBE63DA /* POPSpringSolver.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = POPSpringSolver.h; path = pop/POPSpringSolver.h; sourceTree = "<group>"; };
+		9A031D6AC923D3B0BA3302AD062C329D /* POPAnimationRuntime.mm */ = {isa = PBXFileReference; includeInIndex = 1; name = POPAnimationRuntime.mm; path = pop/POPAnimationRuntime.mm; sourceTree = "<group>"; };
+		A0C6ABD55E646E7F8FCE31EAF6D828E5 /* POPAnimationEvent.mm */ = {isa = PBXFileReference; includeInIndex = 1; name = POPAnimationEvent.mm; path = pop/POPAnimationEvent.mm; sourceTree = "<group>"; };
 		A3710639A34ACC56FC49DA07FFCB5217 /* Pods-AxReminder.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; path = "Pods-AxReminder.modulemap"; sourceTree = "<group>"; };
 		A3CEE770F51BE68EB9F22725B7AE0914 /* Pods-AxReminder-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-AxReminder-resources.sh"; sourceTree = "<group>"; };
-		A5274E0F71F40ED673DF4E7A400C0FB8 /* AXAnimationChainSwift.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = AXAnimationChainSwift.xcconfig; sourceTree = "<group>"; };
-		A619E05D43487CE90EBCBD67F2DE6A61 /* AXPracticalHUD.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AXPracticalHUD.m; path = AXPracticalHUD/AXPracticalHUD/AXPracticalHUD.m; sourceTree = "<group>"; };
-		A83FFA83FED131F7F97B470C172E2C1D /* AXPracticalHUDContentView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AXPracticalHUDContentView.m; path = AXPracticalHUD/AXPracticalHUD/AXPracticalHUDContentView.m; sourceTree = "<group>"; };
-		AE5B158C97EEFA81401D1BBD5464F3A5 /* AXPracticalHUD.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; path = AXPracticalHUD.modulemap; sourceTree = "<group>"; };
-		AEB894868B392E8707ADD48FA8560663 /* AXAnimationChainSwift.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; path = AXAnimationChainSwift.modulemap; sourceTree = "<group>"; };
+		A3F79743A6962A8A7EE3681CA5048E3E /* AXAnimationChainSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = AXAnimationChainSwift.framework; path = AXAnimationChainSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		A4A90A09C42A78B5AE9C71C4B1CEA798 /* AXCircleProgressView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AXCircleProgressView.m; path = AXPracticalHUD/AXPracticalHUD/AXCircleProgressView.m; sourceTree = "<group>"; };
+		AA553A02A51828C8FBF7A405E55E3897 /* POPCustomAnimation.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = POPCustomAnimation.h; path = pop/POPCustomAnimation.h; sourceTree = "<group>"; };
+		ABABC32F7B618EA2CB92DABC071A182B /* POPMath.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = POPMath.h; path = pop/POPMath.h; sourceTree = "<group>"; };
+		AFAB3C20A328D10E2D8BF1850A4BF5F6 /* AXPracticalHUD.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = AXPracticalHUD.xcconfig; sourceTree = "<group>"; };
 		B095679F4179ED0402E5D1702356B39C /* Pods-AxReminder-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-AxReminder-acknowledgements.markdown"; sourceTree = "<group>"; };
-		B4100ECADEFE9C4BD0993848E786E10A /* CAMediaTimingFunction+Extends.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "CAMediaTimingFunction+Extends.h"; path = "AXAnimationChain/Classes/CoreAnimation/CAMediaTimingFunction+Extends.h"; sourceTree = "<group>"; };
-		B45EF95CC282A16BEDC36B386805F154 /* Pods_AxReminder.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Pods_AxReminder.framework; path = "Pods-AxReminder.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B20AF9950C9AEA8F2A18F8A37ABBAA0A /* POPMath.mm */ = {isa = PBXFileReference; includeInIndex = 1; name = POPMath.mm; path = pop/POPMath.mm; sourceTree = "<group>"; };
+		B297CE378C7D535D3079ED5DF7D318D8 /* AXPracticalHUD-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "AXPracticalHUD-umbrella.h"; sourceTree = "<group>"; };
+		B420EE7804CC1A777841A5ADA3682A94 /* AXIndicatorView.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = AXIndicatorView.xcconfig; sourceTree = "<group>"; };
+		B44775CF2E506D4E4186EE0C55AB408A /* pop.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = pop.framework; path = pop.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B56650365471B397845066DEC360E167 /* Pods-AxReminder.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-AxReminder.debug.xcconfig"; sourceTree = "<group>"; };
+		B8026EC4B35ACA5B82CCB9B121EE24A5 /* AXSpinningWaitCursor.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AXSpinningWaitCursor.m; path = AXIndicatorView/Classes/AXSpinningWaitCursor.m; sourceTree = "<group>"; };
+		B886979E418E15CB0F9F7592797A11BD /* POPAnimationExtras.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = POPAnimationExtras.h; path = pop/POPAnimationExtras.h; sourceTree = "<group>"; };
+		B8937B933643AC4BF0F32317D0D5C76C /* CAMediaTimingFunction+Extends.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "CAMediaTimingFunction+Extends.m"; path = "AXAnimationChain/Classes/CoreAnimation/CAMediaTimingFunction+Extends.m"; sourceTree = "<group>"; };
+		BBD4429792A29AB3B0523CBA08E600D8 /* AXPracticalHUD-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "AXPracticalHUD-prefix.pch"; sourceTree = "<group>"; };
+		BC61A7D95476281D5EB8394C3248E6C1 /* AXActivityIndicatorView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AXActivityIndicatorView.h; path = AXIndicatorView/Classes/AXActivityIndicatorView.h; sourceTree = "<group>"; };
 		BD766BAA2413499535FEA6344080BAE4 /* Pods-AxReminder-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-AxReminder-frameworks.sh"; sourceTree = "<group>"; };
-		C00D27921D366CE87EA65049C01BA4E9 /* AXCircleProgressView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AXCircleProgressView.h; path = AXPracticalHUD/AXPracticalHUD/AXCircleProgressView.h; sourceTree = "<group>"; };
-		C294E79B28FD8E4B8B5988098C305B1C /* AXPracticalHUD-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "AXPracticalHUD-prefix.pch"; sourceTree = "<group>"; };
-		C8B2372F953AD523B6DC5C406C7DDCCE /* AXPracticalHUDContentView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AXPracticalHUDContentView.h; path = AXPracticalHUD/AXPracticalHUD/AXPracticalHUDContentView.h; sourceTree = "<group>"; };
+		BF1D46C8ACED67D83E88BA7CDC9F84A1 /* AXIndicatorView.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = AXIndicatorView.framework; path = AXIndicatorView.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		BFFECDDBF8D70B425930C195153638A2 /* CAAnimation+ImmediateValue.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "CAAnimation+ImmediateValue.m"; path = "AXAnimationChain/Classes/CoreAnimation/CAAnimation+ImmediateValue.m"; sourceTree = "<group>"; };
+		C0A8A128B5059A8C37A1799CC120F626 /* CAAnimation+Convertable.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "CAAnimation+Convertable.h"; path = "AXAnimationChain/Classes/CoreAnimation/CAAnimation+Convertable.h"; sourceTree = "<group>"; };
+		C350F93CB727BEE1495B6130B4771EA6 /* AXDecayAnimation.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AXDecayAnimation.m; path = AXAnimationChain/Classes/CoreAnimation/AXDecayAnimation.m; sourceTree = "<group>"; };
+		C8AB38CF43AB79018AD1E7A341FDE0B1 /* pop-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "pop-umbrella.h"; sourceTree = "<group>"; };
 		C958FD8AFB0A97CA5944918913BFBC6D /* Pods-AxReminder-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-AxReminder-umbrella.h"; sourceTree = "<group>"; };
-		CDE6D0C5ABDFC6C428B642100E6A667B /* AXIndicatorView.bundle */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "wrapper.plug-in"; name = AXIndicatorView.bundle; path = AXIndicatorView/Classes/AXIndicatorView.bundle; sourceTree = "<group>"; };
-		CF1CB53B8AFB39F0B8E3351BE0D284F2 /* AXChainAnimator.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AXChainAnimator.swift; path = AXAnimationChain/Classes/Swifty/AXChainAnimator.swift; sourceTree = "<group>"; };
-		D44AD220172038C3E137DDA47D5DFF92 /* AXAnimationChainSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = AXAnimationChainSwift.framework; path = AXAnimationChainSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		D84CA801CCFEDB9FC1FB340FA872E842 /* AXDecayAnimation.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AXDecayAnimation.m; path = AXAnimationChain/Classes/CoreAnimation/AXDecayAnimation.m; sourceTree = "<group>"; };
-		D8DB0D95C18161900D4D628D7D549DB4 /* AXIndicatorView-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "AXIndicatorView-prefix.pch"; sourceTree = "<group>"; };
+		CE181062D338DBAD6718F882488C9464 /* AXIndicatorView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AXIndicatorView.h; path = AXIndicatorView/Classes/AXIndicatorView.h; sourceTree = "<group>"; };
+		CEFD98932DF254B5E2FE5017F158673F /* POPDecayAnimationInternal.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = POPDecayAnimationInternal.h; path = pop/POPDecayAnimationInternal.h; sourceTree = "<group>"; };
+		CF46D8211A4CEC8446B52D16D1C79222 /* UIView+AnimationChain.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UIView+AnimationChain.swift"; path = "AXAnimationChain/Classes/Swifty/UIView+AnimationChain.swift"; sourceTree = "<group>"; };
+		D29697C97E88C51D938616786FDECB24 /* AXAnimationChainSwift.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = AXAnimationChainSwift.xcconfig; sourceTree = "<group>"; };
+		D412D2626FDC5D577E0CBD110AD9A80C /* POPCustomAnimation.mm */ = {isa = PBXFileReference; includeInIndex = 1; name = POPCustomAnimation.mm; path = pop/POPCustomAnimation.mm; sourceTree = "<group>"; };
+		DB1CE43E2EEAE766D1BF45FF0DBB0C78 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DE61C24FDC9D5D6AAB912872E39D14FF /* Pods-AxReminder-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-AxReminder-dummy.m"; sourceTree = "<group>"; };
-		E1ED9E51CD6C533C8842C32CD747CDDB /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		EBBCA57EC6AD603120F33DCE38A9AA1C /* AXBreachedAnnulusIndicatorView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AXBreachedAnnulusIndicatorView.h; path = AXIndicatorView/Classes/AXBreachedAnnulusIndicatorView.h; sourceTree = "<group>"; };
-		EED58140D13A43C4606EE31ABBF2D519 /* CAMediaTimingFunction+Extends.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "CAMediaTimingFunction+Extends.m"; path = "AXAnimationChain/Classes/CoreAnimation/CAMediaTimingFunction+Extends.m"; sourceTree = "<group>"; };
-		F418F691941CC1EF0889672770AB9455 /* AXActivityIndicatorView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AXActivityIndicatorView.h; path = AXIndicatorView/Classes/AXActivityIndicatorView.h; sourceTree = "<group>"; };
-		F4BAFDB1612AB719ACE3739FF586FA4E /* AXAnimationChain-Swift.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; path = "AXAnimationChain-Swift.modulemap"; sourceTree = "<group>"; };
-		F80811243713DCD932FE433D00901F12 /* AXSpinningWaitCursor.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AXSpinningWaitCursor.m; path = AXIndicatorView/Classes/AXSpinningWaitCursor.m; sourceTree = "<group>"; };
-		F8623162712CBC8B93172AE939D081B8 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		FB8E155EFB338F9ED882A737C74F453C /* CAAnimation+ImmediateValue.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "CAAnimation+ImmediateValue.h"; path = "AXAnimationChain/Classes/CoreAnimation/CAAnimation+ImmediateValue.h"; sourceTree = "<group>"; };
-		FBFC2AD9388B6209BB32DEF07E4B52FF /* AXAnimationChainSwift-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "AXAnimationChainSwift-prefix.pch"; sourceTree = "<group>"; };
-		FC469422852BB92F98953808AC4516E0 /* AXAnimationChain-Swift.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "AXAnimationChain-Swift.xcconfig"; sourceTree = "<group>"; };
-		FE19CF9DF9FA201966034F49FCF33953 /* AXPracticalHUD.bundle */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "wrapper.plug-in"; name = AXPracticalHUD.bundle; path = AXPracticalHUD/AXPracticalHUD/AXPracticalHUD.bundle; sourceTree = "<group>"; };
-		FE1ECC8D2C81C6364A84DFF118E61AE0 /* AXPracticalHUD-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "AXPracticalHUD-dummy.m"; sourceTree = "<group>"; };
+		E259CB515DC20075392E2F9B775BF790 /* POPSpringAnimation.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = POPSpringAnimation.h; path = pop/POPSpringAnimation.h; sourceTree = "<group>"; };
+		E48712DFB5A4584E68CBFD8436E87035 /* POPSpringAnimation.mm */ = {isa = PBXFileReference; includeInIndex = 1; name = POPSpringAnimation.mm; path = pop/POPSpringAnimation.mm; sourceTree = "<group>"; };
+		E4A1675E83A5457FA734F10CC0C83634 /* POPAction.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = POPAction.h; path = pop/POPAction.h; sourceTree = "<group>"; };
+		E81957B6C474078DF36CFA99275CFE45 /* AXAnimationChain-Swift.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "AXAnimationChain-Swift.xcconfig"; sourceTree = "<group>"; };
+		E922DA87A88F70D17D49BD0734184643 /* AXSpinningWaitCursor.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AXSpinningWaitCursor.h; path = AXIndicatorView/Classes/AXSpinningWaitCursor.h; sourceTree = "<group>"; };
+		EB197D52C12202C3D2F2E8CD0DC1D225 /* POPBasicAnimation.mm */ = {isa = PBXFileReference; includeInIndex = 1; name = POPBasicAnimation.mm; path = pop/POPBasicAnimation.mm; sourceTree = "<group>"; };
+		EB4C479BD5342AC010763CF197BB0B94 /* POPAnimatorPrivate.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = POPAnimatorPrivate.h; path = pop/POPAnimatorPrivate.h; sourceTree = "<group>"; };
+		EC184C1B7DC00CF0413A682B57CBA699 /* AXGradientProgressView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AXGradientProgressView.m; path = AXPracticalHUD/AXPracticalHUD/AXGradientProgressView.m; sourceTree = "<group>"; };
+		EC3F13BB94F4DFBCF5CC0A180898C83C /* CAMediaTimingFunction+Extends.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "CAMediaTimingFunction+Extends.h"; path = "AXAnimationChain/Classes/CoreAnimation/CAMediaTimingFunction+Extends.h"; sourceTree = "<group>"; };
+		ED69F36DDF2679BB86CFC47090D445C0 /* AXBreachedAnnulusIndicatorView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AXBreachedAnnulusIndicatorView.h; path = AXIndicatorView/Classes/AXBreachedAnnulusIndicatorView.h; sourceTree = "<group>"; };
+		EDC1461E8D7511795C64B9B134159B5B /* POPLayerExtras.mm */ = {isa = PBXFileReference; includeInIndex = 1; name = POPLayerExtras.mm; path = pop/POPLayerExtras.mm; sourceTree = "<group>"; };
+		EE4C6A57DC2F2256E7EC8FDC711A9282 /* POPGeometry.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = POPGeometry.h; path = pop/POPGeometry.h; sourceTree = "<group>"; };
+		EE64F43F1959F1C443E33A71AA6BAE0A /* AXBreachedAnnulusIndicatorView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AXBreachedAnnulusIndicatorView.m; path = AXIndicatorView/Classes/AXBreachedAnnulusIndicatorView.m; sourceTree = "<group>"; };
+		F004FF681400409BCCDDB2AE54F2D87E /* POPAnimator.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = POPAnimator.h; path = pop/POPAnimator.h; sourceTree = "<group>"; };
+		F1D91AC320EEF64E2F3F4652F42A1771 /* POPLayerExtras.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = POPLayerExtras.h; path = pop/POPLayerExtras.h; sourceTree = "<group>"; };
+		F7A07DC3F8C8EC7E3FF25D6442B4432C /* AXActivityIndicatorView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AXActivityIndicatorView.m; path = AXIndicatorView/Classes/AXActivityIndicatorView.m; sourceTree = "<group>"; };
+		FA4DBADD0C11AA46E45E43DC9AFBBF66 /* UIView+ChainAnimator.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIView+ChainAnimator.m"; path = "AXAnimationChain/Classes/UIView+ChainAnimator.m"; sourceTree = "<group>"; };
+		FDAD97C8CB0BFD2802CFA174A671CBDA /* AXPracticalHUD.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AXPracticalHUD.h; path = AXPracticalHUD/AXPracticalHUD/AXPracticalHUD.h; sourceTree = "<group>"; };
+		FF59304FDD84C707BF36EE08F9F0E1BC /* pop-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "pop-dummy.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -227,11 +346,19 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		6797BB3B356CB72BECC59844E33A7C43 /* Frameworks */ = {
+		79F5B5382B325C6B84C0C396360F1B8B /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3DA3CCE63A88249EB8659049A3F9121E /* Foundation.framework in Frameworks */,
+				7322C8DC3CA37AF9999D33ED4FC4FB79 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B88ED6425DECA500C84399D4B0BAA42E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3A64AF7A94C0241CA06E1DBA81DA0C90 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -257,60 +384,39 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		195421970E834087CBD6D2690B0B8D2A /* AXIndicatorView */ = {
+		0D0C057112BDC044156CE8AF0BA1B528 /* AXAnimationChain-Swift */ = {
 			isa = PBXGroup;
 			children = (
-				F418F691941CC1EF0889672770AB9455 /* AXActivityIndicatorView.h */,
-				2F45D2D99E453F82E5CAFBC2FCCF24A4 /* AXActivityIndicatorView.m */,
-				EBBCA57EC6AD603120F33DCE38A9AA1C /* AXBreachedAnnulusIndicatorView.h */,
-				86612B05951756DFE62DA01F48B55C7D /* AXBreachedAnnulusIndicatorView.m */,
-				5D8C324A8693AB1A641975CA74612F01 /* AXIndicatorView.h */,
-				7FE1167A8B47D9E481C04DAF4705F4A3 /* AXSpinningWaitCursor.h */,
-				F80811243713DCD932FE433D00901F12 /* AXSpinningWaitCursor.m */,
-				64651DE8D6B0A25E6D0C36A2919E635C /* Resources */,
-				26B02B548F6A712B7CCFFDA7FDD6ABEE /* Support Files */,
-			);
-			name = AXIndicatorView;
-			path = AXIndicatorView;
-			sourceTree = "<group>";
-		};
-		25E03D689029A208B5AD40137435306C /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				9690792618D86C6116085C60A8B3A2FB /* AXAnimationChain_Swift.framework */,
-				D44AD220172038C3E137DDA47D5DFF92 /* AXAnimationChainSwift.framework */,
-				996AB936C02FFB2DF65F52BC959FCCCE /* AXIndicatorView.framework */,
-				34178D60216E0902150A55726DC0BEAD /* AXPracticalHUD.framework */,
-				B45EF95CC282A16BEDC36B386805F154 /* Pods_AxReminder.framework */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		26B02B548F6A712B7CCFFDA7FDD6ABEE /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				1D4425B478EA4D917CACB315301779EB /* AXIndicatorView.modulemap */,
-				A289BBD21D1577CC8D09336AB89C5E48 /* AXIndicatorView.xcconfig */,
-				75A404921EC2D72DF3D4408751A345D1 /* AXIndicatorView-dummy.m */,
-				D8DB0D95C18161900D4D628D7D549DB4 /* AXIndicatorView-prefix.pch */,
-				894E4FAEF62185BC30D011414CB9F881 /* AXIndicatorView-umbrella.h */,
-				E1ED9E51CD6C533C8842C32CD747CDDB /* Info.plist */,
-			);
-			name = "Support Files";
-			path = "../Target Support Files/AXIndicatorView";
-			sourceTree = "<group>";
-		};
-		35E9C70ABD507146E85FF3D663C1202C /* AXAnimationChain-Swift */ = {
-			isa = PBXGroup;
-			children = (
-				CF1CB53B8AFB39F0B8E3351BE0D284F2 /* AXChainAnimator.swift */,
-				31A72C8965996AA100770ED8786BC9E1 /* AXCoreAnimations.swift */,
-				0576980D4E88CBBB1058319E27FF1449 /* UIView+AnimationChain.swift */,
-				1277463D9DE65FBBD84B829466700C37 /* UIView+Effects.swift */,
-				A1A75F61AD6223D905658929E756EF52 /* Support Files */,
+				251DCEC73DA579C213B5A97420DB6931 /* AXChainAnimator.swift */,
+				37BDCEE126587643BB50233052A7BD15 /* AXCoreAnimations.swift */,
+				CF46D8211A4CEC8446B52D16D1C79222 /* UIView+AnimationChain.swift */,
+				3F4617D0084F042C9355196BA338D505 /* UIView+Effects.swift */,
+				3917503EE4F5645ABB37D10D779292A2 /* Support Files */,
 			);
 			name = "AXAnimationChain-Swift";
 			path = "AXAnimationChain-Swift";
+			sourceTree = "<group>";
+		};
+		1D95E9B5F47DE109DBF6DE801A5C28B3 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				9316B2992027629AC081D0451316F7A6 /* AXIndicatorView.bundle */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		3917503EE4F5645ABB37D10D779292A2 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				06B49EE849BDCB5376AB5367462258AA /* AXAnimationChain-Swift.modulemap */,
+				E81957B6C474078DF36CFA99275CFE45 /* AXAnimationChain-Swift.xcconfig */,
+				135112B8561D4849D4A43639DF8D58C3 /* AXAnimationChain-Swift-dummy.m */,
+				6DD85491FF83857612781186E1E7FD41 /* AXAnimationChain-Swift-prefix.pch */,
+				8024F9B6C6A1BBE9E64486E0326D3E31 /* AXAnimationChain-Swift-umbrella.h */,
+				2245CF20923BAECBE4E0145B93342B9D /* Info.plist */,
+			);
+			name = "Support Files";
+			path = "../Target Support Files/AXAnimationChain-Swift";
 			sourceTree = "<group>";
 		};
 		4CB7C9AEAD638F7082B4C9BE0B1E3C5E /* Targets Support Files */ = {
@@ -331,58 +437,38 @@
 			name = iOS;
 			sourceTree = "<group>";
 		};
-		539A63063EF244F9484186F9502EB5DD /* AXAnimationChainSwift */ = {
+		507B90EBB9054D219C8180B158EF9DEE /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				658228E1D8E7D6D0EF363749544D94BE /* AXChainAnimator.h */,
-				18D4D3F7AE262723A04592D7C841FD2F /* AXChainAnimator.m */,
-				6A02100FAD6000EA7FD8E665813C7C3D /* AXCoreAnimation.h */,
-				1E58C2E997AD94786FE3ECB72B7A3BD4 /* AXDecayAnimation.h */,
-				D84CA801CCFEDB9FC1FB340FA872E842 /* AXDecayAnimation.m */,
-				81F6B9985F461009B7DE480013CF63BB /* AXSpringAnimation.h */,
-				3DFD94D1413987F7D16C4309A6A28B7E /* AXSpringAnimation.m */,
-				0C931DF4E2126597F30619B2DFABDC4B /* CAAnimation+Convertable.h */,
-				548B6FB23EBEE42A8AABD8CFAC337C55 /* CAAnimation+Convertable.m */,
-				FB8E155EFB338F9ED882A737C74F453C /* CAAnimation+ImmediateValue.h */,
-				0D1CCDEC116596BFFC6D40E7FED30986 /* CAAnimation+ImmediateValue.m */,
-				82C7471BD8838B5B9C26E7B2CD21CA1C /* CALayer+AnchorPoint.h */,
-				4997654B76B98360EDC4C37E72C0DD26 /* CALayer+AnchorPoint.m */,
-				B4100ECADEFE9C4BD0993848E786E10A /* CAMediaTimingFunction+Extends.h */,
-				EED58140D13A43C4606EE31ABBF2D519 /* CAMediaTimingFunction+Extends.m */,
-				8B5126EC273B8AD28D441C14C7EB272D /* UIView+ChainAnimator.h */,
-				01E490636946E04BCB99B6E7E9F23B4D /* UIView+ChainAnimator.m */,
-				CFA6B89036B73E04B69879A75291D1D6 /* Support Files */,
+				564D80C1CC5AD4CD2F268ED4772AD145 /* Info.plist */,
+				44D89B06964BEAA2C548434A260F21E0 /* pop.modulemap */,
+				92BBC721C4C165AD9F2A7FF7537158AB /* pop.xcconfig */,
+				FF59304FDD84C707BF36EE08F9F0E1BC /* pop-dummy.m */,
+				14E47FF6B33DD239CE42360B0846D225 /* pop-prefix.pch */,
+				C8AB38CF43AB79018AD1E7A341FDE0B1 /* pop-umbrella.h */,
 			);
-			name = AXAnimationChainSwift;
-			path = AXAnimationChainSwift;
+			name = "Support Files";
+			path = "../Target Support Files/pop";
 			sourceTree = "<group>";
 		};
-		61FD06F43BE59A5DDD2FEEBB172DE758 /* AXPracticalHUD */ = {
+		6C39F3267B6AC3CD849BFA4229778B22 /* AXPracticalHUD */ = {
 			isa = PBXGroup;
 			children = (
-				3D0542B17FAA3001463621BAC8B17F6F /* AXBarProgressView.h */,
-				5263F829639B1F72F6EBE425D9BBDE3B /* AXBarProgressView.m */,
-				C00D27921D366CE87EA65049C01BA4E9 /* AXCircleProgressView.h */,
-				45681E6382A159EC81E9BEED8B175293 /* AXCircleProgressView.m */,
-				1B353F2EF0FB2E1F2446511010314691 /* AXGradientProgressView.h */,
-				462C8EF2F9AFF848CD2CE59BFD72FDFD /* AXGradientProgressView.m */,
-				2E9AA8F99B0B3138C3B799E4CFAC5B7C /* AXPracticalHUD.h */,
-				A619E05D43487CE90EBCBD67F2DE6A61 /* AXPracticalHUD.m */,
-				C8B2372F953AD523B6DC5C406C7DDCCE /* AXPracticalHUDContentView.h */,
-				A83FFA83FED131F7F97B470C172E2C1D /* AXPracticalHUDContentView.m */,
-				DEF4F56F76BF805EB0F709C609DDFF6D /* Resources */,
-				E797E4D79A9417DF8924B4A675E54C2F /* Support Files */,
+				209C095BE0E727D209693EECB31179C9 /* AXBarProgressView.h */,
+				5FCA6B24C8E3E23A1099DB1A4E2DD6AE /* AXBarProgressView.m */,
+				082802B37DB5191324CB9C0E90A96F21 /* AXCircleProgressView.h */,
+				A4A90A09C42A78B5AE9C71C4B1CEA798 /* AXCircleProgressView.m */,
+				0173BC6538E7EA47E47E722784ECFAD2 /* AXGradientProgressView.h */,
+				EC184C1B7DC00CF0413A682B57CBA699 /* AXGradientProgressView.m */,
+				FDAD97C8CB0BFD2802CFA174A671CBDA /* AXPracticalHUD.h */,
+				2951A3EC2E4D268A741D492733367B52 /* AXPracticalHUD.m */,
+				552CEDCED05BF77CC27DFF5839DB4D52 /* AXPracticalHUDContentView.h */,
+				534751BF46F20EFF0B3D53231D52F62D /* AXPracticalHUDContentView.m */,
+				DDD19204F0EF6AD3B5D1016FD13DC568 /* Resources */,
+				9B59D2397FB53B5670C5F0E2221A78FD /* Support Files */,
 			);
 			name = AXPracticalHUD;
 			path = AXPracticalHUD;
-			sourceTree = "<group>";
-		};
-		64651DE8D6B0A25E6D0C36A2919E635C /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				CDE6D0C5ABDFC6C428B642100E6A667B /* AXIndicatorView.bundle */,
-			);
-			name = Resources;
 			sourceTree = "<group>";
 		};
 		7DB346D0F39D3F0E887471402A8071AB = {
@@ -390,24 +476,36 @@
 			children = (
 				93A4A3777CF96A4AAC1D13BA6DCCEA73 /* Podfile */,
 				A512FBE382E9C1C3CE1112B6657C331E /* Frameworks */,
-				FF9AD10A6241CFD55DD7E48CD62A598C /* Pods */,
-				25E03D689029A208B5AD40137435306C /* Products */,
+				9F673E72FB5F0249B2D30E0C42A479CC /* Pods */,
+				C05116809B75663C65D31638FEDE467C /* Products */,
 				4CB7C9AEAD638F7082B4C9BE0B1E3C5E /* Targets Support Files */,
 			);
 			sourceTree = "<group>";
 		};
-		A1A75F61AD6223D905658929E756EF52 /* Support Files */ = {
+		9B59D2397FB53B5670C5F0E2221A78FD /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				F4BAFDB1612AB719ACE3739FF586FA4E /* AXAnimationChain-Swift.modulemap */,
-				FC469422852BB92F98953808AC4516E0 /* AXAnimationChain-Swift.xcconfig */,
-				1D9C1C2E44E27A47DA1065175DD7FDD8 /* AXAnimationChain-Swift-dummy.m */,
-				075A606CD4C6C099726312DD85E1C46B /* AXAnimationChain-Swift-prefix.pch */,
-				69439D359C5F7C338B00310EDBC4C30B /* AXAnimationChain-Swift-umbrella.h */,
-				7959B0E3A20889CFE7CB1D56BF2E7833 /* Info.plist */,
+				4D192D9BBB95A2294DEE8D029AAA5FA1 /* AXPracticalHUD.modulemap */,
+				AFAB3C20A328D10E2D8BF1850A4BF5F6 /* AXPracticalHUD.xcconfig */,
+				30AD86E1C049321D12B29503DA320BF3 /* AXPracticalHUD-dummy.m */,
+				BBD4429792A29AB3B0523CBA08E600D8 /* AXPracticalHUD-prefix.pch */,
+				B297CE378C7D535D3079ED5DF7D318D8 /* AXPracticalHUD-umbrella.h */,
+				0C70683CE297ECFD1647F24985D58E07 /* Info.plist */,
 			);
 			name = "Support Files";
-			path = "../Target Support Files/AXAnimationChain-Swift";
+			path = "../Target Support Files/AXPracticalHUD";
+			sourceTree = "<group>";
+		};
+		9F673E72FB5F0249B2D30E0C42A479CC /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				0D0C057112BDC044156CE8AF0BA1B528 /* AXAnimationChain-Swift */,
+				B98F27F44AF5682ED4923CECDA455B49 /* AXAnimationChainSwift */,
+				FDE5151A39093A766B3E4E3721AE57AD /* AXIndicatorView */,
+				6C39F3267B6AC3CD849BFA4229778B22 /* AXPracticalHUD */,
+				B3B978B4D45B81020BC99103119F788B /* pop */,
+			);
+			name = Pods;
 			sourceTree = "<group>";
 		};
 		A512FBE382E9C1C3CE1112B6657C331E /* Frameworks */ = {
@@ -438,69 +536,215 @@
 			path = "Target Support Files/Pods-AxReminder";
 			sourceTree = "<group>";
 		};
-		CFA6B89036B73E04B69879A75291D1D6 /* Support Files */ = {
+		B3B978B4D45B81020BC99103119F788B /* pop */ = {
 			isa = PBXGroup;
 			children = (
-				AEB894868B392E8707ADD48FA8560663 /* AXAnimationChainSwift.modulemap */,
-				A5274E0F71F40ED673DF4E7A400C0FB8 /* AXAnimationChainSwift.xcconfig */,
-				4CED4F961C3E6FD1742F660420316433 /* AXAnimationChainSwift-dummy.m */,
-				FBFC2AD9388B6209BB32DEF07E4B52FF /* AXAnimationChainSwift-prefix.pch */,
-				30D653027860C9F343679569E491B612 /* AXAnimationChainSwift-umbrella.h */,
-				8BAF61536C26922DBA6C4BA9C692C97D /* Info.plist */,
+				7C980C0AE2C90703E9D4F07A4EC8E4D8 /* FloatConversion.h */,
+				608347706D6656FD1DFF0C7EA22F88F9 /* POP.h */,
+				E4A1675E83A5457FA734F10CC0C83634 /* POPAction.h */,
+				0721CD24E38958A5B1FD30EA65423B8F /* POPAnimatableProperty.h */,
+				7B30D5F9F6DB0DFAF55CD4DAAF86975B /* POPAnimatableProperty.mm */,
+				4E42679CE8845AF1345226485A0D044C /* POPAnimation.h */,
+				8303746915CDFB33D4AC7518A5581CD1 /* POPAnimation.mm */,
+				853F2398B5A4BE66DD7B072760CC7D38 /* POPAnimationEvent.h */,
+				A0C6ABD55E646E7F8FCE31EAF6D828E5 /* POPAnimationEvent.mm */,
+				795B96A9B35F7938BA3A384BAA78C702 /* POPAnimationEventInternal.h */,
+				B886979E418E15CB0F9F7592797A11BD /* POPAnimationExtras.h */,
+				0603FEA884C914F07549F66E8A1DE42A /* POPAnimationExtras.mm */,
+				2B171C16BC6921AD99DBCF7A8CAE5927 /* POPAnimationInternal.h */,
+				17202DBF03A3565B7D71BF2BB5D43224 /* POPAnimationPrivate.h */,
+				436AF9AF89C3D7BB190B187AB65897EF /* POPAnimationRuntime.h */,
+				9A031D6AC923D3B0BA3302AD062C329D /* POPAnimationRuntime.mm */,
+				26CFC89325D04E19E13CCE59B1AD17DE /* POPAnimationTracer.h */,
+				3A66FBAEF89F6CDB0BF99BA8DC5D818C /* POPAnimationTracer.mm */,
+				8ED6D8E78F38FD2BF1EEB0323F1925A5 /* POPAnimationTracerInternal.h */,
+				F004FF681400409BCCDDB2AE54F2D87E /* POPAnimator.h */,
+				3A1F8CD73BB4445BF79A8BEADF49A4F3 /* POPAnimator.mm */,
+				EB4C479BD5342AC010763CF197BB0B94 /* POPAnimatorPrivate.h */,
+				3C44609909570616019F73BC43D4BF74 /* POPBasicAnimation.h */,
+				EB197D52C12202C3D2F2E8CD0DC1D225 /* POPBasicAnimation.mm */,
+				84F38B689F0A17E8A540844ECDE54B01 /* POPBasicAnimationInternal.h */,
+				26FC6B0978EF2361AFF0BDE3322B95BD /* POPCGUtils.h */,
+				060A231C5DE01E4654B9A1F55104A755 /* POPCGUtils.mm */,
+				AA553A02A51828C8FBF7A405E55E3897 /* POPCustomAnimation.h */,
+				D412D2626FDC5D577E0CBD110AD9A80C /* POPCustomAnimation.mm */,
+				5DC74A27088244E568149A4F593806A7 /* POPDecayAnimation.h */,
+				48EF3BB2F5E4E5D2C66C6A92B34B5461 /* POPDecayAnimation.mm */,
+				CEFD98932DF254B5E2FE5017F158673F /* POPDecayAnimationInternal.h */,
+				045EA533A254534A564C7FA411E9818D /* POPDefines.h */,
+				EE4C6A57DC2F2256E7EC8FDC711A9282 /* POPGeometry.h */,
+				6216155B10A9E2CB03892BB0777E1016 /* POPGeometry.mm */,
+				F1D91AC320EEF64E2F3F4652F42A1771 /* POPLayerExtras.h */,
+				EDC1461E8D7511795C64B9B134159B5B /* POPLayerExtras.mm */,
+				ABABC32F7B618EA2CB92DABC071A182B /* POPMath.h */,
+				B20AF9950C9AEA8F2A18F8A37ABBAA0A /* POPMath.mm */,
+				61F9737398EA1FEAB7880457800A4404 /* POPPropertyAnimation.h */,
+				37058AF65CF1CE9AD65F24FDF0911E72 /* POPPropertyAnimation.mm */,
+				36C4D0C4144DA5EE243877F8FCC20031 /* POPPropertyAnimationInternal.h */,
+				E259CB515DC20075392E2F9B775BF790 /* POPSpringAnimation.h */,
+				E48712DFB5A4584E68CBFD8436E87035 /* POPSpringAnimation.mm */,
+				4CD7BDE2EE33F991098C35CC33F0EE3C /* POPSpringAnimationInternal.h */,
+				99367D9BADF965E88EAC84BA3CBE63DA /* POPSpringSolver.h */,
+				68BD10276268BC503D4AFC308AABDE82 /* POPVector.h */,
+				46807037EBFD5CBC8AE6657505BE8F3F /* POPVector.mm */,
+				3EF60D6A3EC453F137535DFB567209B4 /* TransformationMatrix.cpp */,
+				8C9D47CD8B3640DD6EA610067370A7D0 /* TransformationMatrix.h */,
+				16597D5DC784C06AF0A9CA786B396339 /* UnitBezier.h */,
+				507B90EBB9054D219C8180B158EF9DEE /* Support Files */,
+			);
+			name = pop;
+			path = pop;
+			sourceTree = "<group>";
+		};
+		B98F27F44AF5682ED4923CECDA455B49 /* AXAnimationChainSwift */ = {
+			isa = PBXGroup;
+			children = (
+				15A616C51C261BA81A9CEEF21B40A150 /* AXChainAnimator.h */,
+				924ECF8437E95FCE2BB62865E4ADA0ED /* AXChainAnimator.m */,
+				4B99C4F7BC110C8E4A52C4237E43ECA0 /* AXCoreAnimation.h */,
+				83119A82F432D7CAD58FFB83910D51A3 /* AXDecayAnimation.h */,
+				C350F93CB727BEE1495B6130B4771EA6 /* AXDecayAnimation.m */,
+				14120009CB4A8DCDBD6787A90517918C /* AXSpringAnimation.h */,
+				8C9AA8E404F37DB8BE21D6BD6CFC40F4 /* AXSpringAnimation.m */,
+				C0A8A128B5059A8C37A1799CC120F626 /* CAAnimation+Convertable.h */,
+				8721E6DF209C0C7379E27A02FB2D4CF1 /* CAAnimation+Convertable.m */,
+				66D33185944923B42BDF2657840EF242 /* CAAnimation+ImmediateValue.h */,
+				BFFECDDBF8D70B425930C195153638A2 /* CAAnimation+ImmediateValue.m */,
+				805F2660330F2226954910A4B95B026E /* CALayer+AnchorPoint.h */,
+				4B2A23A515F30896D730D47D4C405021 /* CALayer+AnchorPoint.m */,
+				EC3F13BB94F4DFBCF5CC0A180898C83C /* CAMediaTimingFunction+Extends.h */,
+				B8937B933643AC4BF0F32317D0D5C76C /* CAMediaTimingFunction+Extends.m */,
+				90C7DF3C3969855A3B89D9553434829F /* UIView+ChainAnimator.h */,
+				FA4DBADD0C11AA46E45E43DC9AFBBF66 /* UIView+ChainAnimator.m */,
+				D68F8B5FDD01662DD9B34F5146BABDF3 /* Support Files */,
+			);
+			name = AXAnimationChainSwift;
+			path = AXAnimationChainSwift;
+			sourceTree = "<group>";
+		};
+		C05116809B75663C65D31638FEDE467C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				5E15582D5D5D18C0B274C88DDD03EFCE /* AXAnimationChain_Swift.framework */,
+				A3F79743A6962A8A7EE3681CA5048E3E /* AXAnimationChainSwift.framework */,
+				BF1D46C8ACED67D83E88BA7CDC9F84A1 /* AXIndicatorView.framework */,
+				33B91AB70F0588F073F9AB79859304D1 /* AXPracticalHUD.framework */,
+				189939F59484A3E0AA3F684CC61860EA /* Pods_AxReminder.framework */,
+				B44775CF2E506D4E4186EE0C55AB408A /* pop.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		D68F8B5FDD01662DD9B34F5146BABDF3 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				2EA5D6B475C8FAC215220A0141265DDD /* AXAnimationChainSwift.modulemap */,
+				D29697C97E88C51D938616786FDECB24 /* AXAnimationChainSwift.xcconfig */,
+				34D9489E542B34A920FE11D358FE9186 /* AXAnimationChainSwift-dummy.m */,
+				460D30AF7E6E0852833A7BD6229B5A86 /* AXAnimationChainSwift-prefix.pch */,
+				8BFFE179206AB5FC43D7254F57A467E1 /* AXAnimationChainSwift-umbrella.h */,
+				DB1CE43E2EEAE766D1BF45FF0DBB0C78 /* Info.plist */,
 			);
 			name = "Support Files";
 			path = "../Target Support Files/AXAnimationChainSwift";
 			sourceTree = "<group>";
 		};
-		DEF4F56F76BF805EB0F709C609DDFF6D /* Resources */ = {
+		DDD19204F0EF6AD3B5D1016FD13DC568 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				FE19CF9DF9FA201966034F49FCF33953 /* AXPracticalHUD.bundle */,
+				959D018BE43F4A0FDF68E7ADE8076767 /* AXPracticalHUD.bundle */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
 		};
-		E797E4D79A9417DF8924B4A675E54C2F /* Support Files */ = {
+		F21956363709695985BEB8A17AEF14EA /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				AE5B158C97EEFA81401D1BBD5464F3A5 /* AXPracticalHUD.modulemap */,
-				5DB46C18D7C8321BD87C60D3F3DD2DF3 /* AXPracticalHUD.xcconfig */,
-				FE1ECC8D2C81C6364A84DFF118E61AE0 /* AXPracticalHUD-dummy.m */,
-				C294E79B28FD8E4B8B5988098C305B1C /* AXPracticalHUD-prefix.pch */,
-				659B70032785C625F5612B73EF8B49FA /* AXPracticalHUD-umbrella.h */,
-				F8623162712CBC8B93172AE939D081B8 /* Info.plist */,
+				918BCC1DC0825BF74920FFD074790CDC /* AXIndicatorView.modulemap */,
+				B420EE7804CC1A777841A5ADA3682A94 /* AXIndicatorView.xcconfig */,
+				41321ECD9783947E25C7050C52333A54 /* AXIndicatorView-dummy.m */,
+				9403D758A8E4DF0516CA93A193F812C2 /* AXIndicatorView-prefix.pch */,
+				5DAC4D21869A9592879193DDCCB425BE /* AXIndicatorView-umbrella.h */,
+				7D0380822436DC9FAD6A4C25DE127B07 /* Info.plist */,
 			);
 			name = "Support Files";
-			path = "../Target Support Files/AXPracticalHUD";
+			path = "../Target Support Files/AXIndicatorView";
 			sourceTree = "<group>";
 		};
-		FF9AD10A6241CFD55DD7E48CD62A598C /* Pods */ = {
+		FDE5151A39093A766B3E4E3721AE57AD /* AXIndicatorView */ = {
 			isa = PBXGroup;
 			children = (
-				35E9C70ABD507146E85FF3D663C1202C /* AXAnimationChain-Swift */,
-				539A63063EF244F9484186F9502EB5DD /* AXAnimationChainSwift */,
-				195421970E834087CBD6D2690B0B8D2A /* AXIndicatorView */,
-				61FD06F43BE59A5DDD2FEEBB172DE758 /* AXPracticalHUD */,
+				BC61A7D95476281D5EB8394C3248E6C1 /* AXActivityIndicatorView.h */,
+				F7A07DC3F8C8EC7E3FF25D6442B4432C /* AXActivityIndicatorView.m */,
+				ED69F36DDF2679BB86CFC47090D445C0 /* AXBreachedAnnulusIndicatorView.h */,
+				EE64F43F1959F1C443E33A71AA6BAE0A /* AXBreachedAnnulusIndicatorView.m */,
+				CE181062D338DBAD6718F882488C9464 /* AXIndicatorView.h */,
+				E922DA87A88F70D17D49BD0734184643 /* AXSpinningWaitCursor.h */,
+				B8026EC4B35ACA5B82CCB9B121EE24A5 /* AXSpinningWaitCursor.m */,
+				1D95E9B5F47DE109DBF6DE801A5C28B3 /* Resources */,
+				F21956363709695985BEB8A17AEF14EA /* Support Files */,
 			);
-			name = Pods;
+			name = AXIndicatorView;
+			path = AXIndicatorView;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		0F86CD169DBF1DD0058E9424C5654123 /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				C67F7F65601D6B158D07C5344EACDFB6 /* Pods-AxReminder-umbrella.h in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		198928A51F0F4AA12AC92FDEF5CA0CC0 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				D7A85599228BC76CB0117ABF0A55A30F /* AXAnimationChain-Swift-umbrella.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		65D6257D4BCBBD6AFCE3167D8F43E91F /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C8F95DF1F0CA4B8CAF06415FA596FA1C /* Pods-AxReminder-umbrella.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		68E17EAFB631B704177A5826520B3726 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B688B84C9EAA2C885ADBF481A46AAE5A /* FloatConversion.h in Headers */,
+				EAE4AC0F18EF231DC57BD5EA7995AD1F /* pop-umbrella.h in Headers */,
+				09E1E7A9CF716526A597467726942695 /* POP.h in Headers */,
+				84BDA1A186A9493336F1DDE6DBB42D28 /* POPAction.h in Headers */,
+				8DA18583DADDE2C9F597BB9BF70D8C55 /* POPAnimatableProperty.h in Headers */,
+				3A48510E58720080699936168750CCBA /* POPAnimation.h in Headers */,
+				C0E0BBD591870E5AB3CE6C922A5A036F /* POPAnimationEvent.h in Headers */,
+				021A47C09ED544F3DDE7A8076D9B38CA /* POPAnimationEventInternal.h in Headers */,
+				A79F3DF6E52FA51C72FAFB0721E316E7 /* POPAnimationExtras.h in Headers */,
+				020DCDA2D54FAC67BB079C2000AF1891 /* POPAnimationInternal.h in Headers */,
+				D3D0DC095BE5F954741AE6FBF674101D /* POPAnimationPrivate.h in Headers */,
+				2642D39F167B110F0F014F5C4317197F /* POPAnimationRuntime.h in Headers */,
+				64CD3E56C6B074842DEE8E4FCDAF11FE /* POPAnimationTracer.h in Headers */,
+				5C8EE9BFFD12285ABAD37518CE3941A6 /* POPAnimationTracerInternal.h in Headers */,
+				D61DDC36D2C78E62C568CABC8516F6B0 /* POPAnimator.h in Headers */,
+				7FA81ADD697D386D5DD3CA04D3D76668 /* POPAnimatorPrivate.h in Headers */,
+				912961DCE5ABD5620758E952614FD451 /* POPBasicAnimation.h in Headers */,
+				5FF1BA6B5D2C0704D15DDAC8F2D5E213 /* POPBasicAnimationInternal.h in Headers */,
+				82455BD6B92A448A3928B7FC19357BBD /* POPCGUtils.h in Headers */,
+				7CF04617049120CE4B5FD952DC7F47BC /* POPCustomAnimation.h in Headers */,
+				ED0068077023F07440F6B6F651AC0674 /* POPDecayAnimation.h in Headers */,
+				8CA2B4DFC69A790D96ACCE0C377F0E91 /* POPDecayAnimationInternal.h in Headers */,
+				0E40E40AC75F6FD46FE14112891DDA10 /* POPDefines.h in Headers */,
+				045BA98FF16FAF29306EEC37372E5195 /* POPGeometry.h in Headers */,
+				FA6E2AB7D0C32CB48E2C600889FD933A /* POPLayerExtras.h in Headers */,
+				3AD99CE0925561DFEBB35FF6FF31804F /* POPMath.h in Headers */,
+				7A25953F943B42185F319AAAD671CB24 /* POPPropertyAnimation.h in Headers */,
+				B6496A55154EED6385EC14FB449E07F1 /* POPPropertyAnimationInternal.h in Headers */,
+				FA1B125ABB2C86B00EF4DF4A8A31D044 /* POPSpringAnimation.h in Headers */,
+				CE28D531EEA11C5F6F8D36FB3B615DF4 /* POPSpringAnimationInternal.h in Headers */,
+				4D3436DFAB9AB4E110CDC3557C75C1F9 /* POPSpringSolver.h in Headers */,
+				D569C20BB93C2041BA446C813680E93B /* POPVector.h in Headers */,
+				F0BEC3E3B446AA291816DE31F37CA588 /* TransformationMatrix.h in Headers */,
+				3B99C429877D9127420318DABC06BCA3 /* UnitBezier.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -549,6 +793,23 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		0299A0C6C57AA315E6DFE9CCD26ABD9D /* pop */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3A7F8988B6CA9C0855797EE04B4F645A /* Build configuration list for PBXNativeTarget "pop" */;
+			buildPhases = (
+				48E1988E0D3DE58D9D23B5FD7D656C11 /* Sources */,
+				79F5B5382B325C6B84C0C396360F1B8B /* Frameworks */,
+				68E17EAFB631B704177A5826520B3726 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = pop;
+			productName = pop;
+			productReference = B44775CF2E506D4E4186EE0C55AB408A /* pop.framework */;
+			productType = "com.apple.product-type.framework";
+		};
 		060186B6B426DB3FDC91A01203682CB1 /* AXIndicatorView */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = D2C9720967798055451A47F02542D023 /* Build configuration list for PBXNativeTarget "AXIndicatorView" */;
@@ -564,7 +825,29 @@
 			);
 			name = AXIndicatorView;
 			productName = AXIndicatorView;
-			productReference = 996AB936C02FFB2DF65F52BC959FCCCE /* AXIndicatorView.framework */;
+			productReference = BF1D46C8ACED67D83E88BA7CDC9F84A1 /* AXIndicatorView.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		126780811C244CEC8E61525D2C4A0273 /* Pods-AxReminder */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 85FF66BC7A31A8E59632CFA400A57B6D /* Build configuration list for PBXNativeTarget "Pods-AxReminder" */;
+			buildPhases = (
+				7E782A07BC3B700ADE22F9C496B80115 /* Sources */,
+				B88ED6425DECA500C84399D4B0BAA42E /* Frameworks */,
+				65D6257D4BCBBD6AFCE3167D8F43E91F /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B9E092750577971F6B9A9D83734C01EB /* PBXTargetDependency */,
+				1F62FDE0BCE268D624031C7B528A63F6 /* PBXTargetDependency */,
+				A56DFCC244FB68E9356C1D75B8C2E533 /* PBXTargetDependency */,
+				A570610315DE4877D2B925B8998F34B9 /* PBXTargetDependency */,
+				D199566A7F70B5879FB7EB17182A2386 /* PBXTargetDependency */,
+			);
+			name = "Pods-AxReminder";
+			productName = "Pods-AxReminder";
+			productReference = 189939F59484A3E0AA3F684CC61860EA /* Pods_AxReminder.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		13A4E0D7FC39B118948A672573F2A05D /* AXAnimationChain-Swift */ = {
@@ -582,28 +865,7 @@
 			);
 			name = "AXAnimationChain-Swift";
 			productName = "AXAnimationChain-Swift";
-			productReference = 9690792618D86C6116085C60A8B3A2FB /* AXAnimationChain_Swift.framework */;
-			productType = "com.apple.product-type.framework";
-		};
-		268279595D4BE3D46EE70939A1821A7A /* Pods-AxReminder */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 719F118E480212F6452AB49BED459C0C /* Build configuration list for PBXNativeTarget "Pods-AxReminder" */;
-			buildPhases = (
-				4512007D6A449CE052E59F413EB1915F /* Sources */,
-				6797BB3B356CB72BECC59844E33A7C43 /* Frameworks */,
-				0F86CD169DBF1DD0058E9424C5654123 /* Headers */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				D70BA27577EA8D93AB37B2AE0B50C1FE /* PBXTargetDependency */,
-				BA990F68666B09EF3CFEB8E0A1FF62E9 /* PBXTargetDependency */,
-				2E6AAE936B9F107C1F37F31077DB606C /* PBXTargetDependency */,
-				8E4954178B7DED2A9EE4279279D3C4E5 /* PBXTargetDependency */,
-			);
-			name = "Pods-AxReminder";
-			productName = "Pods-AxReminder";
-			productReference = B45EF95CC282A16BEDC36B386805F154 /* Pods_AxReminder.framework */;
+			productReference = 5E15582D5D5D18C0B274C88DDD03EFCE /* AXAnimationChain_Swift.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		8B74B139F8A1995AAAFC6F31D3AB9E2B /* AXAnimationChainSwift */ = {
@@ -620,7 +882,7 @@
 			);
 			name = AXAnimationChainSwift;
 			productName = AXAnimationChainSwift;
-			productReference = D44AD220172038C3E137DDA47D5DFF92 /* AXAnimationChainSwift.framework */;
+			productReference = A3F79743A6962A8A7EE3681CA5048E3E /* AXAnimationChainSwift.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		A7CA60F8C75DFD6F6921EC655C2B30FE /* AXPracticalHUD */ = {
@@ -639,7 +901,7 @@
 			);
 			name = AXPracticalHUD;
 			productName = AXPracticalHUD;
-			productReference = 34178D60216E0902150A55726DC0BEAD /* AXPracticalHUD.framework */;
+			productReference = 33B91AB70F0588F073F9AB79859304D1 /* AXPracticalHUD.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 /* End PBXNativeTarget section */
@@ -659,7 +921,7 @@
 				en,
 			);
 			mainGroup = 7DB346D0F39D3F0E887471402A8071AB;
-			productRefGroup = 25E03D689029A208B5AD40137435306C /* Products */;
+			productRefGroup = C05116809B75663C65D31638FEDE467C /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -667,7 +929,8 @@
 				8B74B139F8A1995AAAFC6F31D3AB9E2B /* AXAnimationChainSwift */,
 				060186B6B426DB3FDC91A01203682CB1 /* AXIndicatorView */,
 				A7CA60F8C75DFD6F6921EC655C2B30FE /* AXPracticalHUD */,
-				268279595D4BE3D46EE70939A1821A7A /* Pods-AxReminder */,
+				126780811C244CEC8E61525D2C4A0273 /* Pods-AxReminder */,
+				0299A0C6C57AA315E6DFE9CCD26ABD9D /* pop */,
 			);
 		};
 /* End PBXProject section */
@@ -704,11 +967,29 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		4512007D6A449CE052E59F413EB1915F /* Sources */ = {
+		48E1988E0D3DE58D9D23B5FD7D656C11 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F31180316BF284ADA0657DB66A7CAE26 /* Pods-AxReminder-dummy.m in Sources */,
+				12BCBBAF30228E715729FFB92AC9AEDF /* pop-dummy.m in Sources */,
+				9755336CD2E9D718E0571CF0C70A59E1 /* POPAnimatableProperty.mm in Sources */,
+				1E74692400FF9D46ED8A8171E8E9F423 /* POPAnimation.mm in Sources */,
+				642AC161DAEEB0078B328893CE724CB9 /* POPAnimationEvent.mm in Sources */,
+				F8013C2B05EE903826466D0BE6C9A05A /* POPAnimationExtras.mm in Sources */,
+				E165720CFE5AAF45E0694D0025585B5B /* POPAnimationRuntime.mm in Sources */,
+				76915436215451BC440EAE5EAC3D760B /* POPAnimationTracer.mm in Sources */,
+				E5C67B81F4F42ADD2EFD3F392423BA84 /* POPAnimator.mm in Sources */,
+				BB26A1D4266335FF5AA2639F1E3E13B1 /* POPBasicAnimation.mm in Sources */,
+				EC1041850F31C543A9868FAB8B3FD8D7 /* POPCGUtils.mm in Sources */,
+				143D47CAE165A97BF3E5E49643278CAB /* POPCustomAnimation.mm in Sources */,
+				5473CD877531C9BFFE1ADAB4C4A2E8C8 /* POPDecayAnimation.mm in Sources */,
+				999FF90C71B4EFF65B34857D09E89903 /* POPGeometry.mm in Sources */,
+				7E4C1A3B7048D61CD39FC09C96687448 /* POPLayerExtras.mm in Sources */,
+				70319841CB94084CA43808AD3D8F4964 /* POPMath.mm in Sources */,
+				80321E7BE9862CEF424B53349AB5733F /* POPPropertyAnimation.mm in Sources */,
+				B9E7906E0AFD9E8B68F51FE653D003AD /* POPSpringAnimation.mm in Sources */,
+				419901FE02D0650B47DD352FEA9590F6 /* POPVector.mm in Sources */,
+				6F5BF9FA8F12DEDEF07341E888A2A162 /* TransformationMatrix.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -720,6 +1001,14 @@
 				27B332B23FD7D4EC4636AE39C26F6C04 /* AXBreachedAnnulusIndicatorView.m in Sources */,
 				D28BABE5C4AB44EB6CEBD17416AF9A72 /* AXIndicatorView-dummy.m in Sources */,
 				6D3B59B7F5DD9FB270A0F54F8EEC0957 /* AXSpinningWaitCursor.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7E782A07BC3B700ADE22F9C496B80115 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				11B9BC1150688F3560083EE37459F223 /* Pods-AxReminder-dummy.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -755,17 +1044,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		2E6AAE936B9F107C1F37F31077DB606C /* PBXTargetDependency */ = {
+		1F62FDE0BCE268D624031C7B528A63F6 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = AXIndicatorView;
-			target = 060186B6B426DB3FDC91A01203682CB1 /* AXIndicatorView */;
-			targetProxy = 63FD89408F5501E2F3647447F8F61FC4 /* PBXContainerItemProxy */;
-		};
-		8E4954178B7DED2A9EE4279279D3C4E5 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = AXPracticalHUD;
-			target = A7CA60F8C75DFD6F6921EC655C2B30FE /* AXPracticalHUD */;
-			targetProxy = A871F73720E294AB83A54B6D98C72DA0 /* PBXContainerItemProxy */;
+			name = AXAnimationChainSwift;
+			target = 8B74B139F8A1995AAAFC6F31D3AB9E2B /* AXAnimationChainSwift */;
+			targetProxy = 2EEEB61FCC303E56BA6A3D5B1FE04E07 /* PBXContainerItemProxy */;
 		};
 		93BD7C0840EA40AC83AE8B7C4EA14D64 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -773,17 +1056,29 @@
 			target = 8B74B139F8A1995AAAFC6F31D3AB9E2B /* AXAnimationChainSwift */;
 			targetProxy = 6ABFF928B42D51ECEFD20DF8473BB887 /* PBXContainerItemProxy */;
 		};
-		BA990F68666B09EF3CFEB8E0A1FF62E9 /* PBXTargetDependency */ = {
+		A56DFCC244FB68E9356C1D75B8C2E533 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = AXAnimationChainSwift;
-			target = 8B74B139F8A1995AAAFC6F31D3AB9E2B /* AXAnimationChainSwift */;
-			targetProxy = FD2EE67EF7AD49369D3B17C2C9C10661 /* PBXContainerItemProxy */;
+			name = AXIndicatorView;
+			target = 060186B6B426DB3FDC91A01203682CB1 /* AXIndicatorView */;
+			targetProxy = 4F802ED5B09D92B2AC238E0DC69EA324 /* PBXContainerItemProxy */;
 		};
-		D70BA27577EA8D93AB37B2AE0B50C1FE /* PBXTargetDependency */ = {
+		A570610315DE4877D2B925B8998F34B9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = AXPracticalHUD;
+			target = A7CA60F8C75DFD6F6921EC655C2B30FE /* AXPracticalHUD */;
+			targetProxy = 68C78B8B0817BD856A8159680500D410 /* PBXContainerItemProxy */;
+		};
+		B9E092750577971F6B9A9D83734C01EB /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "AXAnimationChain-Swift";
 			target = 13A4E0D7FC39B118948A672573F2A05D /* AXAnimationChain-Swift */;
-			targetProxy = D720A287706778D6D5B2F8924ED92C5A /* PBXContainerItemProxy */;
+			targetProxy = 81CB8439F07A5E10F014ACCBBFE70BCB /* PBXContainerItemProxy */;
+		};
+		D199566A7F70B5879FB7EB17182A2386 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = pop;
+			target = 0299A0C6C57AA315E6DFE9CCD26ABD9D /* pop */;
+			targetProxy = 5945029018635CC5099D373BE755E95A /* PBXContainerItemProxy */;
 		};
 		E5EB8B26DFA6DAF50526A2A552F7914B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -838,45 +1133,9 @@
 			};
 			name = Debug;
 		};
-		12F7B986222AA9FACDA910132084EFBD /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = B56650365471B397845066DEC360E167 /* Pods-AxReminder.debug.xcconfig */;
-			buildSettings = {
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				CURRENT_PROJECT_VERSION = 1;
-				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEFINES_MODULE = YES;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				GCC_NO_COMMON_BLOCKS = YES;
-				INFOPLIST_FILE = "Target Support Files/Pods-AxReminder/Info.plist";
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MACH_O_TYPE = staticlib;
-				MODULEMAP_FILE = "Target Support Files/Pods-AxReminder/Pods-AxReminder.modulemap";
-				MTL_ENABLE_DEBUG_INFO = YES;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PODS_ROOT = "$(SRCROOT)";
-				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
-				PRODUCT_NAME = Pods_AxReminder;
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VERSIONING_SYSTEM = "apple-generic";
-				VERSION_INFO_PREFIX = "";
-			};
-			name = Debug;
-		};
 		1F3B5913505D0F76E8A794F1F1E1759F /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = A289BBD21D1577CC8D09336AB89C5E48 /* AXIndicatorView.xcconfig */;
+			baseConfigurationReference = B420EE7804CC1A777841A5ADA3682A94 /* AXIndicatorView.xcconfig */;
 			buildSettings = {
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
@@ -908,7 +1167,7 @@
 		};
 		31E3062B80A75F0D1C2E8E092374E07E /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = FC469422852BB92F98953808AC4516E0 /* AXAnimationChain-Swift.xcconfig */;
+			baseConfigurationReference = E81957B6C474078DF36CFA99275CFE45 /* AXAnimationChain-Swift.xcconfig */;
 			buildSettings = {
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
@@ -980,7 +1239,7 @@
 		};
 		4D875D7F9E3B2F23E2D5BBD66F5760CA /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5DB46C18D7C8321BD87C60D3F3DD2DF3 /* AXPracticalHUD.xcconfig */;
+			baseConfigurationReference = AFAB3C20A328D10E2D8BF1850A4BF5F6 /* AXPracticalHUD.xcconfig */;
 			buildSettings = {
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
@@ -1012,7 +1271,7 @@
 		};
 		4DA53B7FBCE0B6F742AB3E2C7BA1DFCD /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = A5274E0F71F40ED673DF4E7A400C0FB8 /* AXAnimationChainSwift.xcconfig */;
+			baseConfigurationReference = D29697C97E88C51D938616786FDECB24 /* AXAnimationChainSwift.xcconfig */;
 			buildSettings = {
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
@@ -1044,7 +1303,7 @@
 		};
 		65BC4D79E91639343E27CDA4679B7F29 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = A5274E0F71F40ED673DF4E7A400C0FB8 /* AXAnimationChainSwift.xcconfig */;
+			baseConfigurationReference = D29697C97E88C51D938616786FDECB24 /* AXAnimationChainSwift.xcconfig */;
 			buildSettings = {
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
@@ -1074,39 +1333,7 @@
 			};
 			name = Release;
 		};
-		71F54F269F34C395E4F119A75D0E3110 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5DB46C18D7C8321BD87C60D3F3DD2DF3 /* AXPracticalHUD.xcconfig */;
-			buildSettings = {
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				CURRENT_PROJECT_VERSION = 1;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEFINES_MODULE = YES;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_PREFIX_HEADER = "Target Support Files/AXPracticalHUD/AXPracticalHUD-prefix.pch";
-				INFOPLIST_FILE = "Target Support Files/AXPracticalHUD/Info.plist";
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MODULEMAP_FILE = "Target Support Files/AXPracticalHUD/AXPracticalHUD.modulemap";
-				MTL_ENABLE_DEBUG_INFO = NO;
-				PRODUCT_NAME = AXPracticalHUD;
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 3.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VERSIONING_SYSTEM = "apple-generic";
-				VERSION_INFO_PREFIX = "";
-			};
-			name = Release;
-		};
-		82D8A5B29758E6C5B3397D97482A2808 /* Release */ = {
+		68012539984AEA058839C2D4F0D285C9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 3FD0BAB3C2E5E8DD93047F23B107CDFD /* Pods-AxReminder.release.xcconfig */;
 			buildSettings = {
@@ -1141,9 +1368,41 @@
 			};
 			name = Release;
 		};
+		71F54F269F34C395E4F119A75D0E3110 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = AFAB3C20A328D10E2D8BF1850A4BF5F6 /* AXPracticalHUD.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREFIX_HEADER = "Target Support Files/AXPracticalHUD/AXPracticalHUD-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/AXPracticalHUD/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MODULEMAP_FILE = "Target Support Files/AXPracticalHUD/AXPracticalHUD.modulemap";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_NAME = AXPracticalHUD;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 3.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
 		845D7EA0FAB21883E76119528277488F /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = A289BBD21D1577CC8D09336AB89C5E48 /* AXIndicatorView.xcconfig */;
+			baseConfigurationReference = B420EE7804CC1A777841A5ADA3682A94 /* AXIndicatorView.xcconfig */;
 			buildSettings = {
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
@@ -1173,9 +1432,41 @@
 			};
 			name = Release;
 		};
+		8986FA39C8CCB3ED4B9D145466670C0A /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 92BBC721C4C165AD9F2A7FF7537158AB /* pop.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREFIX_HEADER = "Target Support Files/pop/pop-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/pop/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MODULEMAP_FILE = "Target Support Files/pop/pop.modulemap";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_NAME = pop;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 3.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
 		AEAE0F28457826F9A83226BEF0DC6760 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = FC469422852BB92F98953808AC4516E0 /* AXAnimationChain-Swift.xcconfig */;
+			baseConfigurationReference = E81957B6C474078DF36CFA99275CFE45 /* AXAnimationChain-Swift.xcconfig */;
 			buildSettings = {
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
@@ -1206,6 +1497,74 @@
 			};
 			name = Debug;
 		};
+		DCD143BA4C49C7F8CB156CBA0826571D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B56650365471B397845066DEC360E167 /* Pods-AxReminder.debug.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = "Target Support Files/Pods-AxReminder/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-AxReminder/Pods-AxReminder.modulemap";
+				MTL_ENABLE_DEBUG_INFO = YES;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = Pods_AxReminder;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		FB5857D94946E91B9EA3A74AF8986121 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 92BBC721C4C165AD9F2A7FF7537158AB /* pop.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREFIX_HEADER = "Target Support Files/pop/pop-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/pop/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MODULEMAP_FILE = "Target Support Files/pop/pop.modulemap";
+				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_NAME = pop;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 3.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1227,11 +1586,20 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		719F118E480212F6452AB49BED459C0C /* Build configuration list for PBXNativeTarget "Pods-AxReminder" */ = {
+		3A7F8988B6CA9C0855797EE04B4F645A /* Build configuration list for PBXNativeTarget "pop" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				12F7B986222AA9FACDA910132084EFBD /* Debug */,
-				82D8A5B29758E6C5B3397D97482A2808 /* Release */,
+				FB5857D94946E91B9EA3A74AF8986121 /* Debug */,
+				8986FA39C8CCB3ED4B9D145466670C0A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		85FF66BC7A31A8E59632CFA400A57B6D /* Build configuration list for PBXNativeTarget "Pods-AxReminder" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DCD143BA4C49C7F8CB156CBA0826571D /* Debug */,
+				68012539984AEA058839C2D4F0D285C9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

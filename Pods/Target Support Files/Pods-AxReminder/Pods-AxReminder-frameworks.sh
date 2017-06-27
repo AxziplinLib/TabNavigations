@@ -93,12 +93,14 @@ if [[ "$CONFIGURATION" == "Debug" ]]; then
   install_framework "$BUILT_PRODUCTS_DIR/AXAnimationChainSwift/AXAnimationChainSwift.framework"
   install_framework "$BUILT_PRODUCTS_DIR/AXIndicatorView/AXIndicatorView.framework"
   install_framework "$BUILT_PRODUCTS_DIR/AXPracticalHUD/AXPracticalHUD.framework"
+  install_framework "$BUILT_PRODUCTS_DIR/pop/pop.framework"
 fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
   install_framework "$BUILT_PRODUCTS_DIR/AXAnimationChain-Swift/AXAnimationChain_Swift.framework"
   install_framework "$BUILT_PRODUCTS_DIR/AXAnimationChainSwift/AXAnimationChainSwift.framework"
   install_framework "$BUILT_PRODUCTS_DIR/AXIndicatorView/AXIndicatorView.framework"
   install_framework "$BUILT_PRODUCTS_DIR/AXPracticalHUD/AXPracticalHUD.framework"
+  install_framework "$BUILT_PRODUCTS_DIR/pop/pop.framework"
 fi
 if [ "${COCOAPODS_PARALLEL_CODE_SIGN}" == "true" ]; then
   wait

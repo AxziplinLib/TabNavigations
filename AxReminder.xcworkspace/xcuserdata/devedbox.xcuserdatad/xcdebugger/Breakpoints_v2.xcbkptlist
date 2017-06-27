@@ -19,5 +19,101 @@
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "AxReminder/Classes/Generals/Views/NavigationBar.swift"
+            timestampString = "520242617.013897"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "144"
+            endingLineNumber = "144"
+            landmarkName = "setSelected(_:animated:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "AxReminder.NavigationTitleItem.(setSelected (Swift.Bool, animated : Swift.Bool) -&gt; ()).(closure #2)"
+                  moduleName = "AxReminder"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/devedbox/Library/Mobile%20Documents/com~apple~CloudDocs/Development/AxReminder/AxReminder/Classes/Generals/Views/NavigationBar.swift"
+                  timestampString = "520242804.792181"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "144"
+                  endingLineNumber = "144"
+                  offsetFromSymbolStart = "443">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "AxReminder.NavigationTitleItem.(setSelected (Swift.Bool, animated : Swift.Bool) -&gt; ()).(closure #2).(closure #1)"
+                  moduleName = "AxReminder"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/devedbox/Library/Mobile%20Documents/com~apple~CloudDocs/Development/AxReminder/AxReminder/Classes/Generals/Views/NavigationBar.swift"
+                  timestampString = "520242804.795245"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "146"
+                  endingLineNumber = "146"
+                  offsetFromSymbolStart = "20">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "AxReminder/Classes/Generals/Views/NavigationBar.swift"
+            timestampString = "520242804.993435"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "138"
+            endingLineNumber = "138"
+            landmarkName = "setSelected(_:animated:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "AxReminder.NavigationTitleItem.setSelected (Swift.Bool, animated : Swift.Bool) -&gt; ()"
+                  moduleName = "AxReminder"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/devedbox/Library/Mobile%20Documents/com~apple~CloudDocs/Development/AxReminder/AxReminder/Classes/Generals/Views/NavigationBar.swift"
+                  timestampString = "520242805.225642"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "138"
+                  endingLineNumber = "138"
+                  offsetFromSymbolStart = "1562">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "AxReminder.NavigationTitleItem.(setSelected (Swift.Bool, animated : Swift.Bool) -&gt; ()).(closure #2)"
+                  moduleName = "AxReminder"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/devedbox/Library/Mobile%20Documents/com~apple~CloudDocs/Development/AxReminder/AxReminder/Classes/Generals/Views/NavigationBar.swift"
+                  timestampString = "520242805.229188"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "139"
+                  endingLineNumber = "139"
+                  offsetFromSymbolStart = "28">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
    </Breakpoints>
 </Bucket>

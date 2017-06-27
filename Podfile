@@ -7,4 +7,5 @@ inhibit_all_warnings!
 target 'AxReminder' do
     pod 'AXPracticalHUD'
     pod 'AXAnimationChain-Swift'
+    pod 'pop'
 end
