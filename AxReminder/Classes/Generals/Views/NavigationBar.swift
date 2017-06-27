@@ -13,6 +13,7 @@ private let DefaultTitleUnselectedFontSize: CGFloat = 16.0
 private let DefaultNavigationItemFontSize: CGFloat = 14.0
 
 private class _NavigationItemButton: UIButton { /* Custom view hooks. */ }
+private class _NavigationTitleItemButton: UIButton { /* Custom view hooks. */ }
 
 private class _NavigationItemView: UIView {
     var title: String? {
@@ -104,23 +105,34 @@ public class NavigationItem: NSObject {
 }
 
 public class NavigationTitleItem: NSObject {
-    
     public var selected: Bool {
         didSet {
-            if selected {
-                self._button.titleLabel?.font = UIFont(name: "PingFangTC-Semibold", size: DefaultTitleFontSize)
-                self._button.tintColor = UIColor(hex: "4A4A4A")
-                self._button.setTitleColor(UIColor(hex: "4A4A4A"), for: .normal)
-            } else {
-                self._button.titleLabel?.font = UIFont(name: "PingFangTC-Semibold", size: DefaultTitleUnselectedFontSize)
-                self._button.tintColor = UIColor(hex: "CCCCCC")
-                self._button.setTitleColor(UIColor(hex: "CCCCCC"), for: .normal)
-            }
+            setSelected(selected, animated: false)
         }
     }
     
-    fileprivate lazy var _button: UIButton = { () -> UIButton in
-        let button = UIButton(type: .custom)
+    public func setSelected(_ selected: Bool, animated: Bool) {
+        if selected {
+            // self._button.titleLabel?.font = UIFont(name: "PingFangTC-Semibold", size: DefaultTitleFontSize)
+            let animator = UIViewPropertyAnimator(duration: 0.5, dampingRatio: 0.9, animations: {
+                self._button.titleLabel?.font = UIFont(name: "PingFangTC-Semibold", size: DefaultTitleFontSize)
+            })
+            animator.startAnimation()
+            
+            self._button.tintColor = UIColor(hex: "4A4A4A")
+            self._button.setTitleColor(UIColor(hex: "4A4A4A"), for: .normal)
+        } else {
+            self._button.titleLabel?.font = UIFont(name: "PingFangTC-Semibold", size: DefaultTitleUnselectedFontSize)
+            let duration = 0.25
+            
+            UIView.animateKeyframes(withDuration: <#T##TimeInterval#>, delay: <#T##TimeInterval#>, options: <#T##UIViewKeyframeAnimationOptions#>, animations: <#T##() -> Void#>, completion: <#T##((Bool) -> Void)?##((Bool) -> Void)?##(Bool) -> Void#>)
+            self._button.tintColor = UIColor(hex: "CCCCCC")
+            self._button.setTitleColor(UIColor(hex: "CCCCCC"), for: .normal)
+        }
+    }
+    
+    fileprivate lazy var _button: _NavigationTitleItemButton = { () -> _NavigationTitleItemButton in
+        let button = _NavigationTitleItemButton(type: .custom)
         button.titleLabel?.font = UIFont(name: "PingFangTC-Semibold", size: DefaultTitleFontSize)
         button.tintColor = UIColor(hex: "4A4A4A")
         button.setTitleColor(UIColor(hex: "4A4A4A"), for: .normal)
@@ -299,9 +311,9 @@ extension NavigationBar {
         
         for (idx, item) in _navigationTitleItems.enumerated() {
             if idx == index {
-                item.selected = true
+                item.setSelected(true, animated: animated)
             } else {
-                item.selected = false
+                item.setSelected(false, animated: animated)
             }
         }
     }
@@ -310,7 +322,7 @@ extension NavigationBar {
 // MARK: - Conforming `NSCoding`.
 extension NavigationBar {
     public override func encode(with aCoder: NSCoder) {
-        
+        super.encode(with: aCoder)
     }
 }
 // MARK: - Conforming `UIBarPositioning`.

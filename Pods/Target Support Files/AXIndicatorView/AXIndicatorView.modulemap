@@ -1,0 +1,6 @@
+framework module AXIndicatorView {
+  umbrella header "AXIndicatorView-umbrella.h"
+
+  export *
+  module * { export * }
+}

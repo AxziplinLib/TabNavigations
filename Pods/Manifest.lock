@@ -1,0 +1,21 @@
+PODS:
+  - AXAnimationChain-Swift (0.4.1):
+    - AXAnimationChainSwift
+  - AXAnimationChainSwift (0.4.1)
+  - AXIndicatorView (0.0.7)
+  - AXPracticalHUD (1.1.6):
+    - AXIndicatorView
+
+DEPENDENCIES:
+  - AXAnimationChain-Swift
+  - AXPracticalHUD
+
+SPEC CHECKSUMS:
+  AXAnimationChain-Swift: b7518ed0de3751b0899f97274f8696873fe191a8
+  AXAnimationChainSwift: 5c1b6431c6847bfd199a311d8420aec302d27bbd
+  AXIndicatorView: caa6c08cc6b732fad163fa26197e3c34b1339060
+  AXPracticalHUD: eba707b5515a4da7424ac3d36f07e643df1c8fc3
+
+PODFILE CHECKSUM: fa450d2283d8997ee74b7cd3ff62df46c9e4792f
+
+COCOAPODS: 1.2.0

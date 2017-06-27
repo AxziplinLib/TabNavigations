@@ -1,0 +1,6 @@
+framework module AXPracticalHUD {
+  umbrella header "AXPracticalHUD-umbrella.h"
+
+  export *
+  module * { export * }
+}

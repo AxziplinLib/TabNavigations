@@ -1,0 +1,1269 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 48;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		03335FD38C7CCCF0C989B5E49E07E7AD /* CAAnimation+Convertable.m in Sources */ = {isa = PBXBuildFile; fileRef = 548B6FB23EBEE42A8AABD8CFAC337C55 /* CAAnimation+Convertable.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		168A20E924481C3CF28ECAB3E5D92474 /* AXBreachedAnnulusIndicatorView.h in Headers */ = {isa = PBXBuildFile; fileRef = EBBCA57EC6AD603120F33DCE38A9AA1C /* AXBreachedAnnulusIndicatorView.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		16E6D29B1FFA40760ACBFF02604BA458 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 21DDA0D7EB8741084D43F723C488E807 /* UIKit.framework */; };
+		19961E718A8F4EAD390658585491D958 /* AXGradientProgressView.h in Headers */ = {isa = PBXBuildFile; fileRef = 1B353F2EF0FB2E1F2446511010314691 /* AXGradientProgressView.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A0A67A7E5F6B53FDC7D074EF2D2A8D1 /* CALayer+AnchorPoint.m in Sources */ = {isa = PBXBuildFile; fileRef = 4997654B76B98360EDC4C37E72C0DD26 /* CALayer+AnchorPoint.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		241D9678427E154F68113C82503765AF /* AXPracticalHUD-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 659B70032785C625F5612B73EF8B49FA /* AXPracticalHUD-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		27B332B23FD7D4EC4636AE39C26F6C04 /* AXBreachedAnnulusIndicatorView.m in Sources */ = {isa = PBXBuildFile; fileRef = 86612B05951756DFE62DA01F48B55C7D /* AXBreachedAnnulusIndicatorView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		2892731C656AEFAE1C41ADC82CD1520B /* AXDecayAnimation.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E58C2E997AD94786FE3ECB72B7A3BD4 /* AXDecayAnimation.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		2F10EEFD528924DD446127D99452B7CC /* AXIndicatorView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A15003DEC49F15E2786558DB9E40532 /* AXIndicatorView.framework */; };
+		3170034F1ACA016DD4C029C0FAE70764 /* AXChainAnimator.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D4D3F7AE262723A04592D7C841FD2F /* AXChainAnimator.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		334F1D20E2BB76BB4F191F64D41D549F /* UIView+AnimationChain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0576980D4E88CBBB1058319E27FF1449 /* UIView+AnimationChain.swift */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		33B10B26D96C6A44B0C0E8E640C09F2F /* AXDecayAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = D84CA801CCFEDB9FC1FB340FA872E842 /* AXDecayAnimation.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		3BC219C2940DB00CDC6AC56EA369986F /* AXCoreAnimation.h in Headers */ = {isa = PBXBuildFile; fileRef = 6A02100FAD6000EA7FD8E665813C7C3D /* AXCoreAnimation.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		3C1C4A04779E2F1A16AD71582017DF9C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 53D1144834303CE6E3FC93B6130160A7 /* Foundation.framework */; };
+		3DA3CCE63A88249EB8659049A3F9121E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 53D1144834303CE6E3FC93B6130160A7 /* Foundation.framework */; };
+		3EFAFEAA4F0D9F731DC79C5FEF359F02 /* AXIndicatorView.h in Headers */ = {isa = PBXBuildFile; fileRef = 5D8C324A8693AB1A641975CA74612F01 /* AXIndicatorView.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4123E435423832CFDECF0B776CEC79B8 /* AXCoreAnimations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31A72C8965996AA100770ED8786BC9E1 /* AXCoreAnimations.swift */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		42146BB2CE10032F99E65FD226ECEE44 /* CAAnimation+ImmediateValue.h in Headers */ = {isa = PBXBuildFile; fileRef = FB8E155EFB338F9ED882A737C74F453C /* CAAnimation+ImmediateValue.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		474FB694E45ADF7ED85661899F5D66B6 /* UIView+ChainAnimator.m in Sources */ = {isa = PBXBuildFile; fileRef = 01E490636946E04BCB99B6E7E9F23B4D /* UIView+ChainAnimator.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		48427FD27ACFA7A2A9932ADE1030CB5A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 21DDA0D7EB8741084D43F723C488E807 /* UIKit.framework */; };
+		4AF26DC8497DDE93AD0DD1E5B30EC848 /* AXIndicatorView.bundle in Resources */ = {isa = PBXBuildFile; fileRef = CDE6D0C5ABDFC6C428B642100E6A667B /* AXIndicatorView.bundle */; };
+		4C207F258FEA7023D730020E268317D3 /* AXActivityIndicatorView.h in Headers */ = {isa = PBXBuildFile; fileRef = F418F691941CC1EF0889672770AB9455 /* AXActivityIndicatorView.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4D478429C11D3746A04F22B3F2B48EA5 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 53D1144834303CE6E3FC93B6130160A7 /* Foundation.framework */; };
+		4FF6847B055589C93C3F59BB89C4B59F /* AXCircleProgressView.h in Headers */ = {isa = PBXBuildFile; fileRef = C00D27921D366CE87EA65049C01BA4E9 /* AXCircleProgressView.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		50B535573AF2F0DF5FD92D47F84E5EBA /* AXGradientProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = 462C8EF2F9AFF848CD2CE59BFD72FDFD /* AXGradientProgressView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		55949F1A86745ED426A36C02B145E11D /* AXAnimationChainSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CD6D1999E34692889E85BBE4F071E60 /* AXAnimationChainSwift.framework */; };
+		5ED05BCFCD8881E28676B78D295B3BF8 /* CAAnimation+Convertable.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C931DF4E2126597F30619B2DFABDC4B /* CAAnimation+Convertable.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		6150E1A5419DF03C4C20E02CED79A159 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B6A68343DD7A287F9413633AE9B3BC8 /* QuartzCore.framework */; };
+		6C0CB8B1EA0BF654FE690154427BCA09 /* AXPracticalHUDContentView.h in Headers */ = {isa = PBXBuildFile; fileRef = C8B2372F953AD523B6DC5C406C7DDCCE /* AXPracticalHUDContentView.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		6D3B59B7F5DD9FB270A0F54F8EEC0957 /* AXSpinningWaitCursor.m in Sources */ = {isa = PBXBuildFile; fileRef = F80811243713DCD932FE433D00901F12 /* AXSpinningWaitCursor.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		76A038A846D9C267287FC61DE439376A /* AXPracticalHUDContentView.m in Sources */ = {isa = PBXBuildFile; fileRef = A83FFA83FED131F7F97B470C172E2C1D /* AXPracticalHUDContentView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		798554DC826CDA8FFF2668C7D3DB5DD6 /* AXSpinningWaitCursor.h in Headers */ = {isa = PBXBuildFile; fileRef = 7FE1167A8B47D9E481C04DAF4705F4A3 /* AXSpinningWaitCursor.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		7AB578960F6918C43F06E58B7FB478BD /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 53D1144834303CE6E3FC93B6130160A7 /* Foundation.framework */; };
+		7E29A33609297F95618832962B1B4181 /* AXPracticalHUD.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E9AA8F99B0B3138C3B799E4CFAC5B7C /* AXPracticalHUD.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		882BF1CFE37E6C89FDD9902B7EA05D9E /* UIView+ChainAnimator.h in Headers */ = {isa = PBXBuildFile; fileRef = 8B5126EC273B8AD28D441C14C7EB272D /* UIView+ChainAnimator.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		8DDE45AC1341C7B370534ADA5A179FF9 /* AXPracticalHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = A619E05D43487CE90EBCBD67F2DE6A61 /* AXPracticalHUD.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		9CF05228FE282060377873A50B3F75A3 /* UIView+Effects.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1277463D9DE65FBBD84B829466700C37 /* UIView+Effects.swift */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		A0AB44634F7AC7335B3FEAF90CECC5E6 /* AXAnimationChainSwift-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 30D653027860C9F343679569E491B612 /* AXAnimationChainSwift-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		A198D7E2DD2320998B868F9C363CBB5D /* AXChainAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF1CB53B8AFB39F0B8E3351BE0D284F2 /* AXChainAnimator.swift */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		A7EE1CFED43C62D869B210BA64440BAF /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 21DDA0D7EB8741084D43F723C488E807 /* UIKit.framework */; };
+		AD6147E479AFBE14EB72A29C17ED1E70 /* AXActivityIndicatorView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F45D2D99E453F82E5CAFBC2FCCF24A4 /* AXActivityIndicatorView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		B1EF6E9351D6811014B2EC23AF267952 /* CAMediaTimingFunction+Extends.m in Sources */ = {isa = PBXBuildFile; fileRef = EED58140D13A43C4606EE31ABBF2D519 /* CAMediaTimingFunction+Extends.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		B39A30BDEC7A4C6CDCF085E998985B46 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B6A68343DD7A287F9413633AE9B3BC8 /* QuartzCore.framework */; };
+		BD7BF621F3A72F4564A34972C1CB23BC /* CALayer+AnchorPoint.h in Headers */ = {isa = PBXBuildFile; fileRef = 82C7471BD8838B5B9C26E7B2CD21CA1C /* CALayer+AnchorPoint.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		BFDBBE0E37CC83A8F0707919B5E6322E /* AXAnimationChainSwift-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CED4F961C3E6FD1742F660420316433 /* AXAnimationChainSwift-dummy.m */; };
+		C01614D52B5A5614EDABEE48BB86A8FF /* CAAnimation+ImmediateValue.m in Sources */ = {isa = PBXBuildFile; fileRef = 0D1CCDEC116596BFFC6D40E7FED30986 /* CAAnimation+ImmediateValue.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		C61F029DBA1D5246E330C3997849BBA6 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 21DDA0D7EB8741084D43F723C488E807 /* UIKit.framework */; };
+		C67F7F65601D6B158D07C5344EACDFB6 /* Pods-AxReminder-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = C958FD8AFB0A97CA5944918913BFBC6D /* Pods-AxReminder-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		CA18F5067BF670D665D7F985E68FEF85 /* AXAnimationChain-Swift-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D9C1C2E44E27A47DA1065175DD7FDD8 /* AXAnimationChain-Swift-dummy.m */; };
+		D28BABE5C4AB44EB6CEBD17416AF9A72 /* AXIndicatorView-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 75A404921EC2D72DF3D4408751A345D1 /* AXIndicatorView-dummy.m */; };
+		D652EF35EBEF131CB3DD9ED8B0ED3845 /* CAMediaTimingFunction+Extends.h in Headers */ = {isa = PBXBuildFile; fileRef = B4100ECADEFE9C4BD0993848E786E10A /* CAMediaTimingFunction+Extends.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D7A85599228BC76CB0117ABF0A55A30F /* AXAnimationChain-Swift-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 69439D359C5F7C338B00310EDBC4C30B /* AXAnimationChain-Swift-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		DA43390B4E8E0C637A640EA3C95F6622 /* AXIndicatorView-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 894E4FAEF62185BC30D011414CB9F881 /* AXIndicatorView-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		E32442E0D5760FF2934F678B9BBCF4FC /* AXCircleProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = 45681E6382A159EC81E9BEED8B175293 /* AXCircleProgressView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		E89BA3CF865DEAA0254E6D6C42560CF4 /* AXChainAnimator.h in Headers */ = {isa = PBXBuildFile; fileRef = 658228E1D8E7D6D0EF363749544D94BE /* AXChainAnimator.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		EE62036AEF8BAA1852C72625CBE4087A /* AXSpringAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DFD94D1413987F7D16C4309A6A28B7E /* AXSpringAnimation.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		F0F7A1620FBCF4194C28FAE53C035F2F /* AXBarProgressView.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D0542B17FAA3001463621BAC8B17F6F /* AXBarProgressView.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F27DFABDB89FF234539BD61B856AB199 /* AXBarProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5263F829639B1F72F6EBE425D9BBDE3B /* AXBarProgressView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		F31180316BF284ADA0657DB66A7CAE26 /* Pods-AxReminder-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = DE61C24FDC9D5D6AAB912872E39D14FF /* Pods-AxReminder-dummy.m */; };
+		F5C1ABA959E049708FA7D1AAEE602D26 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 53D1144834303CE6E3FC93B6130160A7 /* Foundation.framework */; };
+		FB9620A0B82B8F762C13E6D67198E25D /* AXPracticalHUD-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = FE1ECC8D2C81C6364A84DFF118E61AE0 /* AXPracticalHUD-dummy.m */; };
+		FD2FF4E2B1FE82699127D6CEE1973C1A /* AXPracticalHUD.bundle in Resources */ = {isa = PBXBuildFile; fileRef = FE19CF9DF9FA201966034F49FCF33953 /* AXPracticalHUD.bundle */; };
+		FEE737666BAAC5920A9FB75C9CD62BCC /* AXSpringAnimation.h in Headers */ = {isa = PBXBuildFile; fileRef = 81F6B9985F461009B7DE480013CF63BB /* AXSpringAnimation.h */; settings = {ATTRIBUTES = (Public, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		63FD89408F5501E2F3647447F8F61FC4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 060186B6B426DB3FDC91A01203682CB1;
+			remoteInfo = AXIndicatorView;
+		};
+		6ABFF928B42D51ECEFD20DF8473BB887 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8B74B139F8A1995AAAFC6F31D3AB9E2B;
+			remoteInfo = AXAnimationChainSwift;
+		};
+		A871F73720E294AB83A54B6D98C72DA0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A7CA60F8C75DFD6F6921EC655C2B30FE;
+			remoteInfo = AXPracticalHUD;
+		};
+		ADDDE1927EB7F724A845DD315B950390 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 060186B6B426DB3FDC91A01203682CB1;
+			remoteInfo = AXIndicatorView;
+		};
+		D720A287706778D6D5B2F8924ED92C5A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 13A4E0D7FC39B118948A672573F2A05D;
+			remoteInfo = "AXAnimationChain-Swift";
+		};
+		FD2EE67EF7AD49369D3B17C2C9C10661 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8B74B139F8A1995AAAFC6F31D3AB9E2B;
+			remoteInfo = AXAnimationChainSwift;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		01E490636946E04BCB99B6E7E9F23B4D /* UIView+ChainAnimator.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIView+ChainAnimator.m"; path = "AXAnimationChain/Classes/UIView+ChainAnimator.m"; sourceTree = "<group>"; };
+		0576980D4E88CBBB1058319E27FF1449 /* UIView+AnimationChain.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UIView+AnimationChain.swift"; path = "AXAnimationChain/Classes/Swifty/UIView+AnimationChain.swift"; sourceTree = "<group>"; };
+		075A606CD4C6C099726312DD85E1C46B /* AXAnimationChain-Swift-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "AXAnimationChain-Swift-prefix.pch"; sourceTree = "<group>"; };
+		0C931DF4E2126597F30619B2DFABDC4B /* CAAnimation+Convertable.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "CAAnimation+Convertable.h"; path = "AXAnimationChain/Classes/CoreAnimation/CAAnimation+Convertable.h"; sourceTree = "<group>"; };
+		0D1CCDEC116596BFFC6D40E7FED30986 /* CAAnimation+ImmediateValue.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "CAAnimation+ImmediateValue.m"; path = "AXAnimationChain/Classes/CoreAnimation/CAAnimation+ImmediateValue.m"; sourceTree = "<group>"; };
+		1277463D9DE65FBBD84B829466700C37 /* UIView+Effects.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UIView+Effects.swift"; path = "AXAnimationChain/Classes/Swifty/UIView+Effects.swift"; sourceTree = "<group>"; };
+		18D4D3F7AE262723A04592D7C841FD2F /* AXChainAnimator.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AXChainAnimator.m; path = AXAnimationChain/Classes/AXChainAnimator.m; sourceTree = "<group>"; };
+		1B353F2EF0FB2E1F2446511010314691 /* AXGradientProgressView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AXGradientProgressView.h; path = AXPracticalHUD/AXPracticalHUD/AXGradientProgressView.h; sourceTree = "<group>"; };
+		1B6A68343DD7A287F9413633AE9B3BC8 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS10.0.sdk/System/Library/Frameworks/QuartzCore.framework; sourceTree = DEVELOPER_DIR; };
+		1D4425B478EA4D917CACB315301779EB /* AXIndicatorView.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; path = AXIndicatorView.modulemap; sourceTree = "<group>"; };
+		1D9C1C2E44E27A47DA1065175DD7FDD8 /* AXAnimationChain-Swift-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "AXAnimationChain-Swift-dummy.m"; sourceTree = "<group>"; };
+		1E58C2E997AD94786FE3ECB72B7A3BD4 /* AXDecayAnimation.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AXDecayAnimation.h; path = AXAnimationChain/Classes/CoreAnimation/AXDecayAnimation.h; sourceTree = "<group>"; };
+		21DDA0D7EB8741084D43F723C488E807 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS10.0.sdk/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
+		2CD6D1999E34692889E85BBE4F071E60 /* AXAnimationChainSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = AXAnimationChainSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		2E9AA8F99B0B3138C3B799E4CFAC5B7C /* AXPracticalHUD.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AXPracticalHUD.h; path = AXPracticalHUD/AXPracticalHUD/AXPracticalHUD.h; sourceTree = "<group>"; };
+		2F45D2D99E453F82E5CAFBC2FCCF24A4 /* AXActivityIndicatorView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AXActivityIndicatorView.m; path = AXIndicatorView/Classes/AXActivityIndicatorView.m; sourceTree = "<group>"; };
+		30D653027860C9F343679569E491B612 /* AXAnimationChainSwift-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "AXAnimationChainSwift-umbrella.h"; sourceTree = "<group>"; };
+		31A72C8965996AA100770ED8786BC9E1 /* AXCoreAnimations.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AXCoreAnimations.swift; path = AXAnimationChain/Classes/Swifty/AXCoreAnimations.swift; sourceTree = "<group>"; };
+		34178D60216E0902150A55726DC0BEAD /* AXPracticalHUD.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = AXPracticalHUD.framework; path = AXPracticalHUD.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		3D0542B17FAA3001463621BAC8B17F6F /* AXBarProgressView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AXBarProgressView.h; path = AXPracticalHUD/AXPracticalHUD/AXBarProgressView.h; sourceTree = "<group>"; };
+		3DFD94D1413987F7D16C4309A6A28B7E /* AXSpringAnimation.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AXSpringAnimation.m; path = AXAnimationChain/Classes/CoreAnimation/AXSpringAnimation.m; sourceTree = "<group>"; };
+		3FD0BAB3C2E5E8DD93047F23B107CDFD /* Pods-AxReminder.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-AxReminder.release.xcconfig"; sourceTree = "<group>"; };
+		45681E6382A159EC81E9BEED8B175293 /* AXCircleProgressView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AXCircleProgressView.m; path = AXPracticalHUD/AXPracticalHUD/AXCircleProgressView.m; sourceTree = "<group>"; };
+		462C8EF2F9AFF848CD2CE59BFD72FDFD /* AXGradientProgressView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AXGradientProgressView.m; path = AXPracticalHUD/AXPracticalHUD/AXGradientProgressView.m; sourceTree = "<group>"; };
+		4997654B76B98360EDC4C37E72C0DD26 /* CALayer+AnchorPoint.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "CALayer+AnchorPoint.m"; path = "AXAnimationChain/Classes/CALayer+AnchorPoint.m"; sourceTree = "<group>"; };
+		4CED4F961C3E6FD1742F660420316433 /* AXAnimationChainSwift-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "AXAnimationChainSwift-dummy.m"; sourceTree = "<group>"; };
+		5263F829639B1F72F6EBE425D9BBDE3B /* AXBarProgressView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AXBarProgressView.m; path = AXPracticalHUD/AXPracticalHUD/AXBarProgressView.m; sourceTree = "<group>"; };
+		53D1144834303CE6E3FC93B6130160A7 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS10.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		548B6FB23EBEE42A8AABD8CFAC337C55 /* CAAnimation+Convertable.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "CAAnimation+Convertable.m"; path = "AXAnimationChain/Classes/CoreAnimation/CAAnimation+Convertable.m"; sourceTree = "<group>"; };
+		5D8C324A8693AB1A641975CA74612F01 /* AXIndicatorView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AXIndicatorView.h; path = AXIndicatorView/Classes/AXIndicatorView.h; sourceTree = "<group>"; };
+		5DB46C18D7C8321BD87C60D3F3DD2DF3 /* AXPracticalHUD.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = AXPracticalHUD.xcconfig; sourceTree = "<group>"; };
+		658228E1D8E7D6D0EF363749544D94BE /* AXChainAnimator.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AXChainAnimator.h; path = AXAnimationChain/Classes/AXChainAnimator.h; sourceTree = "<group>"; };
+		659B70032785C625F5612B73EF8B49FA /* AXPracticalHUD-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "AXPracticalHUD-umbrella.h"; sourceTree = "<group>"; };
+		66E152BD2E9BEABC23EDB61634D53A19 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		69439D359C5F7C338B00310EDBC4C30B /* AXAnimationChain-Swift-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "AXAnimationChain-Swift-umbrella.h"; sourceTree = "<group>"; };
+		6A02100FAD6000EA7FD8E665813C7C3D /* AXCoreAnimation.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AXCoreAnimation.h; path = AXAnimationChain/Classes/CoreAnimation/AXCoreAnimation.h; sourceTree = "<group>"; };
+		75A404921EC2D72DF3D4408751A345D1 /* AXIndicatorView-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "AXIndicatorView-dummy.m"; sourceTree = "<group>"; };
+		7959B0E3A20889CFE7CB1D56BF2E7833 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		7A15003DEC49F15E2786558DB9E40532 /* AXIndicatorView.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = AXIndicatorView.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		7FE1167A8B47D9E481C04DAF4705F4A3 /* AXSpinningWaitCursor.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AXSpinningWaitCursor.h; path = AXIndicatorView/Classes/AXSpinningWaitCursor.h; sourceTree = "<group>"; };
+		81F6B9985F461009B7DE480013CF63BB /* AXSpringAnimation.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AXSpringAnimation.h; path = AXAnimationChain/Classes/CoreAnimation/AXSpringAnimation.h; sourceTree = "<group>"; };
+		82C7471BD8838B5B9C26E7B2CD21CA1C /* CALayer+AnchorPoint.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "CALayer+AnchorPoint.h"; path = "AXAnimationChain/Classes/CALayer+AnchorPoint.h"; sourceTree = "<group>"; };
+		86612B05951756DFE62DA01F48B55C7D /* AXBreachedAnnulusIndicatorView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AXBreachedAnnulusIndicatorView.m; path = AXIndicatorView/Classes/AXBreachedAnnulusIndicatorView.m; sourceTree = "<group>"; };
+		894E4FAEF62185BC30D011414CB9F881 /* AXIndicatorView-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "AXIndicatorView-umbrella.h"; sourceTree = "<group>"; };
+		8B5126EC273B8AD28D441C14C7EB272D /* UIView+ChainAnimator.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIView+ChainAnimator.h"; path = "AXAnimationChain/Classes/UIView+ChainAnimator.h"; sourceTree = "<group>"; };
+		8BAF61536C26922DBA6C4BA9C692C97D /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		9293549553E9FC9F1E99CB559030EC3B /* Pods-AxReminder-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-AxReminder-acknowledgements.plist"; sourceTree = "<group>"; };
+		93A4A3777CF96A4AAC1D13BA6DCCEA73 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		9690792618D86C6116085C60A8B3A2FB /* AXAnimationChain_Swift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = AXAnimationChain_Swift.framework; path = "AXAnimationChain-Swift.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
+		996AB936C02FFB2DF65F52BC959FCCCE /* AXIndicatorView.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = AXIndicatorView.framework; path = AXIndicatorView.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		A289BBD21D1577CC8D09336AB89C5E48 /* AXIndicatorView.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = AXIndicatorView.xcconfig; sourceTree = "<group>"; };
+		A3710639A34ACC56FC49DA07FFCB5217 /* Pods-AxReminder.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; path = "Pods-AxReminder.modulemap"; sourceTree = "<group>"; };
+		A3CEE770F51BE68EB9F22725B7AE0914 /* Pods-AxReminder-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-AxReminder-resources.sh"; sourceTree = "<group>"; };
+		A5274E0F71F40ED673DF4E7A400C0FB8 /* AXAnimationChainSwift.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = AXAnimationChainSwift.xcconfig; sourceTree = "<group>"; };
+		A619E05D43487CE90EBCBD67F2DE6A61 /* AXPracticalHUD.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AXPracticalHUD.m; path = AXPracticalHUD/AXPracticalHUD/AXPracticalHUD.m; sourceTree = "<group>"; };
+		A83FFA83FED131F7F97B470C172E2C1D /* AXPracticalHUDContentView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AXPracticalHUDContentView.m; path = AXPracticalHUD/AXPracticalHUD/AXPracticalHUDContentView.m; sourceTree = "<group>"; };
+		AE5B158C97EEFA81401D1BBD5464F3A5 /* AXPracticalHUD.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; path = AXPracticalHUD.modulemap; sourceTree = "<group>"; };
+		AEB894868B392E8707ADD48FA8560663 /* AXAnimationChainSwift.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; path = AXAnimationChainSwift.modulemap; sourceTree = "<group>"; };
+		B095679F4179ED0402E5D1702356B39C /* Pods-AxReminder-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-AxReminder-acknowledgements.markdown"; sourceTree = "<group>"; };
+		B4100ECADEFE9C4BD0993848E786E10A /* CAMediaTimingFunction+Extends.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "CAMediaTimingFunction+Extends.h"; path = "AXAnimationChain/Classes/CoreAnimation/CAMediaTimingFunction+Extends.h"; sourceTree = "<group>"; };
+		B45EF95CC282A16BEDC36B386805F154 /* Pods_AxReminder.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Pods_AxReminder.framework; path = "Pods-AxReminder.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B56650365471B397845066DEC360E167 /* Pods-AxReminder.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-AxReminder.debug.xcconfig"; sourceTree = "<group>"; };
+		BD766BAA2413499535FEA6344080BAE4 /* Pods-AxReminder-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-AxReminder-frameworks.sh"; sourceTree = "<group>"; };
+		C00D27921D366CE87EA65049C01BA4E9 /* AXCircleProgressView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AXCircleProgressView.h; path = AXPracticalHUD/AXPracticalHUD/AXCircleProgressView.h; sourceTree = "<group>"; };
+		C294E79B28FD8E4B8B5988098C305B1C /* AXPracticalHUD-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "AXPracticalHUD-prefix.pch"; sourceTree = "<group>"; };
+		C8B2372F953AD523B6DC5C406C7DDCCE /* AXPracticalHUDContentView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AXPracticalHUDContentView.h; path = AXPracticalHUD/AXPracticalHUD/AXPracticalHUDContentView.h; sourceTree = "<group>"; };
+		C958FD8AFB0A97CA5944918913BFBC6D /* Pods-AxReminder-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-AxReminder-umbrella.h"; sourceTree = "<group>"; };
+		CDE6D0C5ABDFC6C428B642100E6A667B /* AXIndicatorView.bundle */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "wrapper.plug-in"; name = AXIndicatorView.bundle; path = AXIndicatorView/Classes/AXIndicatorView.bundle; sourceTree = "<group>"; };
+		CF1CB53B8AFB39F0B8E3351BE0D284F2 /* AXChainAnimator.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AXChainAnimator.swift; path = AXAnimationChain/Classes/Swifty/AXChainAnimator.swift; sourceTree = "<group>"; };
+		D44AD220172038C3E137DDA47D5DFF92 /* AXAnimationChainSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = AXAnimationChainSwift.framework; path = AXAnimationChainSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D84CA801CCFEDB9FC1FB340FA872E842 /* AXDecayAnimation.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AXDecayAnimation.m; path = AXAnimationChain/Classes/CoreAnimation/AXDecayAnimation.m; sourceTree = "<group>"; };
+		D8DB0D95C18161900D4D628D7D549DB4 /* AXIndicatorView-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "AXIndicatorView-prefix.pch"; sourceTree = "<group>"; };
+		DE61C24FDC9D5D6AAB912872E39D14FF /* Pods-AxReminder-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-AxReminder-dummy.m"; sourceTree = "<group>"; };
+		E1ED9E51CD6C533C8842C32CD747CDDB /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		EBBCA57EC6AD603120F33DCE38A9AA1C /* AXBreachedAnnulusIndicatorView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AXBreachedAnnulusIndicatorView.h; path = AXIndicatorView/Classes/AXBreachedAnnulusIndicatorView.h; sourceTree = "<group>"; };
+		EED58140D13A43C4606EE31ABBF2D519 /* CAMediaTimingFunction+Extends.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "CAMediaTimingFunction+Extends.m"; path = "AXAnimationChain/Classes/CoreAnimation/CAMediaTimingFunction+Extends.m"; sourceTree = "<group>"; };
+		F418F691941CC1EF0889672770AB9455 /* AXActivityIndicatorView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AXActivityIndicatorView.h; path = AXIndicatorView/Classes/AXActivityIndicatorView.h; sourceTree = "<group>"; };
+		F4BAFDB1612AB719ACE3739FF586FA4E /* AXAnimationChain-Swift.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; path = "AXAnimationChain-Swift.modulemap"; sourceTree = "<group>"; };
+		F80811243713DCD932FE433D00901F12 /* AXSpinningWaitCursor.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AXSpinningWaitCursor.m; path = AXIndicatorView/Classes/AXSpinningWaitCursor.m; sourceTree = "<group>"; };
+		F8623162712CBC8B93172AE939D081B8 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		FB8E155EFB338F9ED882A737C74F453C /* CAAnimation+ImmediateValue.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "CAAnimation+ImmediateValue.h"; path = "AXAnimationChain/Classes/CoreAnimation/CAAnimation+ImmediateValue.h"; sourceTree = "<group>"; };
+		FBFC2AD9388B6209BB32DEF07E4B52FF /* AXAnimationChainSwift-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "AXAnimationChainSwift-prefix.pch"; sourceTree = "<group>"; };
+		FC469422852BB92F98953808AC4516E0 /* AXAnimationChain-Swift.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "AXAnimationChain-Swift.xcconfig"; sourceTree = "<group>"; };
+		FE19CF9DF9FA201966034F49FCF33953 /* AXPracticalHUD.bundle */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "wrapper.plug-in"; name = AXPracticalHUD.bundle; path = AXPracticalHUD/AXPracticalHUD/AXPracticalHUD.bundle; sourceTree = "<group>"; };
+		FE1ECC8D2C81C6364A84DFF118E61AE0 /* AXPracticalHUD-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "AXPracticalHUD-dummy.m"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		0385B77E2933F5F61C449220244AAE3A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				55949F1A86745ED426A36C02B145E11D /* AXAnimationChainSwift.framework in Frameworks */,
+				4D478429C11D3746A04F22B3F2B48EA5 /* Foundation.framework in Frameworks */,
+				B39A30BDEC7A4C6CDCF085E998985B46 /* QuartzCore.framework in Frameworks */,
+				C61F029DBA1D5246E330C3997849BBA6 /* UIKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5F84E285115585536E241F9B283E2D3F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F5C1ABA959E049708FA7D1AAEE602D26 /* Foundation.framework in Frameworks */,
+				6150E1A5419DF03C4C20E02CED79A159 /* QuartzCore.framework in Frameworks */,
+				48427FD27ACFA7A2A9932ADE1030CB5A /* UIKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6797BB3B356CB72BECC59844E33A7C43 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3DA3CCE63A88249EB8659049A3F9121E /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D1B038C59972C60802538E907E2A17DD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3C1C4A04779E2F1A16AD71582017DF9C /* Foundation.framework in Frameworks */,
+				16E6D29B1FFA40760ACBFF02604BA458 /* UIKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E81053E6D800E42F3CA7D62FB320E25A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2F10EEFD528924DD446127D99452B7CC /* AXIndicatorView.framework in Frameworks */,
+				7AB578960F6918C43F06E58B7FB478BD /* Foundation.framework in Frameworks */,
+				A7EE1CFED43C62D869B210BA64440BAF /* UIKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		195421970E834087CBD6D2690B0B8D2A /* AXIndicatorView */ = {
+			isa = PBXGroup;
+			children = (
+				F418F691941CC1EF0889672770AB9455 /* AXActivityIndicatorView.h */,
+				2F45D2D99E453F82E5CAFBC2FCCF24A4 /* AXActivityIndicatorView.m */,
+				EBBCA57EC6AD603120F33DCE38A9AA1C /* AXBreachedAnnulusIndicatorView.h */,
+				86612B05951756DFE62DA01F48B55C7D /* AXBreachedAnnulusIndicatorView.m */,
+				5D8C324A8693AB1A641975CA74612F01 /* AXIndicatorView.h */,
+				7FE1167A8B47D9E481C04DAF4705F4A3 /* AXSpinningWaitCursor.h */,
+				F80811243713DCD932FE433D00901F12 /* AXSpinningWaitCursor.m */,
+				64651DE8D6B0A25E6D0C36A2919E635C /* Resources */,
+				26B02B548F6A712B7CCFFDA7FDD6ABEE /* Support Files */,
+			);
+			name = AXIndicatorView;
+			path = AXIndicatorView;
+			sourceTree = "<group>";
+		};
+		25E03D689029A208B5AD40137435306C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9690792618D86C6116085C60A8B3A2FB /* AXAnimationChain_Swift.framework */,
+				D44AD220172038C3E137DDA47D5DFF92 /* AXAnimationChainSwift.framework */,
+				996AB936C02FFB2DF65F52BC959FCCCE /* AXIndicatorView.framework */,
+				34178D60216E0902150A55726DC0BEAD /* AXPracticalHUD.framework */,
+				B45EF95CC282A16BEDC36B386805F154 /* Pods_AxReminder.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		26B02B548F6A712B7CCFFDA7FDD6ABEE /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				1D4425B478EA4D917CACB315301779EB /* AXIndicatorView.modulemap */,
+				A289BBD21D1577CC8D09336AB89C5E48 /* AXIndicatorView.xcconfig */,
+				75A404921EC2D72DF3D4408751A345D1 /* AXIndicatorView-dummy.m */,
+				D8DB0D95C18161900D4D628D7D549DB4 /* AXIndicatorView-prefix.pch */,
+				894E4FAEF62185BC30D011414CB9F881 /* AXIndicatorView-umbrella.h */,
+				E1ED9E51CD6C533C8842C32CD747CDDB /* Info.plist */,
+			);
+			name = "Support Files";
+			path = "../Target Support Files/AXIndicatorView";
+			sourceTree = "<group>";
+		};
+		35E9C70ABD507146E85FF3D663C1202C /* AXAnimationChain-Swift */ = {
+			isa = PBXGroup;
+			children = (
+				CF1CB53B8AFB39F0B8E3351BE0D284F2 /* AXChainAnimator.swift */,
+				31A72C8965996AA100770ED8786BC9E1 /* AXCoreAnimations.swift */,
+				0576980D4E88CBBB1058319E27FF1449 /* UIView+AnimationChain.swift */,
+				1277463D9DE65FBBD84B829466700C37 /* UIView+Effects.swift */,
+				A1A75F61AD6223D905658929E756EF52 /* Support Files */,
+			);
+			name = "AXAnimationChain-Swift";
+			path = "AXAnimationChain-Swift";
+			sourceTree = "<group>";
+		};
+		4CB7C9AEAD638F7082B4C9BE0B1E3C5E /* Targets Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				AB9B331D96FE9C5FE5C37D3FE9ABF95E /* Pods-AxReminder */,
+			);
+			name = "Targets Support Files";
+			sourceTree = "<group>";
+		};
+		4D508052F167E88CB59FE2BC6415282B /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				53D1144834303CE6E3FC93B6130160A7 /* Foundation.framework */,
+				1B6A68343DD7A287F9413633AE9B3BC8 /* QuartzCore.framework */,
+				21DDA0D7EB8741084D43F723C488E807 /* UIKit.framework */,
+			);
+			name = iOS;
+			sourceTree = "<group>";
+		};
+		539A63063EF244F9484186F9502EB5DD /* AXAnimationChainSwift */ = {
+			isa = PBXGroup;
+			children = (
+				658228E1D8E7D6D0EF363749544D94BE /* AXChainAnimator.h */,
+				18D4D3F7AE262723A04592D7C841FD2F /* AXChainAnimator.m */,
+				6A02100FAD6000EA7FD8E665813C7C3D /* AXCoreAnimation.h */,
+				1E58C2E997AD94786FE3ECB72B7A3BD4 /* AXDecayAnimation.h */,
+				D84CA801CCFEDB9FC1FB340FA872E842 /* AXDecayAnimation.m */,
+				81F6B9985F461009B7DE480013CF63BB /* AXSpringAnimation.h */,
+				3DFD94D1413987F7D16C4309A6A28B7E /* AXSpringAnimation.m */,
+				0C931DF4E2126597F30619B2DFABDC4B /* CAAnimation+Convertable.h */,
+				548B6FB23EBEE42A8AABD8CFAC337C55 /* CAAnimation+Convertable.m */,
+				FB8E155EFB338F9ED882A737C74F453C /* CAAnimation+ImmediateValue.h */,
+				0D1CCDEC116596BFFC6D40E7FED30986 /* CAAnimation+ImmediateValue.m */,
+				82C7471BD8838B5B9C26E7B2CD21CA1C /* CALayer+AnchorPoint.h */,
+				4997654B76B98360EDC4C37E72C0DD26 /* CALayer+AnchorPoint.m */,
+				B4100ECADEFE9C4BD0993848E786E10A /* CAMediaTimingFunction+Extends.h */,
+				EED58140D13A43C4606EE31ABBF2D519 /* CAMediaTimingFunction+Extends.m */,
+				8B5126EC273B8AD28D441C14C7EB272D /* UIView+ChainAnimator.h */,
+				01E490636946E04BCB99B6E7E9F23B4D /* UIView+ChainAnimator.m */,
+				CFA6B89036B73E04B69879A75291D1D6 /* Support Files */,
+			);
+			name = AXAnimationChainSwift;
+			path = AXAnimationChainSwift;
+			sourceTree = "<group>";
+		};
+		61FD06F43BE59A5DDD2FEEBB172DE758 /* AXPracticalHUD */ = {
+			isa = PBXGroup;
+			children = (
+				3D0542B17FAA3001463621BAC8B17F6F /* AXBarProgressView.h */,
+				5263F829639B1F72F6EBE425D9BBDE3B /* AXBarProgressView.m */,
+				C00D27921D366CE87EA65049C01BA4E9 /* AXCircleProgressView.h */,
+				45681E6382A159EC81E9BEED8B175293 /* AXCircleProgressView.m */,
+				1B353F2EF0FB2E1F2446511010314691 /* AXGradientProgressView.h */,
+				462C8EF2F9AFF848CD2CE59BFD72FDFD /* AXGradientProgressView.m */,
+				2E9AA8F99B0B3138C3B799E4CFAC5B7C /* AXPracticalHUD.h */,
+				A619E05D43487CE90EBCBD67F2DE6A61 /* AXPracticalHUD.m */,
+				C8B2372F953AD523B6DC5C406C7DDCCE /* AXPracticalHUDContentView.h */,
+				A83FFA83FED131F7F97B470C172E2C1D /* AXPracticalHUDContentView.m */,
+				DEF4F56F76BF805EB0F709C609DDFF6D /* Resources */,
+				E797E4D79A9417DF8924B4A675E54C2F /* Support Files */,
+			);
+			name = AXPracticalHUD;
+			path = AXPracticalHUD;
+			sourceTree = "<group>";
+		};
+		64651DE8D6B0A25E6D0C36A2919E635C /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				CDE6D0C5ABDFC6C428B642100E6A667B /* AXIndicatorView.bundle */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		7DB346D0F39D3F0E887471402A8071AB = {
+			isa = PBXGroup;
+			children = (
+				93A4A3777CF96A4AAC1D13BA6DCCEA73 /* Podfile */,
+				A512FBE382E9C1C3CE1112B6657C331E /* Frameworks */,
+				FF9AD10A6241CFD55DD7E48CD62A598C /* Pods */,
+				25E03D689029A208B5AD40137435306C /* Products */,
+				4CB7C9AEAD638F7082B4C9BE0B1E3C5E /* Targets Support Files */,
+			);
+			sourceTree = "<group>";
+		};
+		A1A75F61AD6223D905658929E756EF52 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				F4BAFDB1612AB719ACE3739FF586FA4E /* AXAnimationChain-Swift.modulemap */,
+				FC469422852BB92F98953808AC4516E0 /* AXAnimationChain-Swift.xcconfig */,
+				1D9C1C2E44E27A47DA1065175DD7FDD8 /* AXAnimationChain-Swift-dummy.m */,
+				075A606CD4C6C099726312DD85E1C46B /* AXAnimationChain-Swift-prefix.pch */,
+				69439D359C5F7C338B00310EDBC4C30B /* AXAnimationChain-Swift-umbrella.h */,
+				7959B0E3A20889CFE7CB1D56BF2E7833 /* Info.plist */,
+			);
+			name = "Support Files";
+			path = "../Target Support Files/AXAnimationChain-Swift";
+			sourceTree = "<group>";
+		};
+		A512FBE382E9C1C3CE1112B6657C331E /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				2CD6D1999E34692889E85BBE4F071E60 /* AXAnimationChainSwift.framework */,
+				7A15003DEC49F15E2786558DB9E40532 /* AXIndicatorView.framework */,
+				4D508052F167E88CB59FE2BC6415282B /* iOS */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		AB9B331D96FE9C5FE5C37D3FE9ABF95E /* Pods-AxReminder */ = {
+			isa = PBXGroup;
+			children = (
+				66E152BD2E9BEABC23EDB61634D53A19 /* Info.plist */,
+				A3710639A34ACC56FC49DA07FFCB5217 /* Pods-AxReminder.modulemap */,
+				B095679F4179ED0402E5D1702356B39C /* Pods-AxReminder-acknowledgements.markdown */,
+				9293549553E9FC9F1E99CB559030EC3B /* Pods-AxReminder-acknowledgements.plist */,
+				DE61C24FDC9D5D6AAB912872E39D14FF /* Pods-AxReminder-dummy.m */,
+				BD766BAA2413499535FEA6344080BAE4 /* Pods-AxReminder-frameworks.sh */,
+				A3CEE770F51BE68EB9F22725B7AE0914 /* Pods-AxReminder-resources.sh */,
+				C958FD8AFB0A97CA5944918913BFBC6D /* Pods-AxReminder-umbrella.h */,
+				B56650365471B397845066DEC360E167 /* Pods-AxReminder.debug.xcconfig */,
+				3FD0BAB3C2E5E8DD93047F23B107CDFD /* Pods-AxReminder.release.xcconfig */,
+			);
+			name = "Pods-AxReminder";
+			path = "Target Support Files/Pods-AxReminder";
+			sourceTree = "<group>";
+		};
+		CFA6B89036B73E04B69879A75291D1D6 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				AEB894868B392E8707ADD48FA8560663 /* AXAnimationChainSwift.modulemap */,
+				A5274E0F71F40ED673DF4E7A400C0FB8 /* AXAnimationChainSwift.xcconfig */,
+				4CED4F961C3E6FD1742F660420316433 /* AXAnimationChainSwift-dummy.m */,
+				FBFC2AD9388B6209BB32DEF07E4B52FF /* AXAnimationChainSwift-prefix.pch */,
+				30D653027860C9F343679569E491B612 /* AXAnimationChainSwift-umbrella.h */,
+				8BAF61536C26922DBA6C4BA9C692C97D /* Info.plist */,
+			);
+			name = "Support Files";
+			path = "../Target Support Files/AXAnimationChainSwift";
+			sourceTree = "<group>";
+		};
+		DEF4F56F76BF805EB0F709C609DDFF6D /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				FE19CF9DF9FA201966034F49FCF33953 /* AXPracticalHUD.bundle */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		E797E4D79A9417DF8924B4A675E54C2F /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				AE5B158C97EEFA81401D1BBD5464F3A5 /* AXPracticalHUD.modulemap */,
+				5DB46C18D7C8321BD87C60D3F3DD2DF3 /* AXPracticalHUD.xcconfig */,
+				FE1ECC8D2C81C6364A84DFF118E61AE0 /* AXPracticalHUD-dummy.m */,
+				C294E79B28FD8E4B8B5988098C305B1C /* AXPracticalHUD-prefix.pch */,
+				659B70032785C625F5612B73EF8B49FA /* AXPracticalHUD-umbrella.h */,
+				F8623162712CBC8B93172AE939D081B8 /* Info.plist */,
+			);
+			name = "Support Files";
+			path = "../Target Support Files/AXPracticalHUD";
+			sourceTree = "<group>";
+		};
+		FF9AD10A6241CFD55DD7E48CD62A598C /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				35E9C70ABD507146E85FF3D663C1202C /* AXAnimationChain-Swift */,
+				539A63063EF244F9484186F9502EB5DD /* AXAnimationChainSwift */,
+				195421970E834087CBD6D2690B0B8D2A /* AXIndicatorView */,
+				61FD06F43BE59A5DDD2FEEBB172DE758 /* AXPracticalHUD */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		0F86CD169DBF1DD0058E9424C5654123 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C67F7F65601D6B158D07C5344EACDFB6 /* Pods-AxReminder-umbrella.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		198928A51F0F4AA12AC92FDEF5CA0CC0 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D7A85599228BC76CB0117ABF0A55A30F /* AXAnimationChain-Swift-umbrella.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7524E5851D69C9A71249063B4AA1F594 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F0F7A1620FBCF4194C28FAE53C035F2F /* AXBarProgressView.h in Headers */,
+				4FF6847B055589C93C3F59BB89C4B59F /* AXCircleProgressView.h in Headers */,
+				19961E718A8F4EAD390658585491D958 /* AXGradientProgressView.h in Headers */,
+				241D9678427E154F68113C82503765AF /* AXPracticalHUD-umbrella.h in Headers */,
+				7E29A33609297F95618832962B1B4181 /* AXPracticalHUD.h in Headers */,
+				6C0CB8B1EA0BF654FE690154427BCA09 /* AXPracticalHUDContentView.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8DF1A9EB5E08AF663BF93392A38BC6EF /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A0AB44634F7AC7335B3FEAF90CECC5E6 /* AXAnimationChainSwift-umbrella.h in Headers */,
+				E89BA3CF865DEAA0254E6D6C42560CF4 /* AXChainAnimator.h in Headers */,
+				3BC219C2940DB00CDC6AC56EA369986F /* AXCoreAnimation.h in Headers */,
+				2892731C656AEFAE1C41ADC82CD1520B /* AXDecayAnimation.h in Headers */,
+				FEE737666BAAC5920A9FB75C9CD62BCC /* AXSpringAnimation.h in Headers */,
+				5ED05BCFCD8881E28676B78D295B3BF8 /* CAAnimation+Convertable.h in Headers */,
+				42146BB2CE10032F99E65FD226ECEE44 /* CAAnimation+ImmediateValue.h in Headers */,
+				BD7BF621F3A72F4564A34972C1CB23BC /* CALayer+AnchorPoint.h in Headers */,
+				D652EF35EBEF131CB3DD9ED8B0ED3845 /* CAMediaTimingFunction+Extends.h in Headers */,
+				882BF1CFE37E6C89FDD9902B7EA05D9E /* UIView+ChainAnimator.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A73257376EC8CAF5F028E9FE65AD6B6E /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4C207F258FEA7023D730020E268317D3 /* AXActivityIndicatorView.h in Headers */,
+				168A20E924481C3CF28ECAB3E5D92474 /* AXBreachedAnnulusIndicatorView.h in Headers */,
+				DA43390B4E8E0C637A640EA3C95F6622 /* AXIndicatorView-umbrella.h in Headers */,
+				3EFAFEAA4F0D9F731DC79C5FEF359F02 /* AXIndicatorView.h in Headers */,
+				798554DC826CDA8FFF2668C7D3DB5DD6 /* AXSpinningWaitCursor.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		060186B6B426DB3FDC91A01203682CB1 /* AXIndicatorView */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D2C9720967798055451A47F02542D023 /* Build configuration list for PBXNativeTarget "AXIndicatorView" */;
+			buildPhases = (
+				68C786F78FECB434D8B46390A74DE5ED /* Sources */,
+				D1B038C59972C60802538E907E2A17DD /* Frameworks */,
+				A73257376EC8CAF5F028E9FE65AD6B6E /* Headers */,
+				0C806C0FB575E691B7F2ED7E48682279 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = AXIndicatorView;
+			productName = AXIndicatorView;
+			productReference = 996AB936C02FFB2DF65F52BC959FCCCE /* AXIndicatorView.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		13A4E0D7FC39B118948A672573F2A05D /* AXAnimationChain-Swift */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0FBF1D0E26B1FCA33947350366A7B624 /* Build configuration list for PBXNativeTarget "AXAnimationChain-Swift" */;
+			buildPhases = (
+				1ABB950EEDBAEAFDFBD1D53F49AF3600 /* Sources */,
+				0385B77E2933F5F61C449220244AAE3A /* Frameworks */,
+				198928A51F0F4AA12AC92FDEF5CA0CC0 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				93BD7C0840EA40AC83AE8B7C4EA14D64 /* PBXTargetDependency */,
+			);
+			name = "AXAnimationChain-Swift";
+			productName = "AXAnimationChain-Swift";
+			productReference = 9690792618D86C6116085C60A8B3A2FB /* AXAnimationChain_Swift.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		268279595D4BE3D46EE70939A1821A7A /* Pods-AxReminder */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 719F118E480212F6452AB49BED459C0C /* Build configuration list for PBXNativeTarget "Pods-AxReminder" */;
+			buildPhases = (
+				4512007D6A449CE052E59F413EB1915F /* Sources */,
+				6797BB3B356CB72BECC59844E33A7C43 /* Frameworks */,
+				0F86CD169DBF1DD0058E9424C5654123 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D70BA27577EA8D93AB37B2AE0B50C1FE /* PBXTargetDependency */,
+				BA990F68666B09EF3CFEB8E0A1FF62E9 /* PBXTargetDependency */,
+				2E6AAE936B9F107C1F37F31077DB606C /* PBXTargetDependency */,
+				8E4954178B7DED2A9EE4279279D3C4E5 /* PBXTargetDependency */,
+			);
+			name = "Pods-AxReminder";
+			productName = "Pods-AxReminder";
+			productReference = B45EF95CC282A16BEDC36B386805F154 /* Pods_AxReminder.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		8B74B139F8A1995AAAFC6F31D3AB9E2B /* AXAnimationChainSwift */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9668427FDA25E524CAEA7D89EB1C6DC7 /* Build configuration list for PBXNativeTarget "AXAnimationChainSwift" */;
+			buildPhases = (
+				E41E655D67D36C88A68B4F7A99BA1903 /* Sources */,
+				5F84E285115585536E241F9B283E2D3F /* Frameworks */,
+				8DF1A9EB5E08AF663BF93392A38BC6EF /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = AXAnimationChainSwift;
+			productName = AXAnimationChainSwift;
+			productReference = D44AD220172038C3E137DDA47D5DFF92 /* AXAnimationChainSwift.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		A7CA60F8C75DFD6F6921EC655C2B30FE /* AXPracticalHUD */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 94E456A2D9B791291E887C283EAC66DA /* Build configuration list for PBXNativeTarget "AXPracticalHUD" */;
+			buildPhases = (
+				A8C37C4E300291BAF4088833BB17AF9B /* Sources */,
+				E81053E6D800E42F3CA7D62FB320E25A /* Frameworks */,
+				7524E5851D69C9A71249063B4AA1F594 /* Headers */,
+				75B6C2E01A6DC7969FD2D781A82D740D /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				E5EB8B26DFA6DAF50526A2A552F7914B /* PBXTargetDependency */,
+			);
+			name = AXPracticalHUD;
+			productName = AXPracticalHUD;
+			productReference = 34178D60216E0902150A55726DC0BEAD /* AXPracticalHUD.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		D41D8CD98F00B204E9800998ECF8427E /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 0730;
+				LastUpgradeCheck = 0700;
+			};
+			buildConfigurationList = 2D8E8EC45A3A1A1D94AE762CB5028504 /* Build configuration list for PBXProject "Pods" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 7DB346D0F39D3F0E887471402A8071AB;
+			productRefGroup = 25E03D689029A208B5AD40137435306C /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				13A4E0D7FC39B118948A672573F2A05D /* AXAnimationChain-Swift */,
+				8B74B139F8A1995AAAFC6F31D3AB9E2B /* AXAnimationChainSwift */,
+				060186B6B426DB3FDC91A01203682CB1 /* AXIndicatorView */,
+				A7CA60F8C75DFD6F6921EC655C2B30FE /* AXPracticalHUD */,
+				268279595D4BE3D46EE70939A1821A7A /* Pods-AxReminder */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		0C806C0FB575E691B7F2ED7E48682279 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4AF26DC8497DDE93AD0DD1E5B30EC848 /* AXIndicatorView.bundle in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		75B6C2E01A6DC7969FD2D781A82D740D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FD2FF4E2B1FE82699127D6CEE1973C1A /* AXPracticalHUD.bundle in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		1ABB950EEDBAEAFDFBD1D53F49AF3600 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CA18F5067BF670D665D7F985E68FEF85 /* AXAnimationChain-Swift-dummy.m in Sources */,
+				A198D7E2DD2320998B868F9C363CBB5D /* AXChainAnimator.swift in Sources */,
+				4123E435423832CFDECF0B776CEC79B8 /* AXCoreAnimations.swift in Sources */,
+				334F1D20E2BB76BB4F191F64D41D549F /* UIView+AnimationChain.swift in Sources */,
+				9CF05228FE282060377873A50B3F75A3 /* UIView+Effects.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4512007D6A449CE052E59F413EB1915F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F31180316BF284ADA0657DB66A7CAE26 /* Pods-AxReminder-dummy.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		68C786F78FECB434D8B46390A74DE5ED /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AD6147E479AFBE14EB72A29C17ED1E70 /* AXActivityIndicatorView.m in Sources */,
+				27B332B23FD7D4EC4636AE39C26F6C04 /* AXBreachedAnnulusIndicatorView.m in Sources */,
+				D28BABE5C4AB44EB6CEBD17416AF9A72 /* AXIndicatorView-dummy.m in Sources */,
+				6D3B59B7F5DD9FB270A0F54F8EEC0957 /* AXSpinningWaitCursor.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A8C37C4E300291BAF4088833BB17AF9B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F27DFABDB89FF234539BD61B856AB199 /* AXBarProgressView.m in Sources */,
+				E32442E0D5760FF2934F678B9BBCF4FC /* AXCircleProgressView.m in Sources */,
+				50B535573AF2F0DF5FD92D47F84E5EBA /* AXGradientProgressView.m in Sources */,
+				FB9620A0B82B8F762C13E6D67198E25D /* AXPracticalHUD-dummy.m in Sources */,
+				8DDE45AC1341C7B370534ADA5A179FF9 /* AXPracticalHUD.m in Sources */,
+				76A038A846D9C267287FC61DE439376A /* AXPracticalHUDContentView.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E41E655D67D36C88A68B4F7A99BA1903 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BFDBBE0E37CC83A8F0707919B5E6322E /* AXAnimationChainSwift-dummy.m in Sources */,
+				3170034F1ACA016DD4C029C0FAE70764 /* AXChainAnimator.m in Sources */,
+				33B10B26D96C6A44B0C0E8E640C09F2F /* AXDecayAnimation.m in Sources */,
+				EE62036AEF8BAA1852C72625CBE4087A /* AXSpringAnimation.m in Sources */,
+				03335FD38C7CCCF0C989B5E49E07E7AD /* CAAnimation+Convertable.m in Sources */,
+				C01614D52B5A5614EDABEE48BB86A8FF /* CAAnimation+ImmediateValue.m in Sources */,
+				1A0A67A7E5F6B53FDC7D074EF2D2A8D1 /* CALayer+AnchorPoint.m in Sources */,
+				B1EF6E9351D6811014B2EC23AF267952 /* CAMediaTimingFunction+Extends.m in Sources */,
+				474FB694E45ADF7ED85661899F5D66B6 /* UIView+ChainAnimator.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		2E6AAE936B9F107C1F37F31077DB606C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = AXIndicatorView;
+			target = 060186B6B426DB3FDC91A01203682CB1 /* AXIndicatorView */;
+			targetProxy = 63FD89408F5501E2F3647447F8F61FC4 /* PBXContainerItemProxy */;
+		};
+		8E4954178B7DED2A9EE4279279D3C4E5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = AXPracticalHUD;
+			target = A7CA60F8C75DFD6F6921EC655C2B30FE /* AXPracticalHUD */;
+			targetProxy = A871F73720E294AB83A54B6D98C72DA0 /* PBXContainerItemProxy */;
+		};
+		93BD7C0840EA40AC83AE8B7C4EA14D64 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = AXAnimationChainSwift;
+			target = 8B74B139F8A1995AAAFC6F31D3AB9E2B /* AXAnimationChainSwift */;
+			targetProxy = 6ABFF928B42D51ECEFD20DF8473BB887 /* PBXContainerItemProxy */;
+		};
+		BA990F68666B09EF3CFEB8E0A1FF62E9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = AXAnimationChainSwift;
+			target = 8B74B139F8A1995AAAFC6F31D3AB9E2B /* AXAnimationChainSwift */;
+			targetProxy = FD2EE67EF7AD49369D3B17C2C9C10661 /* PBXContainerItemProxy */;
+		};
+		D70BA27577EA8D93AB37B2AE0B50C1FE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "AXAnimationChain-Swift";
+			target = 13A4E0D7FC39B118948A672573F2A05D /* AXAnimationChain-Swift */;
+			targetProxy = D720A287706778D6D5B2F8924ED92C5A /* PBXContainerItemProxy */;
+		};
+		E5EB8B26DFA6DAF50526A2A552F7914B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = AXIndicatorView;
+			target = 060186B6B426DB3FDC91A01203682CB1 /* AXIndicatorView */;
+			targetProxy = ADDDE1927EB7F724A845DD315B950390 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		015A368F878AC3E2CEAE21DDE8026304 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGNING_REQUIRED = NO;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_DEBUG=1",
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				ONLY_ACTIVE_ARCH = YES;
+				PROVISIONING_PROFILE_SPECIFIER = NO_SIGNING/;
+				STRIP_INSTALLED_PRODUCT = NO;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Debug;
+		};
+		12F7B986222AA9FACDA910132084EFBD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B56650365471B397845066DEC360E167 /* Pods-AxReminder.debug.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = "Target Support Files/Pods-AxReminder/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-AxReminder/Pods-AxReminder.modulemap";
+				MTL_ENABLE_DEBUG_INFO = YES;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = Pods_AxReminder;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		1F3B5913505D0F76E8A794F1F1E1759F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = A289BBD21D1577CC8D09336AB89C5E48 /* AXIndicatorView.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREFIX_HEADER = "Target Support Files/AXIndicatorView/AXIndicatorView-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/AXIndicatorView/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MODULEMAP_FILE = "Target Support Files/AXIndicatorView/AXIndicatorView.modulemap";
+				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_NAME = AXIndicatorView;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 3.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		31E3062B80A75F0D1C2E8E092374E07E /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = FC469422852BB92F98953808AC4516E0 /* AXAnimationChain-Swift.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREFIX_HEADER = "Target Support Files/AXAnimationChain-Swift/AXAnimationChain-Swift-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/AXAnimationChain-Swift/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MODULEMAP_FILE = "Target Support Files/AXAnimationChain-Swift/AXAnimationChain-Swift.modulemap";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_NAME = AXAnimationChain_Swift;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 3.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		44CDBB6D11DE06DB64D6268622BDC47E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGNING_REQUIRED = NO;
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				PROVISIONING_PROFILE_SPECIFIER = NO_SIGNING/;
+				STRIP_INSTALLED_PRODUCT = NO;
+				SYMROOT = "${SRCROOT}/../build";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		4D875D7F9E3B2F23E2D5BBD66F5760CA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 5DB46C18D7C8321BD87C60D3F3DD2DF3 /* AXPracticalHUD.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREFIX_HEADER = "Target Support Files/AXPracticalHUD/AXPracticalHUD-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/AXPracticalHUD/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MODULEMAP_FILE = "Target Support Files/AXPracticalHUD/AXPracticalHUD.modulemap";
+				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_NAME = AXPracticalHUD;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 3.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		4DA53B7FBCE0B6F742AB3E2C7BA1DFCD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = A5274E0F71F40ED673DF4E7A400C0FB8 /* AXAnimationChainSwift.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREFIX_HEADER = "Target Support Files/AXAnimationChainSwift/AXAnimationChainSwift-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/AXAnimationChainSwift/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MODULEMAP_FILE = "Target Support Files/AXAnimationChainSwift/AXAnimationChainSwift.modulemap";
+				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_NAME = AXAnimationChainSwift;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 3.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		65BC4D79E91639343E27CDA4679B7F29 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = A5274E0F71F40ED673DF4E7A400C0FB8 /* AXAnimationChainSwift.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREFIX_HEADER = "Target Support Files/AXAnimationChainSwift/AXAnimationChainSwift-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/AXAnimationChainSwift/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MODULEMAP_FILE = "Target Support Files/AXAnimationChainSwift/AXAnimationChainSwift.modulemap";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_NAME = AXAnimationChainSwift;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 3.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		71F54F269F34C395E4F119A75D0E3110 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 5DB46C18D7C8321BD87C60D3F3DD2DF3 /* AXPracticalHUD.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREFIX_HEADER = "Target Support Files/AXPracticalHUD/AXPracticalHUD-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/AXPracticalHUD/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MODULEMAP_FILE = "Target Support Files/AXPracticalHUD/AXPracticalHUD.modulemap";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_NAME = AXPracticalHUD;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 3.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		82D8A5B29758E6C5B3397D97482A2808 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3FD0BAB3C2E5E8DD93047F23B107CDFD /* Pods-AxReminder.release.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = "Target Support Files/Pods-AxReminder/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-AxReminder/Pods-AxReminder.modulemap";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = Pods_AxReminder;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		845D7EA0FAB21883E76119528277488F /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = A289BBD21D1577CC8D09336AB89C5E48 /* AXIndicatorView.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREFIX_HEADER = "Target Support Files/AXIndicatorView/AXIndicatorView-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/AXIndicatorView/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MODULEMAP_FILE = "Target Support Files/AXIndicatorView/AXIndicatorView.modulemap";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_NAME = AXIndicatorView;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 3.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		AEAE0F28457826F9A83226BEF0DC6760 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = FC469422852BB92F98953808AC4516E0 /* AXAnimationChain-Swift.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREFIX_HEADER = "Target Support Files/AXAnimationChain-Swift/AXAnimationChain-Swift-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/AXAnimationChain-Swift/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MODULEMAP_FILE = "Target Support Files/AXAnimationChain-Swift/AXAnimationChain-Swift.modulemap";
+				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_NAME = AXAnimationChain_Swift;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 3.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		0FBF1D0E26B1FCA33947350366A7B624 /* Build configuration list for PBXNativeTarget "AXAnimationChain-Swift" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AEAE0F28457826F9A83226BEF0DC6760 /* Debug */,
+				31E3062B80A75F0D1C2E8E092374E07E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2D8E8EC45A3A1A1D94AE762CB5028504 /* Build configuration list for PBXProject "Pods" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				015A368F878AC3E2CEAE21DDE8026304 /* Debug */,
+				44CDBB6D11DE06DB64D6268622BDC47E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		719F118E480212F6452AB49BED459C0C /* Build configuration list for PBXNativeTarget "Pods-AxReminder" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				12F7B986222AA9FACDA910132084EFBD /* Debug */,
+				82D8A5B29758E6C5B3397D97482A2808 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		94E456A2D9B791291E887C283EAC66DA /* Build configuration list for PBXNativeTarget "AXPracticalHUD" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4D875D7F9E3B2F23E2D5BBD66F5760CA /* Debug */,
+				71F54F269F34C395E4F119A75D0E3110 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		9668427FDA25E524CAEA7D89EB1C6DC7 /* Build configuration list for PBXNativeTarget "AXAnimationChainSwift" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4DA53B7FBCE0B6F742AB3E2C7BA1DFCD /* Debug */,
+				65BC4D79E91639343E27CDA4679B7F29 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D2C9720967798055451A47F02542D023 /* Build configuration list for PBXNativeTarget "AXIndicatorView" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1F3B5913505D0F76E8A794F1F1E1759F /* Debug */,
+				845D7EA0FAB21883E76119528277488F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
+}

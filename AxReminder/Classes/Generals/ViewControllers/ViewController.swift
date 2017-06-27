@@ -34,7 +34,9 @@ class ViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        _navigationBar!.setSelectedTitle(at: 0, animated: true)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+            self._navigationBar!.setSelectedTitle(at: 0, animated: true)
+        }
     }
     
     @objc

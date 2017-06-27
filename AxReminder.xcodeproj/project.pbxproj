@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CBC829E119C4BD45BA6CBD32 /* Pods_AxReminder.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 719FE2FF805CC657319C7AF4 /* Pods_AxReminder.framework */; };
 		DC2577E21F010FC000C0C98E /* Colours-5.14.0.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC2577E11F010FB200C0C98E /* Colours-5.14.0.swift */; };
 		DC8DD7BD1F00D6C9006D9706 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DC8DD7BC1F00D6C9006D9706 /* Assets.xcassets */; };
 		DC8DD7CB1F00D6C9006D9706 /* AxReminderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC8DD7CA1F00D6C9006D9706 /* AxReminderTests.swift */; };
@@ -38,6 +39,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		048C31421983B986DB2EC082 /* Pods-AxReminder.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AxReminder.release.xcconfig"; path = "Pods/Target Support Files/Pods-AxReminder/Pods-AxReminder.release.xcconfig"; sourceTree = "<group>"; };
+		658981E75E76212318520A1E /* Pods-AxReminder.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AxReminder.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AxReminder/Pods-AxReminder.debug.xcconfig"; sourceTree = "<group>"; };
+		719FE2FF805CC657319C7AF4 /* Pods_AxReminder.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AxReminder.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DC2577E11F010FB200C0C98E /* Colours-5.14.0.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Colours-5.14.0.swift"; sourceTree = "<group>"; };
 		DC8DD7AF1F00D6C9006D9706 /* AxReminder.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AxReminder.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DC8DD7BC1F00D6C9006D9706 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -63,6 +67,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CBC829E119C4BD45BA6CBD32 /* Pods_AxReminder.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -83,6 +88,23 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		19070357B7C5796F0024AA44 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				658981E75E76212318520A1E /* Pods-AxReminder.debug.xcconfig */,
+				048C31421983B986DB2EC082 /* Pods-AxReminder.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
+		5677251C476F856501BFFF86 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				719FE2FF805CC657319C7AF4 /* Pods_AxReminder.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		DC2577E01F010F9900C0C98E /* Dependencies */ = {
 			isa = PBXGroup;
 			children = (
@@ -98,6 +120,8 @@
 				DC8DD7C91F00D6C9006D9706 /* AxReminderTests */,
 				DC8DD7D41F00D6C9006D9706 /* AxReminderUITests */,
 				DC8DD7B01F00D6C9006D9706 /* Products */,
+				19070357B7C5796F0024AA44 /* Pods */,
+				5677251C476F856501BFFF86 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -250,9 +274,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = DC8DD7DA1F00D6C9006D9706 /* Build configuration list for PBXNativeTarget "AxReminder" */;
 			buildPhases = (
+				580530D67783CE9283BB6ACB /* [CP] Check Pods Manifest.lock */,
 				DC8DD7AB1F00D6C9006D9706 /* Sources */,
 				DC8DD7AC1F00D6C9006D9706 /* Frameworks */,
 				DC8DD7AD1F00D6C9006D9706 /* Resources */,
+				5A0F6B4F16F0546F9BA336B7 /* [CP] Embed Pods Frameworks */,
+				74946E5FA52E626049DA181D /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -369,6 +396,54 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		580530D67783CE9283BB6ACB /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		5A0F6B4F16F0546F9BA336B7 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-AxReminder/Pods-AxReminder-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		74946E5FA52E626049DA181D /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-AxReminder/Pods-AxReminder-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		DC8DD7AB1F00D6C9006D9706 /* Sources */ = {
@@ -542,6 +617,7 @@
 		};
 		DC8DD7DB1F00D6C9006D9706 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 658981E75E76212318520A1E /* Pods-AxReminder.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -559,6 +635,7 @@
 		};
 		DC8DD7DC1F00D6C9006D9706 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 048C31421983B986DB2EC082 /* Pods-AxReminder.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
