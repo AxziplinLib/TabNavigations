@@ -5,11 +5,13 @@ PODS:
   - AXIndicatorView (0.0.7)
   - AXPracticalHUD (1.1.6):
     - AXIndicatorView
+  - AXResponderSchemaKit (0.3.0)
   - pop (1.0.9)
 
 DEPENDENCIES:
   - AXAnimationChain-Swift
   - AXPracticalHUD
+  - AXResponderSchemaKit
   - pop
 
 SPEC CHECKSUMS:
@@ -17,8 +19,9 @@ SPEC CHECKSUMS:
   AXAnimationChainSwift: 5c1b6431c6847bfd199a311d8420aec302d27bbd
   AXIndicatorView: caa6c08cc6b732fad163fa26197e3c34b1339060
   AXPracticalHUD: eba707b5515a4da7424ac3d36f07e643df1c8fc3
+  AXResponderSchemaKit: 9b8077f88b6ff2803171deaf8085b45d5189dcfd
   pop: f667631a5108a2e60d9e8797c9b32ddaf2080bce
 
-PODFILE CHECKSUM: 90f8880c11e2010c6d83653ba589b2d1b0749ce2
+PODFILE CHECKSUM: 8c2941b88001de15f6849f4337f8fe6cc4643112
 
 COCOAPODS: 1.2.0

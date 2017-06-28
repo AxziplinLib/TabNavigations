@@ -24,6 +24,11 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>AXResponderSchemaKit.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>Pods-AxReminder.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -37,22 +42,22 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>0299A0C6C57AA315E6DFE9CCD26ABD9D</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
 		<key>060186B6B426DB3FDC91A01203682CB1</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>126780811C244CEC8E61525D2C4A0273</key>
+		<key>13A4E0D7FC39B118948A672573F2A05D</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>13A4E0D7FC39B118948A672573F2A05D</key>
+		<key>2919C46B96048BA673A3AE5159E961A3</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>2B0CAD03F118EA6BFCE41BD82624037C</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -63,6 +68,11 @@
 			<true/>
 		</dict>
 		<key>A7CA60F8C75DFD6F6921EC655C2B30FE</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>D5DA3EA0A2CED17263F3EF85CA86C054</key>
 		<dict>
 			<key>primary</key>
 			<true/>
