@@ -9,12 +9,12 @@
 import UIKit
 
 class ViewController: UIViewController {
-    var _navigationBar: NavigationBar?
+    var _navigationBar: NavigationTabBar?
     
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        let navigationBar = NavigationBar()
+        let navigationBar = NavigationTabBar()
         navigationBar.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(navigationBar)
         view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[navigationBar]|", options: [], metrics: nil, views: ["navigationBar":navigationBar]))
@@ -25,8 +25,16 @@ class ViewController: UIViewController {
         navigationBar.addNavigationTitleItem(NavigationTitleItem(title: "分类"))
         navigationBar.addNavigationTitleItem(NavigationTitleItem(title: "设置"))
         navigationBar.addNavigationTitleItem(NavigationTitleItem(title: "随意"))
+        navigationBar.addNavigationTitleItem(NavigationTitleItem(title: "随意"))
+        navigationBar.addNavigationTitleItem(NavigationTitleItem(title: "随意"))
+        navigationBar.addNavigationTitleItem(NavigationTitleItem(title: "随意"))
+        navigationBar.addNavigationTitleItem(NavigationTitleItem(title: "随意"))
+        navigationBar.addNavigationTitleItem(NavigationTitleItem(title: "随意"))
+        navigationBar.addNavigationTitleItem(NavigationTitleItem(title: "随意"))
+        navigationBar.addNavigationTitleItem(NavigationTitleItem(title: "随意"))
         navigationBar.addNavigationItem(NavigationItem(image: #imageLiteral(resourceName: "add"), target: self, selector: #selector(_handleConfirm(_:))))
         navigationBar.addNavigationItem(NavigationItem(image: #imageLiteral(resourceName: "search"), target: self, selector: #selector(_handleConfirm(_:))))
+        navigationBar.setSelectedTitle(at: 0, animated: false)
         _navigationBar = navigationBar
         // Do any additional setup after loading the view.
     }
@@ -34,9 +42,9 @@ class ViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
-            self._navigationBar!.setSelectedTitle(at: 0, animated: true)
-        }
+        // DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+            // self._navigationBar!.setSelectedTitle(at: 0, animated: true)
+        // }
     }
     
     @objc

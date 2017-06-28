@@ -161,8 +161,7 @@ public class NavigationTitleItem: NSObject {
     }
 }
 
-// UINavigationBar
-public class NavigationBar: UIView, UIBarPositioning {
+public class NavigationTabBar: UIView, UIBarPositioning {
     // MARK: - Public Properties.
     // MARK: - Private Properties.
     private lazy var __titleAlignmentLabel: UILabel = { () -> UILabel in
@@ -336,7 +335,7 @@ public class NavigationBar: UIView, UIBarPositioning {
     }
 }
 
-extension NavigationBar: UIScrollViewDelegate {
+extension NavigationTabBar: UIScrollViewDelegate {
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {
         
         
@@ -393,7 +392,7 @@ extension NavigationBar: UIScrollViewDelegate {
     }
 }
 
-extension NavigationBar {
+extension NavigationTabBar {
     // MARK: - Public.
     public var selectedTitleItem: NavigationTitleItem { return _navigationTitleItems[_selectedTitleItemIndex] }
     
@@ -444,12 +443,12 @@ extension NavigationBar {
 }
 
 // MARK: - Conforming `NSCoding`.
-extension NavigationBar {
+extension NavigationTabBar {
     public override func encode(with aCoder: NSCoder) {
         super.encode(with: aCoder)
     }
 }
 // MARK: - Conforming `UIBarPositioning`.
-extension NavigationBar {
+extension NavigationTabBar {
     public var barPosition: UIBarPosition { return .top }
 }
