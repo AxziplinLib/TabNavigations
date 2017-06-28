@@ -12,6 +12,10 @@ import pop
 private let DefaultTitleFontSize: CGFloat = 36.0
 private let DefaultTitleUnselectedFontSize: CGFloat = 16.0
 private let DefaultNavigationItemFontSize: CGFloat = 14.0
+private let DefaultNavigationTitleItemPadding: CGFloat = 15.0
+private let DefaultNavigationItemEdgeMargin: CGFloat = 8.0
+private let DefaultNavigationItemHeight: CGFloat = 44.0
+private let DefaultNavigationItemWidthThreshold: CGFloat = 30.0
 
 private class _NavigationItemButton: UIButton { /* Custom view hooks. */ }
 private class _NavigationTitleItemButton: UIButton { // Custom view hooks.
@@ -183,6 +187,9 @@ public class NavigationBar: UIView, UIBarPositioning {
         scrollView.showsVerticalScrollIndicator = false
         scrollView.showsHorizontalScrollIndicator = false
         scrollView.backgroundColor = UIColor.clear
+        scrollView.decelerationRate = UIScrollViewDecelerationRateFast
+        // scrollView.alwaysBounceHorizontal = true
+        // scrollView.isScrollEnabled = false
         return scrollView
     }()
     private lazy var _navigationItemView: UIView = { () -> UIView in
@@ -197,6 +204,7 @@ public class NavigationBar: UIView, UIBarPositioning {
     fileprivate var _navigationTitleItems: [NavigationTitleItem] = []
     
     fileprivate var _selectedTitleItemIndex: Int = 0
+    fileprivate var _transitonTitleItemIndex: Int = 0
     
     private weak var _leadingConstraintOflastItemView: NSLayoutConstraint?
     private weak var _trailingConstraintOflastTitleItemLabel: NSLayoutConstraint?
@@ -218,8 +226,6 @@ public class NavigationBar: UIView, UIBarPositioning {
     private func _initializer() {
         // Set up container views:
         _setupContainerViews()
-        // Set up title label.
-        // _setupTitleLabel()
         
         _setupContentScrollView()
     }
@@ -234,6 +240,8 @@ public class NavigationBar: UIView, UIBarPositioning {
         if let index = _navigationTitleItems.index(of: _titleItem) {
             setSelectedTitle(at: index, animated: true)
         }
+        
+        _scrollToSelectedTitleItem()
     }
     
     // MARK: - Private.
@@ -250,6 +258,7 @@ public class NavigationBar: UIView, UIBarPositioning {
     }
     
     private func _setupContentScrollView() {
+        _contentScrollView.delegate = self
         _scrollViewContainerView.addSubview(_contentScrollView)
         _scrollViewContainerView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[_contentScrollView]|", options: [], metrics: nil, views: ["_contentScrollView":_contentScrollView]))
         _scrollViewContainerView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[_contentScrollView]|", options: [], metrics: nil, views: ["_contentScrollView":_contentScrollView]))
@@ -257,22 +266,22 @@ public class NavigationBar: UIView, UIBarPositioning {
         _scrollViewContainerView.addConstraint(NSLayoutConstraint(item: _scrollViewContainerView, attribute: .width, relatedBy: .equal, toItem: _contentScrollView, attribute: .width, multiplier: 1.0, constant: 0.0))
         
         _contentScrollView.addSubview(__titleAlignmentLabel)
-        _contentScrollView.addConstraint(NSLayoutConstraint(item: _contentScrollView, attribute: .leading, relatedBy: .equal, toItem: __titleAlignmentLabel, attribute: .leading, multiplier: 1.0, constant: -15))
-        _contentScrollView.addConstraint(NSLayoutConstraint(item: _contentScrollView, attribute: .centerY, relatedBy: .equal, toItem: __titleAlignmentLabel, attribute: .centerY, multiplier: 1.0, constant: 0.0))
+        _scrollViewContainerView.addConstraint(NSLayoutConstraint(item: _scrollViewContainerView, attribute: .leading, relatedBy: .equal, toItem: __titleAlignmentLabel, attribute: .leading, multiplier: 1.0, constant: -DefaultNavigationTitleItemPadding))
+        _scrollViewContainerView.addConstraint(NSLayoutConstraint(item: _scrollViewContainerView, attribute: .centerY, relatedBy: .equal, toItem: __titleAlignmentLabel, attribute: .centerY, multiplier: 1.0, constant: 0.0))
     }
     
     fileprivate func _addNavigationItemView(_ item: NavigationItem) {
         let _itemView = item._view
         _itemView.translatesAutoresizingMaskIntoConstraints = false
-        // _itemView.setContentHuggingPriority(.required, for: .horizontal)
+
         _navigationItemView.addSubview(_itemView)
         // Height and with:
-        _itemView.addConstraint(NSLayoutConstraint(item: _itemView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 44.0))
-        _itemView.addConstraint(NSLayoutConstraint(item: _itemView, attribute: .width, relatedBy: .greaterThanOrEqual, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 30.0))
+        _itemView.addConstraint(NSLayoutConstraint(item: _itemView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: DefaultNavigationItemHeight))
+        _itemView.addConstraint(NSLayoutConstraint(item: _itemView, attribute: .width, relatedBy: .greaterThanOrEqual, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: DefaultNavigationItemWidthThreshold))
         // Base line:
         addConstraint(NSLayoutConstraint(item: _itemView._button, attribute: _navigationTitleItems.last != nil ? .lastBaseline : .centerY, relatedBy: .equal, toItem: _navigationTitleItems.last?._button ?? _navigationItemView, attribute: _navigationTitleItems.last != nil ? .lastBaseline : .centerY, multiplier: 1.0, constant: 0.0))
         // Horizontal:
-        _navigationItemView.addConstraint(NSLayoutConstraint(item: _itemView, attribute: .trailing, relatedBy: .equal, toItem: _navigationItems.last?._view ?? _navigationItemView, attribute: _navigationItems.last?._view != nil ? .leading : .trailing, multiplier: 1.0, constant: _navigationItems.count>0 ? 0.0 : -8))
+        _navigationItemView.addConstraint(NSLayoutConstraint(item: _itemView, attribute: .trailing, relatedBy: .equal, toItem: _navigationItems.last?._view ?? _navigationItemView, attribute: _navigationItems.last?._view != nil ? .leading : .trailing, multiplier: 1.0, constant: _navigationItems.count>0 ? 0.0 : -DefaultNavigationItemEdgeMargin))
         if let _leading = _leadingConstraintOflastItemView {
             _navigationItemView.removeConstraint(_leading)
         }
@@ -284,12 +293,12 @@ public class NavigationBar: UIView, UIBarPositioning {
     
     fileprivate func _addNavigationTitleItemButton(_ item: NavigationTitleItem) {
         let _itemButton = item._button
-        _itemButton.addTarget(self, action: #selector(_handleDidSelectTitleItem(_:)), for: .touchDown)
+        _itemButton.addTarget(self, action: #selector(_handleDidSelectTitleItem(_:)), for: .touchUpInside)
         _itemButton.translatesAutoresizingMaskIntoConstraints = false
         
         _contentScrollView.addSubview(_itemButton)
         
-        _contentScrollView.addConstraint(NSLayoutConstraint(item: _itemButton, attribute: .leading, relatedBy: .equal, toItem: _navigationTitleItems.last?._button ?? _contentScrollView, attribute: _navigationTitleItems.last?._button != nil ? .trailing : .leading, multiplier: 1.0, constant:15))
+        _contentScrollView.addConstraint(NSLayoutConstraint(item: _itemButton, attribute: .leading, relatedBy: .equal, toItem: _navigationTitleItems.last?._button ?? _contentScrollView, attribute: _navigationTitleItems.last?._button != nil ? .trailing : .leading, multiplier: 1.0, constant:DefaultNavigationTitleItemPadding))
         _contentScrollView.addConstraint(NSLayoutConstraint(item: __titleAlignmentLabel, attribute: .lastBaseline, relatedBy: .equal, toItem: _itemButton, attribute: .lastBaseline, multiplier: 1.0, constant: 0.0))
         
         if let _trailing = _trailingConstraintOflastTitleItemLabel {
@@ -298,6 +307,89 @@ public class NavigationBar: UIView, UIBarPositioning {
         let _trailing = NSLayoutConstraint(item: _contentScrollView, attribute: .trailing, relatedBy: .equal, toItem: _itemButton, attribute: .trailing, multiplier: 1.0, constant: 0.0)
         _contentScrollView.addConstraint(_trailing)
         _trailingConstraintOflastTitleItemLabel = _trailing
+    }
+    
+    @objc
+    fileprivate func _scrollToSelectedTitleItem(_ animated: Bool = true) {
+        _contentScrollView.setContentOffset(CGPoint(x: _calculatedPositionUptoTitleItemIndex(_selectedTitleItemIndex), y: 0.0), animated: animated)
+    }
+    @objc
+    fileprivate func _scrollToSelectedTitleItemWithAnimation() {
+        NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(_scrollToSelectedTitleItemWithAnimation), object: nil)
+        _scrollToSelectedTitleItem()
+    }
+    
+    fileprivate func _calculatedPositionUptoTitleItemIndex(_ index: Int = 0) -> CGFloat {
+        assert(index < _navigationTitleItems.endIndex, "Index of title item is out of bounds.")
+        var _positionX: CGFloat = 0.0
+        
+        for index in 0...index {
+            if index > _navigationTitleItems.startIndex {
+                _positionX += DefaultNavigationTitleItemPadding
+                let _titleItem = _navigationTitleItems[_navigationTitleItems.index(before: index)]
+                let size = (_titleItem._button.currentTitle as NSString?)?.boundingRect(with: CGSize(width: CGFloat.greatestFiniteMagnitude, height: self.bounds.height), options: [.usesLineFragmentOrigin, .usesFontLeading], attributes: [NSFontAttributeName:_titleItem._button.titleLabel != nil ? UIFont(name: _titleItem._button.titleLabel!.font.fontName, size: DefaultTitleUnselectedFontSize) as Any : UIFont.systemFont(ofSize: DefaultTitleUnselectedFontSize)], context: nil).size
+                _positionX += CGFloat(Double(size!.width))
+            }
+        }
+        
+        return _positionX
+    }
+}
+
+extension NavigationBar: UIScrollViewDelegate {
+    public func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        
+        
+        return
+        let _uptoSelectedTitleItemPosition = _calculatedPositionUptoTitleItemIndex(_transitonTitleItemIndex)
+        let _offset = scrollView.contentOffset.x - _uptoSelectedTitleItemPosition
+        print("Offset of selected title index: \(_offset)")
+        
+        var _comingIndex: Int = 0
+        var _comingOffsetPosition: CGFloat = 0.0
+        
+        if _offset >= 0 {
+            guard _transitonTitleItemIndex < _navigationTitleItems.index(before: _navigationTitleItems.endIndex) else { return }
+            
+            // Get coming index of navigation title items.
+            _comingIndex = _navigationTitleItems.index(after: _transitonTitleItemIndex)
+            // Calculate the offset position to the coming index.
+            _comingOffsetPosition = _calculatedPositionUptoTitleItemIndex(_comingIndex) - _uptoSelectedTitleItemPosition
+        } else {
+            guard _transitonTitleItemIndex > _navigationTitleItems.startIndex else { return }
+            
+            // Get coming index of navigation title items.
+            _comingIndex = _navigationTitleItems.index(before: _transitonTitleItemIndex)
+            // Calculate the offset position to the coming index.
+            _comingOffsetPosition = _uptoSelectedTitleItemPosition - _calculatedPositionUptoTitleItemIndex(_comingIndex)
+        }
+        
+        print("Coming offset position: \(_comingOffsetPosition)")
+        
+        if Double(_comingOffsetPosition) > fabs(Double(_offset)) {
+            let _transitionPercent = fabs(Double(_offset))/Double(_comingOffsetPosition)
+            let _deltaOfFontSize = Double(DefaultTitleFontSize - DefaultTitleUnselectedFontSize) * _transitionPercent
+            
+            let _transitionTitleItem = _navigationTitleItems[_transitonTitleItemIndex]
+            let _comingTitleItem = _navigationTitleItems[_comingIndex]
+            
+            let _fontName = _transitionTitleItem._button.titleLabel?.font.fontName
+            
+            _transitionTitleItem._button.titleLabel?.font = UIFont(name: _fontName!, size: CGFloat(DefaultTitleFontSize) - CGFloat(_deltaOfFontSize))
+            _comingTitleItem._button.titleLabel?.font = UIFont(name: _fontName!, size: CGFloat(DefaultTitleUnselectedFontSize) + CGFloat(_deltaOfFontSize))
+        } else {
+            _transitonTitleItemIndex = _comingIndex
+            // setSelectedTitle(at: _comingIndex, animated: false)
+        }
+    }
+    
+    public func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(_scrollToSelectedTitleItemWithAnimation), object: nil)
+    }
+    
+    public func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(_scrollToSelectedTitleItemWithAnimation), object: nil)
+        self.perform(#selector(_scrollToSelectedTitleItemWithAnimation), with: nil, afterDelay: 2.0, inModes: [.commonModes])
     }
 }
 
