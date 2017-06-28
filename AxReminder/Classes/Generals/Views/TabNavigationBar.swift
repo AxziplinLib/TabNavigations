@@ -221,6 +221,10 @@ public class TabNavigationBar: UIView, UIBarPositioning {
         _initializer()
     }
     
+    convenience init() {
+        self.init(frame: .zero)
+    }
+    
     // Initializer:
     private func _initializer() {
         // Set up container views:
