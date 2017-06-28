@@ -18,6 +18,7 @@
 		DC8DD7F91F00E291006D9706 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DC8DD7EC1F00DE8B006D9706 /* Main.storyboard */; };
 		DC8DD7FF1F00E397006D9706 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC8DD7FE1F00E397006D9706 /* ViewController.swift */; };
 		DC8DD8011F00E3B2006D9706 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC8DD8001F00E3B2006D9706 /* HomeViewController.swift */; };
+		DCB259F61F0381A7001EFC1C /* TabNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCB259F51F0381A7001EFC1C /* TabNavigationController.swift */; };
 		DCB643651F0247F300D89256 /* POPAnimatableProperty.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCB643641F0247F300D89256 /* POPAnimatableProperty.swift */; };
 		DCC627171F00E77700D79D07 /* NavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCC627161F00E77700D79D07 /* NavigationController.swift */; };
 /* End PBXBuildFile section */
@@ -60,6 +61,7 @@
 		DC8DD7F51F00DF70006D9706 /* TabNavigationBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabNavigationBar.swift; sourceTree = "<group>"; };
 		DC8DD7FE1F00E397006D9706 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		DC8DD8001F00E3B2006D9706 /* HomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
+		DCB259F51F0381A7001EFC1C /* TabNavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabNavigationController.swift; sourceTree = "<group>"; };
 		DCB643641F0247F300D89256 /* POPAnimatableProperty.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = POPAnimatableProperty.swift; sourceTree = "<group>"; };
 		DCC627161F00E77700D79D07 /* NavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -242,6 +244,7 @@
 			children = (
 				DC8DD7FE1F00E397006D9706 /* ViewController.swift */,
 				DCC627161F00E77700D79D07 /* NavigationController.swift */,
+				DCB259F51F0381A7001EFC1C /* TabNavigationController.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -464,6 +467,7 @@
 				DCB643651F0247F300D89256 /* POPAnimatableProperty.swift in Sources */,
 				DC2577E21F010FC000C0C98E /* Colours-5.14.0.swift in Sources */,
 				DC8DD7FF1F00E397006D9706 /* ViewController.swift in Sources */,
+				DCB259F61F0381A7001EFC1C /* TabNavigationController.swift in Sources */,
 				DC8DD7F71F00E22B006D9706 /* AppDelegate.swift in Sources */,
 				DCC627171F00E77700D79D07 /* NavigationController.swift in Sources */,
 				DC8DD7F61F00DF70006D9706 /* TabNavigationBar.swift in Sources */,
