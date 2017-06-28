@@ -12,7 +12,7 @@
 		DC8DD7BD1F00D6C9006D9706 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DC8DD7BC1F00D6C9006D9706 /* Assets.xcassets */; };
 		DC8DD7CB1F00D6C9006D9706 /* AxReminderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC8DD7CA1F00D6C9006D9706 /* AxReminderTests.swift */; };
 		DC8DD7D61F00D6C9006D9706 /* AxReminderUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC8DD7D51F00D6C9006D9706 /* AxReminderUITests.swift */; };
-		DC8DD7F61F00DF70006D9706 /* NavigationTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC8DD7F51F00DF70006D9706 /* NavigationTabBar.swift */; };
+		DC8DD7F61F00DF70006D9706 /* TabNavigationBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC8DD7F51F00DF70006D9706 /* TabNavigationBar.swift */; };
 		DC8DD7F71F00E22B006D9706 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC8DD7E51F00DE7B006D9706 /* AppDelegate.swift */; };
 		DC8DD7F81F00E291006D9706 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DC8DD7EA1F00DE8B006D9706 /* LaunchScreen.storyboard */; };
 		DC8DD7F91F00E291006D9706 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DC8DD7EC1F00DE8B006D9706 /* Main.storyboard */; };
@@ -57,7 +57,7 @@
 		DC8DD7EB1F00DE8B006D9706 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		DC8DD7ED1F00DE8B006D9706 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		DC8DD7F01F00DED2006D9706 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		DC8DD7F51F00DF70006D9706 /* NavigationTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationTabBar.swift; sourceTree = "<group>"; };
+		DC8DD7F51F00DF70006D9706 /* TabNavigationBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabNavigationBar.swift; sourceTree = "<group>"; };
 		DC8DD7FE1F00E397006D9706 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		DC8DD8001F00E3B2006D9706 /* HomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
 		DCB643641F0247F300D89256 /* POPAnimatableProperty.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = POPAnimatableProperty.swift; sourceTree = "<group>"; };
@@ -232,7 +232,7 @@
 		DC8DD7F31F00DF4F006D9706 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				DC8DD7F51F00DF70006D9706 /* NavigationTabBar.swift */,
+				DC8DD7F51F00DF70006D9706 /* TabNavigationBar.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -466,7 +466,7 @@
 				DC8DD7FF1F00E397006D9706 /* ViewController.swift in Sources */,
 				DC8DD7F71F00E22B006D9706 /* AppDelegate.swift in Sources */,
 				DCC627171F00E77700D79D07 /* NavigationController.swift in Sources */,
-				DC8DD7F61F00DF70006D9706 /* NavigationTabBar.swift in Sources */,
+				DC8DD7F61F00DF70006D9706 /* TabNavigationBar.swift in Sources */,
 				DC8DD8011F00E3B2006D9706 /* HomeViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -11,18 +11,18 @@ import pop
 
 private let DefaultTitleFontSize: CGFloat = 36.0
 private let DefaultTitleUnselectedFontSize: CGFloat = 16.0
-private let DefaultNavigationItemFontSize: CGFloat = 14.0
-private let DefaultNavigationTitleItemPadding: CGFloat = 15.0
-private let DefaultNavigationItemEdgeMargin: CGFloat = 8.0
-private let DefaultNavigationItemHeight: CGFloat = 44.0
-private let DefaultNavigationItemWidthThreshold: CGFloat = 30.0
+private let DefaultTabNavigationItemFontSize: CGFloat = 14.0
+private let DefaultTabNavigationTitleItemPadding: CGFloat = 15.0
+private let DefaultTabNavigationItemEdgeMargin: CGFloat = 8.0
+private let DefaultTabNavigationItemHeight: CGFloat = 44.0
+private let DefaultTabNavigationItemWidthThreshold: CGFloat = 30.0
 
-private class _NavigationItemButton: UIButton { /* Custom view hooks. */ }
-private class _NavigationTitleItemButton: UIButton { // Custom view hooks.
-    weak var _titleItem: NavigationTitleItem?
+private class _TabNavigationItemButton: UIButton { /* Custom view hooks. */ }
+private class _TabNavigationTitleItemButton: UIButton { // Custom view hooks.
+    weak var _titleItem: TabNavigationTitleItem?
 }
 
-private class _NavigationItemView: UIView {
+private class _TabNavigationItemView: UIView {
     var title: String? {
         didSet {
             _button.setTitle(title, for: .normal)
@@ -36,11 +36,11 @@ private class _NavigationItemView: UIView {
     
     
     // Button item.
-    lazy var _button: _NavigationItemButton = { () -> _NavigationItemButton in
-        let button = _NavigationItemButton(type: .system)
+    lazy var _button: _TabNavigationItemButton = { () -> _TabNavigationItemButton in
+        let button = _TabNavigationItemButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.backgroundColor = UIColor.clear
-        button.titleLabel?.font = UIFont(name: "PingFangTC-Semibold", size: DefaultNavigationItemFontSize)
+        button.titleLabel?.font = UIFont(name: "PingFangTC-Semibold", size: DefaultTabNavigationItemFontSize)
         // button.tintColor =
         return button
     }()
@@ -75,7 +75,7 @@ private class _NavigationItemView: UIView {
     }
 }
 
-public class NavigationItem: NSObject {
+public class TabNavigationItem: NSObject {
     // MARK: - Properties.
     public var image: UIImage? {
         return _view.image
@@ -96,7 +96,7 @@ public class NavigationItem: NSObject {
         return Selector(_selector)
     }
     
-    fileprivate var _view: _NavigationItemView = _NavigationItemView()
+    fileprivate var _view: _TabNavigationItemView = _TabNavigationItemView()
     
     public init(image: UIImage? = nil, target: Any?, selector: Selector) {
         super.init()
@@ -111,7 +111,7 @@ public class NavigationItem: NSObject {
     }
 }
 
-public class NavigationTitleItem: NSObject {
+public class TabNavigationTitleItem: NSObject {
     public var selected: Bool {
         didSet {
             setSelected(selected, animated: false)
@@ -143,8 +143,8 @@ public class NavigationTitleItem: NSObject {
         }
     }
     
-    fileprivate lazy var _button: _NavigationTitleItemButton = { () -> _NavigationTitleItemButton in
-        let button = _NavigationTitleItemButton(type: .custom)
+    fileprivate lazy var _button: _TabNavigationTitleItemButton = { () -> _TabNavigationTitleItemButton in
+        let button = _TabNavigationTitleItemButton(type: .custom)
         button.titleLabel?.font = UIFont(name: "PingFangTC-Semibold", size: DefaultTitleFontSize)
         button.tintColor = UIColor(hex: "4A4A4A")
         button.setTitleColor(UIColor(hex: "4A4A4A"), for: .normal)
@@ -161,7 +161,7 @@ public class NavigationTitleItem: NSObject {
     }
 }
 
-public class NavigationTabBar: UIView, UIBarPositioning {
+public class TabNavigationBar: UIView, UIBarPositioning {
     // MARK: - Public Properties.
     // MARK: - Private Properties.
     private lazy var __titleAlignmentLabel: UILabel = { () -> UILabel in
@@ -199,8 +199,8 @@ public class NavigationTabBar: UIView, UIBarPositioning {
     }()
     
     
-    fileprivate var _navigationItems: [NavigationItem] = []
-    fileprivate var _navigationTitleItems: [NavigationTitleItem] = []
+    fileprivate var _navigationItems: [TabNavigationItem] = []
+    fileprivate var _navigationTitleItems: [TabNavigationTitleItem] = []
     
     fileprivate var _selectedTitleItemIndex: Int = 0
     fileprivate var _transitonTitleItemIndex: Int = 0
@@ -231,7 +231,7 @@ public class NavigationTabBar: UIView, UIBarPositioning {
     
     // MARK: - Actions.
     @objc
-    private func _handleDidSelectTitleItem(_ sender: _NavigationTitleItemButton) {
+    private func _handleDidSelectTitleItem(_ sender: _TabNavigationTitleItemButton) {
         guard let _titleItem = sender._titleItem else {
             return
         }
@@ -265,22 +265,22 @@ public class NavigationTabBar: UIView, UIBarPositioning {
         _scrollViewContainerView.addConstraint(NSLayoutConstraint(item: _scrollViewContainerView, attribute: .width, relatedBy: .equal, toItem: _contentScrollView, attribute: .width, multiplier: 1.0, constant: 0.0))
         
         _contentScrollView.addSubview(__titleAlignmentLabel)
-        _scrollViewContainerView.addConstraint(NSLayoutConstraint(item: _scrollViewContainerView, attribute: .leading, relatedBy: .equal, toItem: __titleAlignmentLabel, attribute: .leading, multiplier: 1.0, constant: -DefaultNavigationTitleItemPadding))
+        _scrollViewContainerView.addConstraint(NSLayoutConstraint(item: _scrollViewContainerView, attribute: .leading, relatedBy: .equal, toItem: __titleAlignmentLabel, attribute: .leading, multiplier: 1.0, constant: -DefaultTabNavigationTitleItemPadding))
         _scrollViewContainerView.addConstraint(NSLayoutConstraint(item: _scrollViewContainerView, attribute: .centerY, relatedBy: .equal, toItem: __titleAlignmentLabel, attribute: .centerY, multiplier: 1.0, constant: 0.0))
     }
     
-    fileprivate func _addNavigationItemView(_ item: NavigationItem) {
+    fileprivate func _addNavigationItemView(_ item: TabNavigationItem) {
         let _itemView = item._view
         _itemView.translatesAutoresizingMaskIntoConstraints = false
 
         _navigationItemView.addSubview(_itemView)
         // Height and with:
-        _itemView.addConstraint(NSLayoutConstraint(item: _itemView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: DefaultNavigationItemHeight))
-        _itemView.addConstraint(NSLayoutConstraint(item: _itemView, attribute: .width, relatedBy: .greaterThanOrEqual, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: DefaultNavigationItemWidthThreshold))
+        _itemView.addConstraint(NSLayoutConstraint(item: _itemView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: DefaultTabNavigationItemHeight))
+        _itemView.addConstraint(NSLayoutConstraint(item: _itemView, attribute: .width, relatedBy: .greaterThanOrEqual, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: DefaultTabNavigationItemWidthThreshold))
         // Base line:
         addConstraint(NSLayoutConstraint(item: _itemView._button, attribute: _navigationTitleItems.last != nil ? .lastBaseline : .centerY, relatedBy: .equal, toItem: _navigationTitleItems.last?._button ?? _navigationItemView, attribute: _navigationTitleItems.last != nil ? .lastBaseline : .centerY, multiplier: 1.0, constant: 0.0))
         // Horizontal:
-        _navigationItemView.addConstraint(NSLayoutConstraint(item: _itemView, attribute: .trailing, relatedBy: .equal, toItem: _navigationItems.last?._view ?? _navigationItemView, attribute: _navigationItems.last?._view != nil ? .leading : .trailing, multiplier: 1.0, constant: _navigationItems.count>0 ? 0.0 : -DefaultNavigationItemEdgeMargin))
+        _navigationItemView.addConstraint(NSLayoutConstraint(item: _itemView, attribute: .trailing, relatedBy: .equal, toItem: _navigationItems.last?._view ?? _navigationItemView, attribute: _navigationItems.last?._view != nil ? .leading : .trailing, multiplier: 1.0, constant: _navigationItems.count>0 ? 0.0 : -DefaultTabNavigationItemEdgeMargin))
         if let _leading = _leadingConstraintOflastItemView {
             _navigationItemView.removeConstraint(_leading)
         }
@@ -290,14 +290,14 @@ public class NavigationTabBar: UIView, UIBarPositioning {
         _leadingConstraintOflastItemView = _leading
     }
     
-    fileprivate func _addNavigationTitleItemButton(_ item: NavigationTitleItem) {
+    fileprivate func _addNavigationTitleItemButton(_ item: TabNavigationTitleItem) {
         let _itemButton = item._button
         _itemButton.addTarget(self, action: #selector(_handleDidSelectTitleItem(_:)), for: .touchUpInside)
         _itemButton.translatesAutoresizingMaskIntoConstraints = false
         
         _contentScrollView.addSubview(_itemButton)
         
-        _contentScrollView.addConstraint(NSLayoutConstraint(item: _itemButton, attribute: .leading, relatedBy: .equal, toItem: _navigationTitleItems.last?._button ?? _contentScrollView, attribute: _navigationTitleItems.last?._button != nil ? .trailing : .leading, multiplier: 1.0, constant:DefaultNavigationTitleItemPadding))
+        _contentScrollView.addConstraint(NSLayoutConstraint(item: _itemButton, attribute: .leading, relatedBy: .equal, toItem: _navigationTitleItems.last?._button ?? _contentScrollView, attribute: _navigationTitleItems.last?._button != nil ? .trailing : .leading, multiplier: 1.0, constant:DefaultTabNavigationTitleItemPadding))
         _contentScrollView.addConstraint(NSLayoutConstraint(item: __titleAlignmentLabel, attribute: .lastBaseline, relatedBy: .equal, toItem: _itemButton, attribute: .lastBaseline, multiplier: 1.0, constant: 0.0))
         
         if let _trailing = _trailingConstraintOflastTitleItemLabel {
@@ -324,7 +324,7 @@ public class NavigationTabBar: UIView, UIBarPositioning {
         
         for index in 0...index {
             if index > _navigationTitleItems.startIndex {
-                _positionX += DefaultNavigationTitleItemPadding
+                _positionX += DefaultTabNavigationTitleItemPadding
                 let _titleItem = _navigationTitleItems[_navigationTitleItems.index(before: index)]
                 let size = (_titleItem._button.currentTitle as NSString?)?.boundingRect(with: CGSize(width: CGFloat.greatestFiniteMagnitude, height: self.bounds.height), options: [.usesLineFragmentOrigin, .usesFontLeading], attributes: [NSFontAttributeName:_titleItem._button.titleLabel != nil ? UIFont(name: _titleItem._button.titleLabel!.font.fontName, size: DefaultTitleUnselectedFontSize) as Any : UIFont.systemFont(ofSize: DefaultTitleUnselectedFontSize)], context: nil).size
                 _positionX += CGFloat(Double(size!.width))
@@ -335,10 +335,9 @@ public class NavigationTabBar: UIView, UIBarPositioning {
     }
 }
 
-extension NavigationTabBar: UIScrollViewDelegate {
+extension TabNavigationBar: UIScrollViewDelegate {
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        
-        
+        /*
         return
         let _uptoSelectedTitleItemPosition = _calculatedPositionUptoTitleItemIndex(_transitonTitleItemIndex)
         let _offset = scrollView.contentOffset.x - _uptoSelectedTitleItemPosition
@@ -379,7 +378,7 @@ extension NavigationTabBar: UIScrollViewDelegate {
         } else {
             _transitonTitleItemIndex = _comingIndex
             // setSelectedTitle(at: _comingIndex, animated: false)
-        }
+        } */
     }
     
     public func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
@@ -392,11 +391,11 @@ extension NavigationTabBar: UIScrollViewDelegate {
     }
 }
 
-extension NavigationTabBar {
+extension TabNavigationBar {
     // MARK: - Public.
-    public var selectedTitleItem: NavigationTitleItem { return _navigationTitleItems[_selectedTitleItemIndex] }
+    public var selectedTitleItem: TabNavigationTitleItem { return _navigationTitleItems[_selectedTitleItemIndex] }
     
-    public var navigationItems: [NavigationItem] {
+    public var navigationItems: [TabNavigationItem] {
         set(items) {
             for item in items {
                 addNavigationItem(item)
@@ -406,7 +405,7 @@ extension NavigationTabBar {
         get { return _navigationItems }
     }
     
-    public var navigationTitleItems: [NavigationTitleItem] {
+    public var navigationTitleItems: [TabNavigationTitleItem] {
         set(items) {
             for item in items {
                 addNavigationTitleItem(item)
@@ -416,13 +415,13 @@ extension NavigationTabBar {
         get { return _navigationTitleItems }
     }
     
-    public func addNavigationItem(_ item: NavigationItem) {
+    public func addNavigationItem(_ item: TabNavigationItem) {
         _addNavigationItemView(item)
         
         _navigationItems.append(item)
     }
     
-    public func addNavigationTitleItem(_ item: NavigationTitleItem) {
+    public func addNavigationTitleItem(_ item: TabNavigationTitleItem) {
         _addNavigationTitleItemButton(item)
         
         _navigationTitleItems.append(item)
@@ -443,12 +442,12 @@ extension NavigationTabBar {
 }
 
 // MARK: - Conforming `NSCoding`.
-extension NavigationTabBar {
+extension TabNavigationBar {
     public override func encode(with aCoder: NSCoder) {
         super.encode(with: aCoder)
     }
 }
 // MARK: - Conforming `UIBarPositioning`.
-extension NavigationTabBar {
+extension TabNavigationBar {
     public var barPosition: UIBarPosition { return .top }
 }

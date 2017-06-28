@@ -9,31 +9,31 @@
 import UIKit
 
 class ViewController: UIViewController {
-    var _navigationBar: NavigationTabBar?
+    var _navigationBar: TabNavigationBar?
     
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        let navigationBar = NavigationTabBar()
+        let navigationBar = TabNavigationBar()
         navigationBar.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(navigationBar)
         view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[navigationBar]|", options: [], metrics: nil, views: ["navigationBar":navigationBar]))
         view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[navigationBar(64)]", options: [], metrics: nil, views: ["navigationBar":navigationBar]))
         
         // navigationBar.title = "主页"
-        navigationBar.addNavigationTitleItem(NavigationTitleItem(title: "主页"))
-        navigationBar.addNavigationTitleItem(NavigationTitleItem(title: "分类"))
-        navigationBar.addNavigationTitleItem(NavigationTitleItem(title: "设置"))
-        navigationBar.addNavigationTitleItem(NavigationTitleItem(title: "随意"))
-        navigationBar.addNavigationTitleItem(NavigationTitleItem(title: "随意"))
-        navigationBar.addNavigationTitleItem(NavigationTitleItem(title: "随意"))
-        navigationBar.addNavigationTitleItem(NavigationTitleItem(title: "随意"))
-        navigationBar.addNavigationTitleItem(NavigationTitleItem(title: "随意"))
-        navigationBar.addNavigationTitleItem(NavigationTitleItem(title: "随意"))
-        navigationBar.addNavigationTitleItem(NavigationTitleItem(title: "随意"))
-        navigationBar.addNavigationTitleItem(NavigationTitleItem(title: "随意"))
-        navigationBar.addNavigationItem(NavigationItem(image: #imageLiteral(resourceName: "add"), target: self, selector: #selector(_handleConfirm(_:))))
-        navigationBar.addNavigationItem(NavigationItem(image: #imageLiteral(resourceName: "search"), target: self, selector: #selector(_handleConfirm(_:))))
+        navigationBar.addNavigationTitleItem(TabNavigationTitleItem(title: "主页"))
+        navigationBar.addNavigationTitleItem(TabNavigationTitleItem(title: "分类"))
+        navigationBar.addNavigationTitleItem(TabNavigationTitleItem(title: "设置"))
+        navigationBar.addNavigationTitleItem(TabNavigationTitleItem(title: "随意"))
+        navigationBar.addNavigationTitleItem(TabNavigationTitleItem(title: "随意"))
+        navigationBar.addNavigationTitleItem(TabNavigationTitleItem(title: "随意"))
+        navigationBar.addNavigationTitleItem(TabNavigationTitleItem(title: "随意"))
+        navigationBar.addNavigationTitleItem(TabNavigationTitleItem(title: "随意"))
+        navigationBar.addNavigationTitleItem(TabNavigationTitleItem(title: "随意"))
+        navigationBar.addNavigationTitleItem(TabNavigationTitleItem(title: "随意"))
+        navigationBar.addNavigationTitleItem(TabNavigationTitleItem(title: "随意"))
+        navigationBar.addNavigationItem(TabNavigationItem(image: #imageLiteral(resourceName: "add"), target: self, selector: #selector(_handleConfirm(_:))))
+        navigationBar.addNavigationItem(TabNavigationItem(image: #imageLiteral(resourceName: "search"), target: self, selector: #selector(_handleConfirm(_:))))
         navigationBar.setSelectedTitle(at: 0, animated: false)
         _navigationBar = navigationBar
         // Do any additional setup after loading the view.
