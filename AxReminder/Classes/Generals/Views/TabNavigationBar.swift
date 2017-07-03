@@ -22,6 +22,15 @@ private class _TabNavigationTitleItemButton: UIButton { // Custom view hooks.
     weak var _titleItem: TabNavigationTitleItem?
 }
 
+private class _TabNavigationBarScrollViewHooks: NSObject {
+    fileprivate var _completion: (()->Void)
+    
+    init(_ completion: @escaping ()->Void) {
+        _completion = completion
+        super.init()
+    }
+}
+
 private class _TabNavigationItemView: UIView {
     var title: String? {
         didSet {
@@ -60,6 +69,7 @@ private class _TabNavigationItemView: UIView {
     }
     
     private func _initializer() {
+        translatesAutoresizingMaskIntoConstraints = false
         backgroundColor = .clear
         // Set up button.
         _setupButton()
@@ -67,6 +77,9 @@ private class _TabNavigationItemView: UIView {
     
     // Private:
     private func _setupButton() {
+        heightAnchor.constraint(equalToConstant: DefaultTabNavigationItemHeight).isActive = true
+        widthAnchor.constraint(greaterThanOrEqualToConstant: DefaultTabNavigationItemWidthThreshold).isActive = true
+        
         addSubview(_button)
         addConstraint(NSLayoutConstraint(item: self, attribute: .centerX, relatedBy: .equal, toItem: _button, attribute: .centerX, multiplier: 1.0, constant: 0.0))
         addConstraint(NSLayoutConstraint(item: self, attribute: .centerY, relatedBy: .equal, toItem: _button, attribute: .centerY, multiplier: 1.0, constant: 0.0))
@@ -85,6 +98,11 @@ public class TabNavigationItem: NSObject {
         return _view.title
     }
     
+    public var tintColor: UIColor? {
+        set { _view._button.tintColor = newValue }
+        get { return _view._button.tintColor }
+    }
+    
     public var target: Any? {
         return _view._button.allTargets.first
     }
@@ -98,16 +116,25 @@ public class TabNavigationItem: NSObject {
     
     fileprivate var _view: _TabNavigationItemView = _TabNavigationItemView()
     
-    public init(image: UIImage? = nil, target: Any?, selector: Selector) {
-        super.init()
-        _view.image = image
-        _view._button.addTarget(target, action: selector, for: .touchUpInside)
-    }
-    
-    public init(title: String? = nil, target: Any?, selector: Selector) {
+    public init(title: String?) {
         super.init()
         _view.title = title
-        _view._button.addTarget(target, action: selector, for: .touchUpInside)
+    }
+    
+    public convenience init(image: UIImage? = nil, target: Any? = nil, selector: Selector? = nil) {
+        self.init(title: nil)
+        _view.image = image
+        if selector != nil {
+            _view._button.addTarget(target, action: selector!, for: .touchUpInside)
+        }
+    }
+    
+    public convenience init(title: String? = nil, target: Any? = nil, selector: Selector? = nil) {
+        self.init(title: title)
+        _view.title = title
+        if selector != nil {
+            _view._button.addTarget(target, action: selector!, for: .touchUpInside)
+        }
     }
 }
 
@@ -118,36 +145,92 @@ public class TabNavigationTitleItem: NSObject {
         }
     }
     
+    public var selectedRange: Range<Int>? {
+        didSet {
+            if let _ = selectedRange {
+                let attributedTitle = NSMutableAttributedString(string: _button.title(for: .normal)!, attributes: [NSFontAttributeName: titleFont(whenSelected: false), NSForegroundColorAttributeName: titleColor(whenSelected: false)])
+                self._button.setAttributedTitle(attributedTitle, for: .normal)
+            } else {
+                self._button.setAttributedTitle(nil, for: .normal)
+            }
+        }
+    }
+    
+    public var currentTitleColor: UIColor {
+        return _selectionTitleColors[selected]!
+    }
+    
+    public var currentTitleFont: UIFont {
+        return _selectionTitleFonts[selected]!
+    }
+    
+    private var _selectionTitleColors: [Bool: UIColor] = [true: UIColor(hex: "4A4A4A"), false: UIColor(hex: "CCCCCC")]
+    private var _selectionTitleFonts: [Bool: UIFont] = [true: UIFont(name: "PingFangTC-Semibold", size: DefaultTitleFontSize)!, false: UIFont(name: "PingFangTC-Semibold", size: DefaultTitleUnselectedFontSize)!]
+    
+    public func setTitleColor(_ titleColor: UIColor, whenSelected selected: Bool) {
+        _selectionTitleColors[selected] = titleColor
+    }
+    public func titleColor(whenSelected selected: Bool) -> UIColor {
+        return _selectionTitleColors[selected]!
+    }
+    
+    public func setTitleFont(_ titleFont: UIFont, whenSelected selected: Bool) {
+        _selectionTitleFonts[selected] = titleFont
+    }
+    public func titleFont(whenSelected selected: Bool) -> UIFont {
+        return _selectionTitleFonts[selected]!
+    }
+    
     public func setSelected(_ selected: Bool, animated: Bool) {
         if animated {
-            let _fontSizeAnimation = POPSpringAnimation()
-            _fontSizeAnimation.property = POPAnimatableProperty.labelFontSize(named: "PingFangTC-Semibold")
-            _fontSizeAnimation.toValue = selected ? DefaultTitleFontSize : DefaultTitleUnselectedFontSize
-            _fontSizeAnimation.removedOnCompletion = true
-            self._button.titleLabel?.pop_add(_fontSizeAnimation, forKey: "FONT")
-            
-            let _titleColorAnimation = POPSpringAnimation()
-            _titleColorAnimation.property = POPAnimatableProperty.buttonTitleColor(for: . normal)
-            _titleColorAnimation.toValue = selected ? UIColor(hex: "4A4A4A") : UIColor(hex: "CCCCCC")
-            _titleColorAnimation.removedOnCompletion = true
-            self._button.pop_add(_titleColorAnimation, forKey: "COLOR")
-            
-            let _tintColorAnimation = POPSpringAnimation(propertyNamed: kPOPViewTintColor)
-            _tintColorAnimation?.toValue = selected ? UIColor(hex: "4A4A4A") : UIColor(hex: "CCCCCC")
-            _tintColorAnimation?.removedOnCompletion = true
-            self._button.pop_add(_tintColorAnimation, forKey: "TINTCOLOR")
+            if let range = selectedRange {
+                let _ns_range = NSMakeRange(range.lowerBound, range.upperBound - range.lowerBound)
+                
+                let _fontSizeAnimation = POPSpringAnimation()
+                _fontSizeAnimation.property = POPAnimatableProperty.attributedButtonFontSize(named: _selectionTitleFonts[selected]!.fontName, range: _ns_range, state: .normal)
+                _fontSizeAnimation.toValue = titleFont(whenSelected: selected).pointSize
+                _fontSizeAnimation.removedOnCompletion = true
+                self._button.pop_add(_fontSizeAnimation, forKey: "ATTRIBUTEDFONT")
+                
+                let _titleColorAnimation = POPSpringAnimation()
+                _titleColorAnimation.property = POPAnimatableProperty.attributedButtonTextColor(for: _ns_range, state: .normal)
+                _titleColorAnimation.toValue = _selectionTitleColors[selected]
+                _titleColorAnimation.removedOnCompletion = true
+                self._button.pop_add(_titleColorAnimation, forKey: "ATTRIBUTEDCOLOR")
+            } else {
+                let _fontSizeAnimation = POPSpringAnimation()
+                _fontSizeAnimation.property = POPAnimatableProperty.labelFontSize(named: _selectionTitleFonts[selected]!.fontName)
+                _fontSizeAnimation.toValue = selected ? DefaultTitleFontSize : DefaultTitleUnselectedFontSize
+                _fontSizeAnimation.removedOnCompletion = true
+                self._button.titleLabel?.pop_add(_fontSizeAnimation, forKey: "FONT")
+                
+                let _titleColorAnimation = POPSpringAnimation()
+                _titleColorAnimation.property = POPAnimatableProperty.buttonTitleColor(for: . normal)
+                _titleColorAnimation.toValue = _selectionTitleColors[selected]
+                _titleColorAnimation.removedOnCompletion = true
+                self._button.pop_add(_titleColorAnimation, forKey: "COLOR")
+                
+                let _tintColorAnimation = POPSpringAnimation(propertyNamed: kPOPViewTintColor)
+                _tintColorAnimation?.toValue = _selectionTitleColors[selected]
+                _tintColorAnimation?.removedOnCompletion = true
+                self._button.pop_add(_tintColorAnimation, forKey: "TINTCOLOR")
+            }
         } else {
-            self._button.titleLabel?.font = UIFont(name: "PingFangTC-Semibold", size: selected ? DefaultTitleFontSize : DefaultTitleUnselectedFontSize)
-            self._button.tintColor = selected ? UIColor(hex: "4A4A4A") : UIColor(hex: "CCCCCC")
-            self._button.setTitleColor(selected ? UIColor(hex: "4A4A4A") : UIColor(hex: "CCCCCC"), for: .normal)
+            if let range = selectedRange {
+                let attributedTitle = NSMutableAttributedString(attributedString: self._button.attributedTitle(for: .normal)!)
+                let _ns_range = NSMakeRange(range.lowerBound, range.upperBound - range.lowerBound)
+                attributedTitle.addAttributes([NSFontAttributeName: titleFont(whenSelected: selected), NSForegroundColorAttributeName: titleColor(whenSelected: selected)], range: _ns_range)
+                self._button.setAttributedTitle(attributedTitle, for: .normal)
+            } else {
+                self._button.titleLabel?.font = _selectionTitleFonts[selected]
+                self._button.tintColor = _selectionTitleColors[selected]
+                self._button.setTitleColor(_selectionTitleColors[selected], for: .normal)
+            }
         }
     }
     
     fileprivate lazy var _button: _TabNavigationTitleItemButton = { () -> _TabNavigationTitleItemButton in
         let button = _TabNavigationTitleItemButton(type: .custom)
-        button.titleLabel?.font = UIFont(name: "PingFangTC-Semibold", size: DefaultTitleFontSize)
-        button.tintColor = UIColor(hex: "4A4A4A")
-        button.setTitleColor(UIColor(hex: "4A4A4A"), for: .normal)
         button.titleLabel?.numberOfLines = 1
         button.adjustsImageWhenHighlighted = false
         return button
@@ -159,10 +242,86 @@ public class TabNavigationTitleItem: NSObject {
         _button.setTitle(title, for: .normal)
         _button._titleItem = self
     }
+    
+    public convenience init(title: String, selectedRange: Range<Int>? = nil) {
+        self.init(title: title)
+        self.selectedRange = selectedRange
+    }
+}
+
+public class TabNavigationTitleActionItem: TabNavigationTitleItem {
+    public override func setSelected(_ selected: Bool, animated: Bool) {
+        super.setSelected(false, animated: false)
+    }
+    
+    public override func titleFont(whenSelected selected: Bool) -> UIFont {
+        return super.titleFont(whenSelected: false)
+    }
+    
+    public override func titleColor(whenSelected selected: Bool) -> UIColor {
+        return super.titleColor(whenSelected: false)
+    }
+    
+    public var tintColor: UIColor? {
+        didSet {
+            _button.tintColor = tintColor
+            if let tint = tintColor {
+                setTitleColor(tint, whenSelected: false)
+            }
+        }
+    }
+    
+    public override init(title: String) {
+        super.init(title: title)
+        _button = _TabNavigationTitleItemButton(type: .system)
+        _button.setTitle(title, for: .normal)
+        _button._titleItem = self
+    }
+    
+    public convenience init(title: String, target: Any?, selector: Selector) {
+        self.init(title: title)
+        _button.addTarget(target, action: selector, for: .touchUpInside)
+    }
+}
+
+extension TabNavigationBar {
+    fileprivate class _TabNavigaitonTitleContentAlignmentView: UIView {}
+}
+
+@objc
+public protocol TabNavigationBarDelegate {
+    @objc
+    optional func tabNavigationBar(_ tabNavigationBar: TabNavigationBar, didSelectTitleItemAt index: Int) -> Void
+}
+
+private func _createGeneralContainerView() -> UIView {
+    let view = UIView()
+    view.translatesAutoresizingMaskIntoConstraints = false
+    view.backgroundColor = .clear
+    view.clipsToBounds = true
+    return view
+}
+
+private func _createGeneralScrollView(alwaysBounceHorizontal: Bool = true) -> UIScrollView {
+    let scrollView = UIScrollView()
+    scrollView.clipsToBounds = true
+    scrollView.translatesAutoresizingMaskIntoConstraints = false
+    scrollView.showsVerticalScrollIndicator = false
+    scrollView.showsHorizontalScrollIndicator = false
+    scrollView.scrollsToTop = false
+    scrollView.backgroundColor = UIColor.clear
+    scrollView.decelerationRate = UIScrollViewDecelerationRateFast
+    scrollView.alwaysBounceHorizontal = alwaysBounceHorizontal
+    return scrollView
+}
+
+extension TabNavigationBar {
+    public typealias TabNavigationItemViews = (itemsContainerView: UIView, itemsScrollView: UIScrollView, navigationItemView: UIView)
 }
 
 public class TabNavigationBar: UIView, UIBarPositioning {
     // MARK: - Public Properties.
+    public weak var delegate: TabNavigationBarDelegate?
     // MARK: - Private Properties.
     private lazy var __titleAlignmentLabel: UILabel = { () -> UILabel in
         let label = UILabel()
@@ -174,39 +333,46 @@ public class TabNavigationBar: UIView, UIBarPositioning {
         return label
     }()
     
-    private lazy var _scrollViewContainerView: UIView = { () -> UIView in
-        let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .clear
-        return view
-    }()
-    private lazy var _contentScrollView: UIScrollView = { () -> UIScrollView in
-        let scrollView = UIScrollView()
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.showsVerticalScrollIndicator = false
-        scrollView.showsHorizontalScrollIndicator = false
-        scrollView.backgroundColor = UIColor.clear
-        scrollView.decelerationRate = UIScrollViewDecelerationRateFast
-        // scrollView.alwaysBounceHorizontal = true
-        // scrollView.isScrollEnabled = false
-        return scrollView
-    }()
-    private lazy var _navigationItemView: UIView = { () -> UIView in
-        let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = UIColor.clear
-        return view
-    }()
+    fileprivate lazy var _titleItemsContainerView: UIView = _createGeneralContainerView()
+    fileprivate lazy var _itemsContainerView: UIView = _createGeneralContainerView()
+    fileprivate lazy var _titleItemsScrollView: UIScrollView = _createGeneralScrollView()
+    private lazy var _itemsScrollView: UIScrollView = _createGeneralScrollView(alwaysBounceHorizontal: false)
+    private lazy var _navigationTitleItemView: UIView = _createGeneralContainerView()
+    fileprivate lazy var _navigationItemView: UIView = _createGeneralContainerView()
     
+    private var _titleItemsPreviewPanGesture: UIPanGestureRecognizer!
     
     fileprivate var _navigationItems: [TabNavigationItem] = []
     fileprivate var _navigationTitleItems: [TabNavigationTitleItem] = []
+    fileprivate var _navigationTitleActionItems: [TabNavigationTitleActionItem] = []
     
-    fileprivate var _selectedTitleItemIndex: Int = 0
-    fileprivate var _transitonTitleItemIndex: Int = 0
+    fileprivate var _selectedTitleItemIndex: Int = 0 {
+        didSet {
+            if _selectedTitleItemIndex > _navigationTitleItems.startIndex {
+                _titleItemsPreviewPanGesture.isEnabled = true
+            } else {
+                _titleItemsPreviewPanGesture.isEnabled = false
+            }
+        }
+    }
     
-    private weak var _leadingConstraintOflastItemView: NSLayoutConstraint?
-    private weak var _trailingConstraintOflastTitleItemLabel: NSLayoutConstraint?
+    fileprivate var _titleItemsScrollViewDelegate: _TabNavigationBarScrollViewHooks!
+    
+    private weak var _leadingConstraintOfLastItemView: NSLayoutConstraint?
+    private weak var _trailingConstraintOfLastTitleItemLabel: NSLayoutConstraint?
+    private weak var _trailingConstraintOfLastTitleActionItemLabel: NSLayoutConstraint?
+    private weak var _widthOfNavigationItemViewForZeroContent: NSLayoutConstraint?
+    fileprivate weak var _widthOfTransitionNavigationItemViewForZeroContent: NSLayoutConstraint?
+    fileprivate weak var _constraintBetweenTitleContainerAndItemsContainer: NSLayoutConstraint?
+    fileprivate weak var _constraintBetweenTransitionTitleContainerAndItemsContainer: NSLayoutConstraint?
+    
+    private lazy var _titleItemContentAlignmentView: _TabNavigaitonTitleContentAlignmentView = { () -> _TabNavigaitonTitleContentAlignmentView in
+        let _view = _TabNavigaitonTitleContentAlignmentView()
+        _view.translatesAutoresizingMaskIntoConstraints = false
+        _view.backgroundColor = .clear
+        return _view
+    }()
+    private weak var _widthOfTitleItemContentAlignmentView: NSLayoutConstraint?
     
     // MARK: - `NSCoding` supporting.
     public required init?(coder aDecoder: NSCoder) {
@@ -229,8 +395,14 @@ public class TabNavigationBar: UIView, UIBarPositioning {
     private func _initializer() {
         // Set up container views:
         _setupContainerViews()
+        _setupPreviewGesture()
         
-        _setupContentScrollView()
+        _setupTitleItemsScrollView()
+        _setupNavigationItemView()
+        
+        _titleItemsScrollViewDelegate = _TabNavigationBarScrollViewHooks({ [unowned self] in
+            self._titleItemsScrollView.delegate = self
+        })
     }
     
     // MARK: - Actions.
@@ -240,81 +412,379 @@ public class TabNavigationBar: UIView, UIBarPositioning {
             return
         }
         
-        if let index = _navigationTitleItems.index(of: _titleItem) {
+        if let index = _navigationTitleItems.index(of: _titleItem), index != _selectedTitleItemIndex {
             setSelectedTitle(at: index, animated: true)
+            
+            NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(_scrollToSelectedTitleItemWithAnimation), object: nil)
+            
+            _scrollToSelectedTitleItem()
         }
+    }
+    @objc
+    private func _handleTitleItemsPreview(_ panGesture: UIPanGestureRecognizer) {
+        var position: CGPoint = .zero
         
-        _scrollToSelectedTitleItem()
+        switch panGesture.state {
+        case .began: fallthrough
+        case .possible:
+            position = panGesture.location(in: _titleItemsContainerView)
+            break
+        case .changed:
+            let _changedPosition = panGesture.location(in: _titleItemsContainerView)
+            if _changedPosition.x - position.x >= 20 {
+                // Begin preview animation.
+                /*
+                _titleItemsScrollView.delegate = _titleItemsScrollViewDelegate
+                _titleItemsScrollView.setContentOffset(CGPoint(x: _calculatedPositionUptoTitleItem(at: _navigationTitleItems.index(before: _selectedTitleItemIndex)), y: 0.0), animated: true)
+                _titleItemsScrollView.isScrollEnabled = true
+                panGesture.isEnabled = false */
+            }
+            break
+        default: break
+        }
     }
     
     // MARK: - Private.
     private func _setupContainerViews() {
-        addSubview(_scrollViewContainerView)
-        addConstraint(NSLayoutConstraint(item: self, attribute: .leading, relatedBy: .equal, toItem: _scrollViewContainerView, attribute: .leading, multiplier: 1.0, constant: 0.0))
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[_scrollViewContainerView]|", options: [], metrics: nil, views: ["_scrollViewContainerView":_scrollViewContainerView]))
+        addSubview(_titleItemsContainerView)
+        self.leadingAnchor.constraint(equalTo: _titleItemsContainerView.leadingAnchor).isActive = true
+        self.topAnchor.constraint(equalTo: _titleItemsContainerView.topAnchor).isActive = true
+        self.bottomAnchor.constraint(equalTo: _titleItemsContainerView.bottomAnchor).isActive = true
         
-        addSubview(_navigationItemView)
-        // _navigationItemView.setContentHuggingPriority(.required, for: .horizontal)
-        addConstraint(NSLayoutConstraint(item: _scrollViewContainerView, attribute: .trailing, relatedBy: .equal, toItem: _navigationItemView, attribute: .leading, multiplier: 1.0, constant: 0.0))
-        addConstraint(NSLayoutConstraint(item: self, attribute: .trailing, relatedBy: .equal, toItem: _navigationItemView, attribute: .trailing, multiplier: 1.0, constant: 0.0))
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[_navigationItemView]|", options: [], metrics: nil, views: ["_navigationItemView":_navigationItemView]))
+        _setupNavigationItemsContainerView(_itemsContainerView)
     }
     
-    private func _setupContentScrollView() {
-        _contentScrollView.delegate = self
-        _scrollViewContainerView.addSubview(_contentScrollView)
-        _scrollViewContainerView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[_contentScrollView]|", options: [], metrics: nil, views: ["_contentScrollView":_contentScrollView]))
-        _scrollViewContainerView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[_contentScrollView]|", options: [], metrics: nil, views: ["_contentScrollView":_contentScrollView]))
-        _scrollViewContainerView.addConstraint(NSLayoutConstraint(item: _scrollViewContainerView, attribute: .height, relatedBy: .equal, toItem: _contentScrollView, attribute: .height, multiplier: 1.0, constant: 0.0))
-        _scrollViewContainerView.addConstraint(NSLayoutConstraint(item: _scrollViewContainerView, attribute: .width, relatedBy: .equal, toItem: _contentScrollView, attribute: .width, multiplier: 1.0, constant: 0.0))
+    private func _setupNavigationItemsContainerView(_ itemsContainerView: UIView, transition: Bool = false) {
+        addSubview(itemsContainerView)
         
-        _contentScrollView.addSubview(__titleAlignmentLabel)
-        _scrollViewContainerView.addConstraint(NSLayoutConstraint(item: _scrollViewContainerView, attribute: .leading, relatedBy: .equal, toItem: __titleAlignmentLabel, attribute: .leading, multiplier: 1.0, constant: -DefaultTabNavigationTitleItemPadding))
-        _scrollViewContainerView.addConstraint(NSLayoutConstraint(item: _scrollViewContainerView, attribute: .centerY, relatedBy: .equal, toItem: __titleAlignmentLabel, attribute: .centerY, multiplier: 1.0, constant: 0.0))
+        let _constraint = _titleItemsContainerView.trailingAnchor.constraint(equalTo: itemsContainerView.leadingAnchor, constant: -DefaultTabNavigationItemEdgeMargin)
+        _constraint.isActive = true
+        if transition {
+            if let constraint = _constraintBetweenTitleContainerAndItemsContainer {
+                removeConstraint(constraint)
+            }
+            _constraintBetweenTransitionTitleContainerAndItemsContainer = _constraint
+        } else {
+            _constraintBetweenTitleContainerAndItemsContainer = _constraint
+        }
+        
+        self.trailingAnchor.constraint(equalTo: itemsContainerView.trailingAnchor).isActive = true
+        self.topAnchor.constraint(equalTo: itemsContainerView.topAnchor).isActive = true
+        self.bottomAnchor.constraint(equalTo: itemsContainerView.bottomAnchor).isActive = true
+        itemsContainerView.widthAnchor.constraint(lessThanOrEqualTo: self.widthAnchor, multiplier: 0.5, constant: 0.0).isActive = true
     }
     
-    fileprivate func _addNavigationItemView(_ item: TabNavigationItem) {
+    private func _setupPreviewGesture() {
+        _titleItemsPreviewPanGesture = UIPanGestureRecognizer(target: self, action: #selector(_handleTitleItemsPreview(_:)))
+        _titleItemsContainerView.addGestureRecognizer(_titleItemsPreviewPanGesture)
+    }
+    
+    private func _setupTitleItemsScrollView() {
+        _titleItemsScrollView.delegate = self
+        _titleItemsContainerView.addSubview(_titleItemsScrollView)
+        _titleItemsScrollView.addSubview(_navigationTitleItemView)
+        
+        _titleItemsContainerView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[_titleItemsScrollView]|", options: [], metrics: nil, views: ["_titleItemsScrollView":_titleItemsScrollView]))
+        _titleItemsContainerView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[_titleItemsScrollView]|", options: [], metrics: nil, views: ["_titleItemsScrollView":_titleItemsScrollView]))
+        _titleItemsScrollView.widthAnchor.constraint(equalTo: _titleItemsContainerView.widthAnchor).isActive = true
+        _titleItemsScrollView.heightAnchor.constraint(equalTo: _titleItemsContainerView.heightAnchor).isActive = true
+        
+        _titleItemsScrollView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[_navigationTitleItemView]|", options: [], metrics: nil, views: ["_navigationTitleItemView":_navigationTitleItemView]))
+        _titleItemsScrollView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[_navigationTitleItemView]|", options: [], metrics: nil, views: ["_navigationTitleItemView":_navigationTitleItemView]))
+        
+        _titleItemsContainerView.heightAnchor.constraint(equalTo: _navigationTitleItemView.heightAnchor).isActive = true
+        
+        _navigationTitleItemView.addSubview(__titleAlignmentLabel)
+        _titleItemsContainerView.leadingAnchor.constraint(equalTo: __titleAlignmentLabel.leadingAnchor).isActive = true
+        _titleItemsContainerView.centerYAnchor.constraint(equalTo: __titleAlignmentLabel.centerYAnchor).isActive = true
+        
+        _navigationTitleItemView.addSubview(_titleItemContentAlignmentView)
+        _navigationTitleItemView.trailingAnchor.constraint(equalTo: _titleItemContentAlignmentView.trailingAnchor).isActive = true
+        _titleItemContentAlignmentView.heightAnchor.constraint(equalTo: _navigationTitleItemView.heightAnchor).isActive = true
+        _titleItemContentAlignmentView.topAnchor.constraint(equalTo: _navigationTitleItemView.topAnchor).isActive = true
+        _titleItemContentAlignmentView.bottomAnchor.constraint(equalTo: _navigationTitleItemView.bottomAnchor).isActive = true
+        _titleItemContentAlignmentView.widthAnchor.constraint(greaterThanOrEqualToConstant: 0).isActive = true
+        
+        let _leading = _navigationTitleItemView.leadingAnchor.constraint(equalTo: _titleItemContentAlignmentView.leadingAnchor)
+        _leading.isActive = true
+        _trailingConstraintOfLastTitleItemLabel = _leading
+        
+        let _width = _titleItemContentAlignmentView.widthAnchor.constraint(equalTo: _titleItemsScrollView.widthAnchor, constant: 0)
+        _width.isActive = true
+        _widthOfTitleItemContentAlignmentView = _width
+    }
+    
+    private func _setupNavigationItemView(containerView: UIView? = nil, scrollView: UIScrollView? = nil, itemView: UIView? = nil, transition: Bool = false) {
+        let itemsContainerView = containerView ?? _itemsContainerView
+        let itemsScrollView = scrollView ?? _itemsScrollView
+        let navigationItemView = itemView ?? _navigationItemView
+        
+        itemsContainerView.addSubview(itemsScrollView)
+        itemsScrollView.addSubview(navigationItemView)
+        
+        itemsContainerView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[itemsScrollView]|", options: [], metrics: nil, views: ["itemsScrollView":itemsScrollView]))
+        itemsContainerView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[itemsScrollView]|", options: [], metrics: nil, views: ["itemsScrollView":itemsScrollView]))
+        itemsScrollView.widthAnchor.constraint(equalTo: itemsContainerView.widthAnchor).isActive = true
+        itemsScrollView.heightAnchor.constraint(equalTo: itemsContainerView.heightAnchor).isActive = true
+        
+        itemsScrollView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[navigationItemView]|", options: [], metrics: nil, views: ["navigationItemView":navigationItemView]))
+        itemsScrollView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[navigationItemView]|", options: [], metrics: nil, views: ["navigationItemView":navigationItemView]))
+        
+        let width = navigationItemView.widthAnchor.constraint(equalToConstant: 0.0)
+        width.isActive = true
+        if transition {
+            _widthOfTransitionNavigationItemViewForZeroContent = width
+        } else {
+            _widthOfNavigationItemViewForZeroContent = width
+        }
+        
+        let widthOfContainer = itemsContainerView.widthAnchor.constraint(equalTo: navigationItemView.widthAnchor)
+        widthOfContainer.priority = UILayoutPriorityDefaultHigh
+        widthOfContainer.isActive = true
+        navigationItemView.heightAnchor.constraint(equalTo: itemsContainerView.heightAnchor).isActive = true
+    }
+    
+    fileprivate func _addNavigationItemView(_ item: TabNavigationItem,`in` items: [TabNavigationItem]? = nil, to itemContainerView: UIView? = nil, transition: Bool = false) {
+        let navigationItems = items ?? _navigationItems
+        let navigationItemView = itemContainerView ?? _navigationItemView
+        
         let _itemView = item._view
         _itemView.translatesAutoresizingMaskIntoConstraints = false
 
-        _navigationItemView.addSubview(_itemView)
-        // Height and with:
-        _itemView.addConstraint(NSLayoutConstraint(item: _itemView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: DefaultTabNavigationItemHeight))
-        _itemView.addConstraint(NSLayoutConstraint(item: _itemView, attribute: .width, relatedBy: .greaterThanOrEqual, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: DefaultTabNavigationItemWidthThreshold))
-        // Base line:
-        addConstraint(NSLayoutConstraint(item: _itemView._button, attribute: _navigationTitleItems.last != nil ? .lastBaseline : .centerY, relatedBy: .equal, toItem: _navigationTitleItems.last?._button ?? _navigationItemView, attribute: _navigationTitleItems.last != nil ? .lastBaseline : .centerY, multiplier: 1.0, constant: 0.0))
-        // Horizontal:
-        _navigationItemView.addConstraint(NSLayoutConstraint(item: _itemView, attribute: .trailing, relatedBy: .equal, toItem: _navigationItems.last?._view ?? _navigationItemView, attribute: _navigationItems.last?._view != nil ? .leading : .trailing, multiplier: 1.0, constant: _navigationItems.count>0 ? 0.0 : -DefaultTabNavigationItemEdgeMargin))
-        if let _leading = _leadingConstraintOflastItemView {
-            _navigationItemView.removeConstraint(_leading)
+        if let _width = transition ? _widthOfTransitionNavigationItemViewForZeroContent : _widthOfNavigationItemViewForZeroContent {
+            navigationItemView.removeConstraint(_width)
         }
         
-        let _leading = NSLayoutConstraint(item: _navigationItemView, attribute: .leading, relatedBy: .equal, toItem: _itemView, attribute: .leading, multiplier: 1.0, constant: 0.0)
-        _navigationItemView.addConstraint(_leading)
-        _leadingConstraintOflastItemView = _leading
+        _itemView.removeFromSuperview()
+        navigationItemView.addSubview(_itemView)
+        
+        _itemView._button.lastBaselineAnchor.constraint(equalTo: __titleAlignmentLabel.lastBaselineAnchor).isActive = true
+        
+        _itemView.trailingAnchor.constraint(equalTo: navigationItems.last?._view.leadingAnchor ?? navigationItemView.trailingAnchor, constant: !navigationItems.isEmpty ? 0.0 : -DefaultTabNavigationItemEdgeMargin).isActive = true
+        
+        if let _leading = _leadingConstraintOfLastItemView {
+            navigationItemView.removeConstraint(_leading)
+        }
+        
+        let _leading = _itemView.leadingAnchor.constraint(equalTo: navigationItemView.leadingAnchor)
+        _leading.isActive = true
+        _leadingConstraintOfLastItemView = _leading
+    }
+    
+    fileprivate func _createAndSetupNavigationItemViews() -> TabNavigationItemViews {
+        let itemsContailerView = _createGeneralContainerView()
+        let itemsScrollView = _createGeneralScrollView(alwaysBounceHorizontal: false)
+        let navigationItemView = _createGeneralContainerView()
+        
+        _setupNavigationItemsContainerView(itemsContailerView, transition: true)
+        _setupNavigationItemView(containerView: itemsContailerView, scrollView: itemsScrollView, itemView: navigationItemView, transition: true)
+        
+        return (itemsContailerView, itemsScrollView, navigationItemView)
+    }
+    
+    fileprivate func _setNavigationItems(_ items: [TabNavigationItem], animated: Bool = false) {
+        guard animated else {
+            while !_navigationItems.isEmpty {
+                removeLastNavigationItem()
+            }
+            navigationItems = items
+            return
+        }
+        
+        // Get the container views.
+        let navigationItemViews = _createAndSetupNavigationItemViews()
+        
+        // Add item to the navigatiom item view.
+        var _transitionItems: [TabNavigationItem] = []
+        for item in items {
+            _addNavigationItemView(item, in: _transitionItems, to: navigationItemViews.navigationItemView, transition: true)
+            _transitionItems.append(item)
+        }
+        
+        navigationItemViews.navigationItemView.alpha = 0.0
+        // Animate the trainsition:
+        UIView.animate(withDuration: 0.25, delay: 0.0, options: [], animations: { [unowned self] in
+            self._navigationItemView.alpha = 0.0
+            navigationItemViews.navigationItemView.alpha = 1.0
+        }) { [unowned self] finished in
+            if finished {
+                self._commitTransitionNavigationItemViews(navigationItemViews, navigationItems: items)
+            }
+        }
+    }
+    
+    fileprivate func _commitTransitionNavigationItemViews(_ navigationItemViews: TabNavigationItemViews, navigationItems: [TabNavigationItem]) {
+        guard navigationItemViews.itemsContainerView !== _itemsContainerView else {
+            return
+        }
+        
+        navigationItemViews.navigationItemView.alpha = 1.0
+        
+        _itemsContainerView.removeFromSuperview()
+        
+        _widthOfNavigationItemViewForZeroContent = _widthOfTransitionNavigationItemViewForZeroContent
+        _constraintBetweenTitleContainerAndItemsContainer = _constraintBetweenTransitionTitleContainerAndItemsContainer
+        
+        _itemsContainerView = navigationItemViews.itemsContainerView
+        _itemsScrollView = navigationItemViews.itemsScrollView
+        _navigationItemView = navigationItemViews.navigationItemView
+        
+        _navigationItems = navigationItems
+        
+        setNeedsDisplay()
+        layoutIfNeeded()
+        _scrollToSelectedTitleItem(false)
     }
     
     fileprivate func _addNavigationTitleItemButton(_ item: TabNavigationTitleItem) {
+        item.selectedRange = 0..<2
         let _itemButton = item._button
-        _itemButton.addTarget(self, action: #selector(_handleDidSelectTitleItem(_:)), for: .touchUpInside)
+        if !(item is TabNavigationTitleActionItem) {
+            _itemButton.addTarget(self, action: #selector(_handleDidSelectTitleItem(_:)), for: .touchUpInside)
+        }
         _itemButton.translatesAutoresizingMaskIntoConstraints = false
         
-        _contentScrollView.addSubview(_itemButton)
+        _itemButton.removeFromSuperview()
+        _navigationTitleItemView.addSubview(_itemButton)
         
-        _contentScrollView.addConstraint(NSLayoutConstraint(item: _itemButton, attribute: .leading, relatedBy: .equal, toItem: _navigationTitleItems.last?._button ?? _contentScrollView, attribute: _navigationTitleItems.last?._button != nil ? .trailing : .leading, multiplier: 1.0, constant:DefaultTabNavigationTitleItemPadding))
-        _contentScrollView.addConstraint(NSLayoutConstraint(item: __titleAlignmentLabel, attribute: .lastBaseline, relatedBy: .equal, toItem: _itemButton, attribute: .lastBaseline, multiplier: 1.0, constant: 0.0))
-        
-        if let _trailing = _trailingConstraintOflastTitleItemLabel {
-            _contentScrollView.removeConstraint(_trailing)
+        _itemButton.lastBaselineAnchor.constraint(equalTo: __titleAlignmentLabel.lastBaselineAnchor).isActive = true
+        if item is TabNavigationTitleActionItem {
+            let _trailingAnchor = _navigationTitleActionItems.last?._button.trailingAnchor ?? (_navigationTitleItems.last?._button.trailingAnchor ?? _navigationTitleItemView.leadingAnchor)
+            let _trailing = _itemButton.leadingAnchor.constraint(equalTo: _trailingAnchor, constant: DefaultTabNavigationTitleItemPadding)
+            
+            if _navigationTitleActionItems.isEmpty {
+                if let _trailingOfTitleItems = _trailingConstraintOfLastTitleItemLabel {
+                    _navigationTitleItemView.removeConstraint(_trailingOfTitleItems)
+                }
+                _trailing.isActive = true
+                _trailingConstraintOfLastTitleItemLabel = _trailing
+            } else {
+                _trailing.isActive = true
+            }
+            
+            if let _trailingOfTitleActionItems = _trailingConstraintOfLastTitleActionItemLabel {
+                _navigationTitleItemView.removeConstraint(_trailingOfTitleActionItems)
+            }
+            
+            let _trailingOfTitleActionItems = _itemButton.trailingAnchor.constraint(equalTo: _titleItemContentAlignmentView.leadingAnchor, constant: -DefaultTabNavigationTitleItemPadding)
+            _trailingOfTitleActionItems.isActive = true
+            _trailingConstraintOfLastTitleActionItemLabel = _trailingOfTitleActionItems
+        } else {
+            let _trailingAnchor = _navigationTitleItems.last?._button.trailingAnchor ?? _navigationTitleItemView.leadingAnchor
+            _itemButton.leadingAnchor.constraint(equalTo: _trailingAnchor, constant: DefaultTabNavigationTitleItemPadding).isActive = true
+            
+            if let _trailing = _trailingConstraintOfLastTitleItemLabel {
+                _navigationTitleItemView.removeConstraint(_trailing)
+            }
+            
+            let _trailing = NSLayoutConstraint(item: _navigationTitleActionItems.first?._button ?? _titleItemContentAlignmentView, attribute: .leading, relatedBy: .equal, toItem: _itemButton, attribute: .trailing, multiplier: 1.0, constant: DefaultTabNavigationTitleItemPadding)
+            _navigationTitleItemView.addConstraint(_trailing)
+            _trailingConstraintOfLastTitleItemLabel = _trailing
         }
-        let _trailing = NSLayoutConstraint(item: _contentScrollView, attribute: .trailing, relatedBy: .equal, toItem: _itemButton, attribute: .trailing, multiplier: 1.0, constant: 0.0)
-        _contentScrollView.addConstraint(_trailing)
-        _trailingConstraintOflastTitleItemLabel = _trailing
+    }
+    
+    fileprivate func _removeNavitationItemView(at index: Array<TabNavigationItem>.Index) -> (Bool, TabNavigationItem?) {
+        guard index < _navigationItems.endIndex, index >= _navigationItems.startIndex else {
+            return (false, nil)
+        }
+        
+        let item = _navigationItems[index]
+        item._view.removeFromSuperview()
+        
+        if _navigationItems.count == 1 {// Handle zero content.
+            let width = _navigationItemView.widthAnchor.constraint(equalToConstant: 0.0)
+            width.isActive = true
+            _widthOfNavigationItemViewForZeroContent = width
+        } else {
+            let _formerTrailingAnchor = index == _navigationItems.index(before: _navigationItems.endIndex) ? _navigationItemView.leadingAnchor : _navigationItems[_navigationItems.index(after: index)]._view.trailingAnchor
+            let _latterLeadingAnchor = index == _navigationItems.startIndex ? _navigationItemView.trailingAnchor : _navigationItems[_navigationItems.index(before: index)]._view.leadingAnchor
+            
+            let leading = _formerTrailingAnchor.constraint(equalTo: _latterLeadingAnchor)
+            if index == _navigationItems.startIndex {
+                leading.constant = -DefaultTabNavigationItemEdgeMargin
+            }
+            leading.isActive = true
+            if index == _navigationItems.index(before: _navigationItems.endIndex) {
+                _leadingConstraintOfLastItemView = leading
+            }
+        }
+        
+        _navigationItems.remove(at: index)
+        
+        return (true, item)
+    }
+    
+    fileprivate func _removeNavigationTitleItemButton(at index: Array<TabNavigationTitleItem>.Index) -> (Bool, TabNavigationTitleItem?) {
+        guard index < _navigationTitleItems.endIndex, index >= _navigationTitleItems.startIndex else {
+            return (false, nil)
+        }
+        
+        let item = _navigationTitleItems[index]
+        item._button.removeFromSuperview()
+        
+        let _formerTrailingAnchor = index == _navigationTitleItems.startIndex ? _navigationTitleItemView.leadingAnchor : _navigationTitleItems[_navigationTitleItems.index(before: index)]._button.trailingAnchor
+        
+        if index == _navigationTitleItems.index(before: _navigationTitleItems.endIndex) {
+            if let _firstTitleActionItem = _navigationTitleActionItems.first {
+                let _latterLeadingAnchor = _firstTitleActionItem._button.leadingAnchor
+                _formerTrailingAnchor.constraint(equalTo: _latterLeadingAnchor, constant: -DefaultTabNavigationTitleItemPadding).isActive = true
+            } else {
+                let _latterLeadingAnchor = _titleItemContentAlignmentView.leadingAnchor
+                
+                let trailing = _formerTrailingAnchor.constraint(equalTo: _latterLeadingAnchor, constant: -DefaultTabNavigationTitleItemPadding)
+                trailing.isActive = true
+                _trailingConstraintOfLastTitleItemLabel = trailing
+            }
+        } else {
+            let _latterLeadingAnchor = _navigationTitleItems[_navigationTitleItems.index(after: index)]._button.leadingAnchor
+            _formerTrailingAnchor.constraint(equalTo: _latterLeadingAnchor, constant: -DefaultTabNavigationTitleItemPadding).isActive = true
+        }
+        
+        _navigationTitleItems.remove(at: index)
+        
+        if index == _selectedTitleItemIndex, !_navigationTitleItems.isEmpty {
+            if _selectedTitleItemIndex >= _navigationTitleItems.endIndex {
+                _selectedTitleItemIndex = _navigationTitleItems.index(before: _navigationTitleItems.endIndex)
+            }
+            setSelectedTitle(at: _selectedTitleItemIndex, animated: true)
+        }
+        
+        _calculateWidthConstantOfContentAlignmentView()
+        
+        return (true, item)
+    }
+    
+    fileprivate func _removeNavigationTitleActionItemButton(at index: Array<TabNavigationTitleActionItem>.Index) -> (Bool, TabNavigationTitleActionItem?) {
+        guard index < _navigationTitleActionItems.endIndex, index >= _navigationTitleActionItems.startIndex else {
+            return (false, nil)
+        }
+        
+        let item = _navigationTitleActionItems[index]
+        item._button.removeFromSuperview()
+        
+        let _formerTrailingAnchor = index == _navigationTitleActionItems.startIndex ? (_navigationTitleItems.isEmpty ? _navigationTitleItemView.leadingAnchor : _navigationTitleItems.last!._button.trailingAnchor) : _navigationTitleActionItems[_navigationTitleActionItems.index(before: index)]._button.trailingAnchor
+        let _latterLeadingAnchor = index == _navigationTitleActionItems.index(before: _navigationTitleActionItems.endIndex) ? _titleItemContentAlignmentView.leadingAnchor : _navigationTitleActionItems[_navigationTitleActionItems.index(after: index)]._button.leadingAnchor
+        _formerTrailingAnchor.constraint(equalTo: _latterLeadingAnchor, constant: -DefaultTabNavigationTitleItemPadding).isActive = true
+        
+        _navigationTitleActionItems.remove(at: index)
+        _calculateWidthConstantOfContentAlignmentView()
+        
+        return (true, item)
     }
     
     @objc
     fileprivate func _scrollToSelectedTitleItem(_ animated: Bool = true) {
-        _contentScrollView.setContentOffset(CGPoint(x: _calculatedPositionUptoTitleItemIndex(_selectedTitleItemIndex), y: 0.0), animated: animated)
+        let _offsetX = _calculatedPositionUptoTitleItem(at: _selectedTitleItemIndex)
+        
+        guard _titleItemsScrollView.contentOffset.x != _offsetX else {
+            return
+        }
+        
+        if animated {
+            _titleItemsScrollView.delegate = _titleItemsScrollViewDelegate
+        }
+        
+        _titleItemsScrollView.setContentOffset(CGPoint(x: _offsetX, y: 0.0), animated: animated)
     }
     @objc
     fileprivate func _scrollToSelectedTitleItemWithAnimation() {
@@ -322,7 +792,24 @@ public class TabNavigationBar: UIView, UIBarPositioning {
         _scrollToSelectedTitleItem()
     }
     
-    fileprivate func _calculatedPositionUptoTitleItemIndex(_ index: Int = 0) -> CGFloat {
+    fileprivate func _calculateWidthConstantOfContentAlignmentView() {
+        if _navigationTitleActionItems.isEmpty && _navigationTitleItems.isEmpty {
+            _widthOfTitleItemContentAlignmentView?.constant = 0.0
+        } else {
+            if _navigationTitleItems.isEmpty {
+                _widthOfTitleItemContentAlignmentView?.constant = -_calculatedPositionsUptoTitleItemAtEndIndex(in: _navigationTitleActionItems).last!
+            } else if _navigationTitleActionItems.isEmpty {
+                _widthOfTitleItemContentAlignmentView?.constant = -_calculatedPositionWidthOfTitleItem(_navigationTitleItems.last!)
+            } else {
+                _widthOfTitleItemContentAlignmentView?.constant = -_calculatedPositionWidthOfTitleItem(_navigationTitleItems.last!) - _calculatedPositionsUptoTitleItemAtEndIndex(in: _navigationTitleActionItems).last!
+            }
+        }
+    }
+    
+    fileprivate func _calculatedPositionUptoTitleItem(at index: Int = 0) -> CGFloat {
+        guard !_navigationTitleItems.isEmpty else {
+            return 0.0
+        }
         assert(index < _navigationTitleItems.endIndex, "Index of title item is out of bounds.")
         var _positionX: CGFloat = 0.0
         
@@ -330,59 +817,198 @@ public class TabNavigationBar: UIView, UIBarPositioning {
             if index > _navigationTitleItems.startIndex {
                 _positionX += DefaultTabNavigationTitleItemPadding
                 let _titleItem = _navigationTitleItems[_navigationTitleItems.index(before: index)]
-                let size = (_titleItem._button.currentTitle as NSString?)?.boundingRect(with: CGSize(width: CGFloat.greatestFiniteMagnitude, height: self.bounds.height), options: [.usesLineFragmentOrigin, .usesFontLeading], attributes: [NSFontAttributeName:_titleItem._button.titleLabel != nil ? UIFont(name: _titleItem._button.titleLabel!.font.fontName, size: DefaultTitleUnselectedFontSize) as Any : UIFont.systemFont(ofSize: DefaultTitleUnselectedFontSize)], context: nil).size
+                
+                var titleString = _titleItem._button.currentTitle
+                if let _ = _titleItem.selectedRange {
+                    titleString = _titleItem._button.currentAttributedTitle?.string
+                }
+                
+                let size = (titleString as NSString?)?.boundingRect(with: CGSize(width: CGFloat.greatestFiniteMagnitude, height: self.bounds.height), options: [.usesLineFragmentOrigin, .usesFontLeading], attributes: [NSFontAttributeName:_titleItem._button.titleLabel != nil ? UIFont(name: _titleItem._button.titleLabel!.font.fontName, size: DefaultTitleUnselectedFontSize) as Any : UIFont.systemFont(ofSize: DefaultTitleUnselectedFontSize)], context: nil).size
                 _positionX += CGFloat(Double(size!.width))
             }
         }
         
         return _positionX
     }
+    
+    fileprivate func _calculatedPositionsUptoTitleItemAtEndIndex(in titleItems: [TabNavigationTitleItem]? = nil) -> [CGFloat] {
+        let items = titleItems ?? _navigationTitleItems
+        
+        var positions: [CGFloat] = []
+        var accumulatedPosition: CGFloat = 0.0
+        
+        let calculation: (Int) -> Void = { _index in
+            accumulatedPosition += DefaultTabNavigationTitleItemPadding
+            let _formerItem = items[items.index(before: _index)]
+            
+            var titleString = _formerItem._button.currentTitle
+            if let _ = _formerItem.selectedRange {
+                titleString = _formerItem._button.currentAttributedTitle?.string
+            }
+            
+            let sizeOfTitleItem = (titleString as NSString?)?.boundingRect(with: CGSize(width: CGFloat.greatestFiniteMagnitude, height: self.bounds.height), options: [.usesLineFragmentOrigin, .usesFontLeading], attributes: [NSFontAttributeName:_formerItem.titleFont(whenSelected: false) as Any], context: nil).size
+            accumulatedPosition += sizeOfTitleItem!.width
+            
+            positions.append(accumulatedPosition)
+        }
+        
+        for (index, _) in items.enumerated() {
+            // Handle start index.
+            if index == items.startIndex {
+                positions.append(0.0)
+            } else {
+                calculation(index)
+            }
+        }
+        if !items.isEmpty {
+            calculation(items.endIndex)
+        }
+        
+        return positions
+    }
+    
+    fileprivate func _calculatedPositionWidthOfTitleItem(_ lastItem: TabNavigationTitleItem) -> CGFloat {
+        var accumulatedPosition: CGFloat = /*DefaultTabNavigationTitleItemPadding*/0.0
+        
+        var titleString = lastItem._button.currentTitle
+        if let _ = lastItem.selectedRange {
+            titleString = lastItem._button.currentAttributedTitle?.string
+        }
+        
+        let sizeOfTitleItem = (titleString as NSString?)?.boundingRect(with: CGSize(width: CGFloat.greatestFiniteMagnitude, height: self.bounds.height), options: [.usesLineFragmentOrigin, .usesFontLeading], attributes: [NSFontAttributeName:lastItem._button.titleLabel != nil ? UIFont(name: lastItem._button.titleLabel!.font.fontName, size: lastItem.titleFont(whenSelected: true).pointSize) as Any : UIFont.systemFont(ofSize: DefaultTitleFontSize)], context: nil).size
+        accumulatedPosition += DefaultTabNavigationTitleItemPadding
+        accumulatedPosition += sizeOfTitleItem!.width
+        
+        return accumulatedPosition
+    }
 }
 
 extension TabNavigationBar: UIScrollViewDelegate {
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        /*
-        return
-        let _uptoSelectedTitleItemPosition = _calculatedPositionUptoTitleItemIndex(_transitonTitleItemIndex)
-        let _offset = scrollView.contentOffset.x - _uptoSelectedTitleItemPosition
-        print("Offset of selected title index: \(_offset)")
-        
-        var _comingIndex: Int = 0
-        var _comingOffsetPosition: CGFloat = 0.0
-        
-        if _offset >= 0 {
-            guard _transitonTitleItemIndex < _navigationTitleItems.index(before: _navigationTitleItems.endIndex) else { return }
-            
-            // Get coming index of navigation title items.
-            _comingIndex = _navigationTitleItems.index(after: _transitonTitleItemIndex)
-            // Calculate the offset position to the coming index.
-            _comingOffsetPosition = _calculatedPositionUptoTitleItemIndex(_comingIndex) - _uptoSelectedTitleItemPosition
-        } else {
-            guard _transitonTitleItemIndex > _navigationTitleItems.startIndex else { return }
-            
-            // Get coming index of navigation title items.
-            _comingIndex = _navigationTitleItems.index(before: _transitonTitleItemIndex)
-            // Calculate the offset position to the coming index.
-            _comingOffsetPosition = _uptoSelectedTitleItemPosition - _calculatedPositionUptoTitleItemIndex(_comingIndex)
+        guard !scrollView.isDragging, !scrollView.isTracking, !scrollView.isDecelerating else {
+            return
         }
         
-        print("Coming offset position: \(_comingOffsetPosition)")
+        let _offsetX = scrollView.contentOffset.x
         
-        if Double(_comingOffsetPosition) > fabs(Double(_offset)) {
-            let _transitionPercent = fabs(Double(_offset))/Double(_comingOffsetPosition)
-            let _deltaOfFontSize = Double(DefaultTitleFontSize - DefaultTitleUnselectedFontSize) * _transitionPercent
+        let _offsetPositionsUpToEndIndex = _calculatedPositionsUptoTitleItemAtEndIndex()
+        
+        for (_index, _titleItem) in _navigationTitleItems.enumerated() {
+            let _offsetPosition = _offsetPositionsUpToEndIndex[_index]
             
-            let _transitionTitleItem = _navigationTitleItems[_transitonTitleItemIndex]
-            let _comingTitleItem = _navigationTitleItems[_comingIndex]
+            let _comingTitleItem = _titleItem
+            let _fontName = _comingTitleItem._button.titleLabel?.font.fontName
+            let _fontSizeDelta = _comingTitleItem.titleFont(whenSelected: true).pointSize - _comingTitleItem.titleFont(whenSelected: false).pointSize
             
-            let _fontName = _transitionTitleItem._button.titleLabel?.font.fontName
+            let _unselectedColor = _comingTitleItem.titleColor(whenSelected: false)
+            let _selectedColor = _comingTitleItem.titleColor(whenSelected: true)
             
-            _transitionTitleItem._button.titleLabel?.font = UIFont(name: _fontName!, size: CGFloat(DefaultTitleFontSize) - CGFloat(_deltaOfFontSize))
-            _comingTitleItem._button.titleLabel?.font = UIFont(name: _fontName!, size: CGFloat(DefaultTitleUnselectedFontSize) + CGFloat(_deltaOfFontSize))
-        } else {
-            _transitonTitleItemIndex = _comingIndex
-            // setSelectedTitle(at: _comingIndex, animated: false)
-        } */
+            var _unselectedRed: CGFloat = 0.0
+            var _unselectedGreen: CGFloat = 0.0
+            var _unselectedBlue: CGFloat = 0.0
+            var _unselectedAlpha: CGFloat = 0.0
+            var _selectedRed: CGFloat = 0.0
+            var _selectedGreen: CGFloat = 0.0
+            var _selectedBlue: CGFloat = 0.0
+            var _selectedAlpha: CGFloat = 0.0
+            
+            _unselectedColor.getRed(&_unselectedRed, green: &_unselectedGreen, blue: &_unselectedBlue, alpha: &_unselectedAlpha)
+            _selectedColor.getRed(&_selectedRed, green: &_selectedGreen, blue: &_selectedBlue, alpha: &_selectedAlpha)
+            
+            let _redDelta = _selectedRed - _unselectedRed
+            let _greenDelta = _selectedGreen - _unselectedGreen
+            let _blueDelta = _selectedBlue - _unselectedBlue
+            let _alphaDelta = _selectedAlpha - _unselectedAlpha
+            
+            if _offsetPosition >= _offsetX { // Will Reach the threshold.
+                if _index > _navigationTitleItems.startIndex {
+                    let _formerOffsetPosition = _offsetPositionsUpToEndIndex[_navigationTitleItems.index(before: _index)]
+                    let _offsetPositionDelta = _offsetPosition - _formerOffsetPosition
+                    
+                    if _offsetPosition - _offsetX <= _offsetPositionDelta {
+                        let _relativeOffsetX = _offsetX - _formerOffsetPosition
+                        
+                        let _transitionPercent = _relativeOffsetX / _offsetPositionDelta
+                        let _relativeOfFontSize = _fontSizeDelta * _transitionPercent
+                        
+                        let _red = _unselectedRed + _redDelta * _transitionPercent
+                        let _green = _unselectedGreen + _greenDelta * _transitionPercent
+                        let _blue = _unselectedBlue + _blueDelta * _transitionPercent
+                        let _alpha = _unselectedAlpha + _alphaDelta * _transitionPercent
+                        
+                        let _color = UIColor(red: _red, green: _green, blue: _blue, alpha: _alpha)
+                        
+                        if let range = _titleItem.selectedRange {
+                            let _ns_range = NSMakeRange(range.lowerBound, range.upperBound - range.lowerBound)
+                            
+                            let attributedTitle = NSMutableAttributedString(attributedString: _comingTitleItem._button.attributedTitle(for: .normal)!)
+                            attributedTitle.addAttributes([NSFontAttributeName: UIFont(name: _fontName!, size: _comingTitleItem.titleFont(whenSelected: false).pointSize + CGFloat(_relativeOfFontSize))!], range: _ns_range)
+                            
+                            attributedTitle.addAttributes([NSForegroundColorAttributeName: _color], range: _ns_range)
+                            
+                            _comingTitleItem._button.setAttributedTitle(attributedTitle, for: .normal)
+                        } else {
+                            _comingTitleItem._button.titleLabel?.font = UIFont(name: _fontName!, size: _comingTitleItem.titleFont(whenSelected: false).pointSize + CGFloat(_relativeOfFontSize))
+                            
+                            _comingTitleItem._button.setTitleColor(_color, for: .normal)
+                            _comingTitleItem._button.tintColor = _color
+                        }
+                        
+                        if _transitionPercent > 0.5 {
+                            _selectedTitleItemIndex = _index
+                        } else {
+                            _selectedTitleItemIndex = _navigationTitleItems.index(before: _index)
+                        }
+                    } else {
+                        _titleItem.setSelected(false, animated: false)
+                    }
+                }
+            } else { // Will move from the threshold.
+                if _index < _navigationTitleItems.index(before: _navigationTitleItems.endIndex) {
+                    let _latterOffsetPosition = _offsetPositionsUpToEndIndex[_navigationTitleItems.index(after: _index)]
+                    
+                    let _offsetPositionDelta = _latterOffsetPosition - _offsetPosition
+                    
+                    if _offsetX - _offsetPosition <= _offsetPositionDelta {
+                        let _relativeOffsetX = _offsetX - _offsetPosition
+                        
+                        let _transitionPercent = _relativeOffsetX / _offsetPositionDelta
+                        let _relativeOfFontSize = _fontSizeDelta * _transitionPercent
+                        
+                        let _red = _selectedRed - _redDelta * _transitionPercent
+                        let _green = _selectedGreen - _greenDelta * _transitionPercent
+                        let _blue = _selectedBlue - _blueDelta * _transitionPercent
+                        let _alpha = _selectedAlpha - _alphaDelta * _transitionPercent
+                        
+                        let _color = UIColor(red: _red, green: _green, blue: _blue, alpha: _alpha)
+                        
+                        if let range = _titleItem.selectedRange {
+                            let _ns_range = NSMakeRange(range.lowerBound, range.upperBound - range.lowerBound)
+                            
+                            let attributedTitle = NSMutableAttributedString(attributedString: _comingTitleItem._button.attributedTitle(for: .normal)!)
+                            attributedTitle.addAttributes([NSFontAttributeName: UIFont(name: _fontName!, size: _comingTitleItem.titleFont(whenSelected: true).pointSize - CGFloat(_relativeOfFontSize))!], range: _ns_range)
+                            
+                            attributedTitle.addAttributes([NSForegroundColorAttributeName: _color], range: _ns_range)
+                            
+                            _comingTitleItem._button.setAttributedTitle(attributedTitle, for: .normal)
+                        } else {
+                            _comingTitleItem._button.titleLabel?.font = UIFont(name: _fontName!, size: _comingTitleItem.titleFont(whenSelected: true).pointSize - CGFloat(_relativeOfFontSize))
+                            
+                            _comingTitleItem._button.setTitleColor(_color, for: .normal)
+                            _comingTitleItem._button.tintColor = _color
+                        }
+                        
+                        if _transitionPercent > 0.5 {
+                            _selectedTitleItemIndex = _navigationTitleItems.index(after: _index)
+                        } else {
+                            _selectedTitleItemIndex = _index
+                        }
+                    } else {
+                        _titleItem.setSelected(false, animated: false)
+                    }
+                }
+            }
+        }
     }
     
     public func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
@@ -392,6 +1018,12 @@ extension TabNavigationBar: UIScrollViewDelegate {
     public func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(_scrollToSelectedTitleItemWithAnimation), object: nil)
         self.perform(#selector(_scrollToSelectedTitleItemWithAnimation), with: nil, afterDelay: 2.0, inModes: [.commonModes])
+    }
+}
+
+extension _TabNavigationBarScrollViewHooks: UIScrollViewDelegate {
+    func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
+        _completion()
     }
 }
 
@@ -419,28 +1051,230 @@ extension TabNavigationBar {
         get { return _navigationTitleItems }
     }
     
+    public var navigationTitleActionItems: [TabNavigationTitleActionItem] {
+        set(items) {
+            for item in items {
+                addNavigationTitleActionItem(item)
+            }
+        }
+        
+        get { return _navigationTitleActionItems }
+    }
+    
     public func addNavigationItem(_ item: TabNavigationItem) {
         _addNavigationItemView(item)
         
         _navigationItems.append(item)
     }
     
+    public func setNavigationItems(_ items: [TabNavigationItem], animated: Bool = false) {
+        _setNavigationItems(items, animated: animated)
+    }
+    @discardableResult
+    public func removeNavigationItem(_ item: TabNavigationItem) -> (Bool, TabNavigationItem?) {
+        guard let index = _navigationItems.index(of: item) else {
+            return (false, nil)
+        }
+        
+        return removeNavigationItem(at: index)
+    }
+    @discardableResult
+    public func removeNavigationItem(at index: Array<TabNavigationItem>.Index) -> (Bool, TabNavigationItem?) {
+        guard !_navigationItems.isEmpty else {
+            return (false, nil)
+        }
+        
+        return _removeNavitationItemView(at:index)
+    }
+    @discardableResult
+    public func removeFirstNavigationItem() -> (Bool, TabNavigationItem?) {
+        guard !_navigationItems.isEmpty else {
+            return (false, nil)
+        }
+        
+        return removeNavigationItem(at: _navigationItems.startIndex)
+    }
+    @discardableResult
+    public func removeLastNavigationItem() -> (Bool, TabNavigationItem?) {
+        guard !_navigationItems.isEmpty else {
+            return (false, nil)
+        }
+        
+        return removeNavigationItem(at: _navigationItems.index(before: _navigationItems.endIndex))
+    }
+    
     public func addNavigationTitleItem(_ item: TabNavigationTitleItem) {
         _addNavigationTitleItemButton(item)
         
-        _navigationTitleItems.append(item)
+        if item is TabNavigationTitleActionItem {
+            _navigationTitleActionItems.append(item as! TabNavigationTitleActionItem)
+        } else {
+            _navigationTitleItems.append(item)
+        }
+        
+        _calculateWidthConstantOfContentAlignmentView()
+    }
+    
+    @discardableResult
+    public func removeNavigationTitleItem(_ item: TabNavigationTitleItem) -> (Bool, TabNavigationTitleItem?) {
+        guard let index = _navigationTitleItems.index(of: item) else {
+            return (false, nil)
+        }
+        
+        return removeNavigaitonTitleItem(at: index)
+    }
+    @discardableResult
+    public func removeNavigaitonTitleItem(at index: Array<TabNavigationTitleItem>.Index) -> (Bool, TabNavigationTitleItem?) {
+        guard !_navigationTitleItems.isEmpty else {
+            return (false, nil)
+        }
+        return _removeNavigationTitleItemButton(at: index)
+    }
+    @discardableResult
+    public func removeFirstNavigaitonTitleItem() -> (Bool, TabNavigationTitleItem?) {
+        guard !_navigationTitleItems.isEmpty else {
+            return (false, nil)
+        }
+        return _removeNavigationTitleItemButton(at: _navigationTitleItems.startIndex)
+    }
+    @discardableResult
+    public func removeLastNavigaitonTitleItem() -> (Bool, TabNavigationTitleItem?) {
+        guard !_navigationTitleItems.isEmpty else {
+            return (false, nil)
+        }
+        return _removeNavigationTitleItemButton(at: _navigationTitleItems.index(before: _navigationTitleItems.endIndex))
+    }
+    
+    public func addNavigationTitleActionItem(_ item: TabNavigationTitleActionItem) {
+        addNavigationTitleItem(item)
+    }
+    
+    @discardableResult
+    public func removeNavigationTitleActionItem(_ item: TabNavigationTitleActionItem) -> (Bool, TabNavigationTitleActionItem?) {
+        guard let index = _navigationTitleActionItems.index(of: item) else {
+            return (false, nil)
+        }
+        
+        return removeNavigationTitleActionItem(at: index)
+    }
+    @discardableResult
+    public func removeNavigationTitleActionItem(at index: Array<TabNavigationTitleActionItem>.Index) -> (Bool, TabNavigationTitleActionItem?) {
+        guard !_navigationTitleActionItems.isEmpty else {
+            return (false, nil)
+        }
+        return _removeNavigationTitleActionItemButton(at:index)
+    }
+    @discardableResult
+    public func removeFirstNavigationTitleActionItem() -> (Bool, TabNavigationTitleActionItem?) {
+        guard !_navigationTitleActionItems.isEmpty else {
+            return (false, nil)
+        }
+        return _removeNavigationTitleActionItemButton(at: _navigationTitleActionItems.startIndex)
+    }
+    @discardableResult
+    public func removeLastNavigationTitleActionItem() -> (Bool, TabNavigationTitleActionItem?) {
+        guard !_navigationTitleActionItems.isEmpty else {
+            return (false, nil)
+        }
+        return _removeNavigationTitleActionItemButton(at: _navigationTitleActionItems.index(before: _navigationTitleActionItems.endIndex))
     }
     // MARK: - Selected title.
     public func setSelectedTitle(at index: Int, animated: Bool) {
-        assert(index < _navigationTitleItems.endIndex, "Index of title item is out of bounds.")
+        guard index >= _navigationTitleItems.startIndex && index < _navigationTitleItems.endIndex else {
+            return
+        }
+        
         _selectedTitleItemIndex = index
         
+        for item in _navigationTitleActionItems {
+            item.setSelected(false, animated: false)
+        }
         for (idx, item) in _navigationTitleItems.enumerated() {
             if idx == index {
                 item.setSelected(true, animated: animated)
+                delegate?.tabNavigationBar?(self, didSelectTitleItemAt: index)
             } else {
                 item.setSelected(false, animated: animated)
             }
+        }
+    }
+    
+    public func beginTransitionNavigationItems(_ items: [TabNavigationItem], on navigatiomItems: [TabNavigationItem] = [], `in` itemViews: TabNavigationItemViews? = nil) -> TabNavigationItemViews {
+        if !navigatiomItems.isEmpty {
+            _setNavigationItems(navigatiomItems, animated: false)
+        }
+        // Get the container views.
+        let navigationItemViews = itemViews ?? _createAndSetupNavigationItemViews()
+        for _itemView in navigationItemViews.navigationItemView.subviews {
+            _itemView.removeFromSuperview()
+        }
+        if _widthOfTransitionNavigationItemViewForZeroContent == nil {
+            let width = navigationItemViews.navigationItemView.widthAnchor.constraint(equalToConstant: 0.0)
+            width.isActive = true
+            _widthOfTransitionNavigationItemViewForZeroContent = width
+        }
+        
+        // Add item to the navigatiom item view.
+        var _transitionItems: [TabNavigationItem] = []
+        for item in items {
+            _addNavigationItemView(item, in: _transitionItems, to: navigationItemViews.navigationItemView, transition: true)
+            _transitionItems.append(item)
+        }
+        
+        navigationItemViews.navigationItemView.alpha = 0.0
+        
+        return navigationItemViews
+    }
+    
+    public func commitTransitionNavigatiomItemViews(_ itemViews: TabNavigationItemViews?, navigationItems: [TabNavigationItem], success: Bool = true) {
+        guard let navigationItemViews = itemViews else {
+            return
+        }
+        
+        if success {
+            _commitTransitionNavigationItemViews(navigationItemViews, navigationItems: navigationItems)
+        } else {
+            _navigationItemView.alpha = 1.0
+            if let _constraint = _constraintBetweenTransitionTitleContainerAndItemsContainer  {
+                removeConstraint(_constraint)
+            }
+            let _constraint = _titleItemsContainerView.trailingAnchor.constraint(equalTo: _itemsContainerView.leadingAnchor, constant: -DefaultTabNavigationItemEdgeMargin)
+            _constraint.isActive = true
+            _constraintBetweenTitleContainerAndItemsContainer = _constraint
+            navigationItemViews.itemsContainerView.removeFromSuperview()
+            
+            setNeedsDisplay()
+            layoutIfNeeded()
+            _scrollToSelectedTitleItem(true)
+        }
+    }
+    
+    public func setNestedScrollViewContentOffset(_ contentOffset: CGPoint, contentSize: CGSize, bounds: CGRect, transition itemViews: TabNavigationItemViews? = nil) {
+        let _offsetPositions = _calculatedPositionsUptoTitleItemAtEndIndex()
+        
+        let index = Int(contentOffset.x / bounds.width)
+        let beginsOffsetPosition = _offsetPositions[index]
+        
+        var _transitionOffsetDelta: CGFloat = 0.0
+        if index == _offsetPositions.index(before: _offsetPositions.endIndex) {
+            _transitionOffsetDelta = _offsetPositions[index] - _offsetPositions[_offsetPositions.index(before: index)]
+        } else if index == _offsetPositions.startIndex {
+            _transitionOffsetDelta = _offsetPositions[_offsetPositions.index(after: index)]
+        } else {
+            _transitionOffsetDelta = _offsetPositions[_offsetPositions.index(after: index)] - _offsetPositions[index]
+        }
+        
+        let _signedPercent = contentOffset.x.truncatingRemainder(dividingBy: bounds.width) / bounds.width
+        let _offsetXDelta = _transitionOffsetDelta * _signedPercent
+        let _offsetX = beginsOffsetPosition + _offsetXDelta
+        
+        _titleItemsScrollView.setContentOffset(CGPoint(x: _offsetX, y: 0.0), animated: false)
+        
+        if let navigationItemView = itemViews?.navigationItemView {
+            if _signedPercent >= navigationItemView.alpha {
+                navigationItemView.alpha = _signedPercent
+            }
+            _navigationItemView.alpha = 1-navigationItemView.alpha
         }
     }
 }
