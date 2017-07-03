@@ -632,10 +632,6 @@ public class TabNavigationBar: UIView, UIBarPositioning {
         _navigationItemView = navigationItemViews.navigationItemView
         
         _navigationItems = navigationItems
-        
-        // setNeedsDisplay()
-        // layoutIfNeeded()
-        // _scrollToSelectedTitleItem(false)
     }
     
     fileprivate func _addNavigationTitleItemButton(_ item: TabNavigationTitleItem) {
@@ -1248,10 +1244,6 @@ extension TabNavigationBar {
             _constraint.isActive = true
             _constraintBetweenTitleContainerAndItemsContainer = _constraint
             navigationItemViews.itemsContainerView.removeFromSuperview()
-            
-            // setNeedsDisplay()
-            // layoutIfNeeded()
-            // _scrollToSelectedTitleItem(true)
         }
     }
     
