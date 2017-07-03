@@ -1,41 +1,76 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12121" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="6tU-aW-qH7">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12121" systemVersion="17A291j" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="6tU-aW-qH7">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12089"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12121"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
+    <customFonts key="customFonts">
+        <array key="PingFang.ttc">
+            <string>PingFangTC-Regular</string>
+        </array>
+    </customFonts>
     <scenes>
         <!--Home-->
         <scene sceneID="I8o-qi-0GR">
             <objects>
                 <tableViewController title="Home" id="6tU-aW-qH7" customClass="HomeViewController" customModule="AxReminder" customModuleProvider="target" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="Iz1-3a-H19">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" keyboardDismissMode="onDrag" dataMode="prototypes" style="grouped" separatorStyle="none" allowsSelection="NO" rowHeight="44" sectionHeaderHeight="18" sectionFooterHeight="18" id="Iz1-3a-H19">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="7ZE-Sj-HfP">
-                                <rect key="frame" x="0.0" y="28" width="375" height="44"/>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="_HomeTableViweCell" rowHeight="63" id="7ZE-Sj-HfP" customClass="HomeTableViewCell" customModule="AxReminder" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="55.5" width="375" height="63"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="7ZE-Sj-HfP" id="8Ge-fM-X7A">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="63"/>
                                     <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cJA-68-e1b">
+                                            <rect key="frame" x="3" y="12" width="44" height="44"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="44" id="GQP-GY-OXH"/>
+                                                <constraint firstAttribute="width" constant="44" id="vf3-Vr-f11"/>
+                                            </constraints>
+                                            <state key="normal" image="unselected"/>
+                                        </button>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="#工作#明天给省公司发邮件，说明项目进度以及后期安排" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="k46-dr-8K1">
+                                            <rect key="frame" x="50" y="10" width="315" height="48"/>
+                                            <fontDescription key="fontDescription" name="PingFangTC-Regular" family="PingFang TC" pointSize="15"/>
+                                            <color key="textColor" red="0.1333333333" green="0.13725490200000001" blue="0.1647058824" alpha="1" colorSpace="calibratedRGB"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstAttribute="bottom" secondItem="k46-dr-8K1" secondAttribute="bottom" constant="5" id="FCx-Uw-ZTd"/>
+                                        <constraint firstItem="k46-dr-8K1" firstAttribute="leading" secondItem="cJA-68-e1b" secondAttribute="trailing" constant="3" id="X7S-Dh-9X7"/>
+                                        <constraint firstItem="k46-dr-8K1" firstAttribute="top" secondItem="8Ge-fM-X7A" secondAttribute="top" constant="10" id="fdg-gC-HPD"/>
+                                        <constraint firstAttribute="trailing" secondItem="k46-dr-8K1" secondAttribute="trailing" constant="10" id="fuq-jY-WwX"/>
+                                        <constraint firstItem="k46-dr-8K1" firstAttribute="centerY" secondItem="cJA-68-e1b" secondAttribute="centerY" id="i3H-ug-yc6"/>
+                                        <constraint firstItem="cJA-68-e1b" firstAttribute="leading" secondItem="8Ge-fM-X7A" secondAttribute="leading" constant="3" id="nvT-HL-jUi"/>
+                                    </constraints>
                                 </tableViewCellContentView>
                             </tableViewCell>
                         </prototypes>
+                        <sections/>
                         <connections>
                             <outlet property="dataSource" destination="6tU-aW-qH7" id="Q0l-Lg-7gi"/>
                             <outlet property="delegate" destination="6tU-aW-qH7" id="cY6-Bv-Izm"/>
                         </connections>
                     </tableView>
+                    <navigationItem key="navigationItem" title="Home" id="Cr7-QV-oSg"/>
+                    <nil key="simulatedStatusBarMetrics"/>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="GVy-m9-76e" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-78" y="34"/>
+            <point key="canvasLocation" x="-79.200000000000003" y="33.733133433283363"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="unselected" width="20" height="19"/>
+    </resources>
 </document>

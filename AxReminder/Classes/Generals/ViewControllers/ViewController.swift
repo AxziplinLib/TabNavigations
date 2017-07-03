@@ -7,49 +7,16 @@
 //
 
 import UIKit
+import AXResponderSchemaKit
+
+protocol StoryboardLoadable: class {
+    static func instance(from storyboard: UIStoryboard) -> Self?
+}
 
 class ViewController: UIViewController {
-    var _navigationBar: TabNavigationBar?
-    
-
     override func viewDidLoad() {
         super.viewDidLoad()
-        let navigationBar = TabNavigationBar()
-        navigationBar.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(navigationBar)
-        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[navigationBar]|", options: [], metrics: nil, views: ["navigationBar":navigationBar]))
-        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[navigationBar(64)]", options: [], metrics: nil, views: ["navigationBar":navigationBar]))
-        
-        // navigationBar.title = "主页"
-        navigationBar.addNavigationTitleItem(TabNavigationTitleItem(title: "主页"))
-        navigationBar.addNavigationTitleItem(TabNavigationTitleItem(title: "分类"))
-        navigationBar.addNavigationTitleItem(TabNavigationTitleItem(title: "设置"))
-        navigationBar.addNavigationTitleItem(TabNavigationTitleItem(title: "随意"))
-        navigationBar.addNavigationTitleItem(TabNavigationTitleItem(title: "随意"))
-        navigationBar.addNavigationTitleItem(TabNavigationTitleItem(title: "随意"))
-        navigationBar.addNavigationTitleItem(TabNavigationTitleItem(title: "随意"))
-        navigationBar.addNavigationTitleItem(TabNavigationTitleItem(title: "随意"))
-        navigationBar.addNavigationTitleItem(TabNavigationTitleItem(title: "随意"))
-        navigationBar.addNavigationTitleItem(TabNavigationTitleItem(title: "随意"))
-        navigationBar.addNavigationTitleItem(TabNavigationTitleItem(title: "随意"))
-        navigationBar.addNavigationItem(TabNavigationItem(image: #imageLiteral(resourceName: "add"), target: self, selector: #selector(_handleConfirm(_:))))
-        navigationBar.addNavigationItem(TabNavigationItem(image: #imageLiteral(resourceName: "search"), target: self, selector: #selector(_handleConfirm(_:))))
-        navigationBar.setSelectedTitle(at: 0, animated: false)
-        _navigationBar = navigationBar
         // Do any additional setup after loading the view.
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
-        // DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
-            // self._navigationBar!.setSelectedTitle(at: 0, animated: true)
-        // }
-    }
-    
-    @objc
-    func _handleConfirm(_ sender: AnyObject?) {
-        print("Confirm")
     }
 
     override func didReceiveMemoryWarning() {
