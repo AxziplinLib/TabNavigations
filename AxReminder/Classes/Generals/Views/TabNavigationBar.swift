@@ -49,8 +49,7 @@ private class _TabNavigationItemView: UIView {
         let button = _TabNavigationItemButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.backgroundColor = UIColor.clear
-        button.titleLabel?.font = UIFont(name: "PingFangTC-Semibold", size: DefaultTabNavigationItemFontSize)
-        // button.tintColor =
+        button.titleLabel?.font = UIFont(name: "PingFangSC-Semibold", size: DefaultTabNavigationItemFontSize)
         return button
     }()
     
@@ -165,7 +164,7 @@ public class TabNavigationTitleItem: NSObject {
     }
     
     private var _selectionTitleColors: [Bool: UIColor] = [true: UIColor(hex: "4A4A4A"), false: UIColor(hex: "CCCCCC")]
-    private var _selectionTitleFonts: [Bool: UIFont] = [true: UIFont(name: "PingFangTC-Semibold", size: DefaultTitleFontSize)!, false: UIFont(name: "PingFangTC-Semibold", size: DefaultTitleUnselectedFontSize)!]
+    private var _selectionTitleFonts: [Bool: UIFont] = [true: UIFont(name: "PingFangSC-Semibold", size: DefaultTitleFontSize)!, false: UIFont(name: "PingFangSC-Semibold", size: DefaultTitleUnselectedFontSize)!]
     
     public func setTitleColor(_ titleColor: UIColor, whenSelected selected: Bool) {
         _selectionTitleColors[selected] = titleColor
@@ -176,6 +175,9 @@ public class TabNavigationTitleItem: NSObject {
     
     public func setTitleFont(_ titleFont: UIFont, whenSelected selected: Bool) {
         _selectionTitleFonts[selected] = titleFont
+        if _selectionTitleFonts[true]!.fontName != _selectionTitleFonts[false]!.fontName {
+            fatalError("Font for selected state and font for unselected state must have the same font family and name.")
+        }
     }
     public func titleFont(whenSelected selected: Bool) -> UIFont {
         return _selectionTitleFonts[selected]!
@@ -325,9 +327,9 @@ public class TabNavigationBar: UIView, UIBarPositioning {
     // MARK: - Private Properties.
     private lazy var __titleAlignmentLabel: UILabel = { () -> UILabel in
         let label = UILabel()
-        label.text = "_|_"
+        label.text = "AL"
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = UIFont(name: "PingFangTC-Semibold", size: DefaultTitleFontSize)
+        label.font = UIFont(name: "PingFangSC-Semibold", size: DefaultTitleFontSize)
         label.textColor = .clear
         label.backgroundColor = .clear
         return label
@@ -631,13 +633,12 @@ public class TabNavigationBar: UIView, UIBarPositioning {
         
         _navigationItems = navigationItems
         
-        setNeedsDisplay()
-        layoutIfNeeded()
-        _scrollToSelectedTitleItem(false)
+        // setNeedsDisplay()
+        // layoutIfNeeded()
+        // _scrollToSelectedTitleItem(false)
     }
     
     fileprivate func _addNavigationTitleItemButton(_ item: TabNavigationTitleItem) {
-        item.selectedRange = 0..<2
         let _itemButton = item._button
         if !(item is TabNavigationTitleActionItem) {
             _itemButton.addTarget(self, action: #selector(_handleDidSelectTitleItem(_:)), for: .touchUpInside)
@@ -823,7 +824,7 @@ public class TabNavigationBar: UIView, UIBarPositioning {
                     titleString = _titleItem._button.currentAttributedTitle?.string
                 }
                 
-                let size = (titleString as NSString?)?.boundingRect(with: CGSize(width: CGFloat.greatestFiniteMagnitude, height: self.bounds.height), options: [.usesLineFragmentOrigin, .usesFontLeading], attributes: [NSFontAttributeName:_titleItem._button.titleLabel != nil ? UIFont(name: _titleItem._button.titleLabel!.font.fontName, size: DefaultTitleUnselectedFontSize) as Any : UIFont.systemFont(ofSize: DefaultTitleUnselectedFontSize)], context: nil).size
+                let size = (titleString as NSString?)?.boundingRect(with: CGSize(width: CGFloat.greatestFiniteMagnitude, height: self.bounds.height), options: [.usesLineFragmentOrigin, .usesFontLeading], attributes: [NSFontAttributeName:_titleItem.titleFont(whenSelected: false)], context: nil).size
                 _positionX += CGFloat(Double(size!.width))
             }
         }
@@ -846,7 +847,7 @@ public class TabNavigationBar: UIView, UIBarPositioning {
                 titleString = _formerItem._button.currentAttributedTitle?.string
             }
             
-            let sizeOfTitleItem = (titleString as NSString?)?.boundingRect(with: CGSize(width: CGFloat.greatestFiniteMagnitude, height: self.bounds.height), options: [.usesLineFragmentOrigin, .usesFontLeading], attributes: [NSFontAttributeName:_formerItem.titleFont(whenSelected: false) as Any], context: nil).size
+            let sizeOfTitleItem = (titleString as NSString?)?.boundingRect(with: CGSize(width: CGFloat.greatestFiniteMagnitude, height: self.bounds.height), options: [.usesLineFragmentOrigin], attributes: [NSFontAttributeName:_formerItem.titleFont(whenSelected: false) as Any], context: nil).size
             accumulatedPosition += sizeOfTitleItem!.width
             
             positions.append(accumulatedPosition)
@@ -875,11 +876,30 @@ public class TabNavigationBar: UIView, UIBarPositioning {
             titleString = lastItem._button.currentAttributedTitle?.string
         }
         
-        let sizeOfTitleItem = (titleString as NSString?)?.boundingRect(with: CGSize(width: CGFloat.greatestFiniteMagnitude, height: self.bounds.height), options: [.usesLineFragmentOrigin, .usesFontLeading], attributes: [NSFontAttributeName:lastItem._button.titleLabel != nil ? UIFont(name: lastItem._button.titleLabel!.font.fontName, size: lastItem.titleFont(whenSelected: true).pointSize) as Any : UIFont.systemFont(ofSize: DefaultTitleFontSize)], context: nil).size
+        let sizeOfTitleItem = (titleString as NSString?)?.boundingRect(with: CGSize(width: CGFloat.greatestFiniteMagnitude, height: self.bounds.height), options: [.usesLineFragmentOrigin], attributes: [NSFontAttributeName:lastItem.titleFont(whenSelected: true) as Any], context: nil).size
         accumulatedPosition += DefaultTabNavigationTitleItemPadding
         accumulatedPosition += sizeOfTitleItem!.width
         
         return accumulatedPosition
+    }
+}
+
+extension UIColor {
+    fileprivate typealias ColorComponents = (red: CGFloat, green: CGFloat, blue: CGFloat, alpha: CGFloat)
+    fileprivate var components: ColorComponents {
+        get {
+            var _red: CGFloat = 0.0
+            var _green: CGFloat = 0.0
+            var _blue: CGFloat = 0.0
+            var _alpha: CGFloat = 0.0
+            getRed(&_red, green: &_green, blue: &_blue, alpha: &_alpha)
+            return (_red, _green, _blue, _alpha)
+        }
+    }
+    
+    fileprivate class func diff(from fromComponents: ColorComponents, to components: ColorComponents) -> ColorComponents {
+        let _components = fromComponents
+        return (_components.red - components.red, _components.green - components.green, _components.blue - components.blue, _components.alpha - components.alpha)
     }
 }
 
@@ -897,28 +917,12 @@ extension TabNavigationBar: UIScrollViewDelegate {
             let _offsetPosition = _offsetPositionsUpToEndIndex[_index]
             
             let _comingTitleItem = _titleItem
-            let _fontName = _comingTitleItem._button.titleLabel?.font.fontName
             let _fontSizeDelta = _comingTitleItem.titleFont(whenSelected: true).pointSize - _comingTitleItem.titleFont(whenSelected: false).pointSize
             
-            let _unselectedColor = _comingTitleItem.titleColor(whenSelected: false)
-            let _selectedColor = _comingTitleItem.titleColor(whenSelected: true)
+            let _unselectedColorComponents = _comingTitleItem.titleColor(whenSelected: false).components
+            let _selectedColorComponents = _comingTitleItem.titleColor(whenSelected: true).components
             
-            var _unselectedRed: CGFloat = 0.0
-            var _unselectedGreen: CGFloat = 0.0
-            var _unselectedBlue: CGFloat = 0.0
-            var _unselectedAlpha: CGFloat = 0.0
-            var _selectedRed: CGFloat = 0.0
-            var _selectedGreen: CGFloat = 0.0
-            var _selectedBlue: CGFloat = 0.0
-            var _selectedAlpha: CGFloat = 0.0
-            
-            _unselectedColor.getRed(&_unselectedRed, green: &_unselectedGreen, blue: &_unselectedBlue, alpha: &_unselectedAlpha)
-            _selectedColor.getRed(&_selectedRed, green: &_selectedGreen, blue: &_selectedBlue, alpha: &_selectedAlpha)
-            
-            let _redDelta = _selectedRed - _unselectedRed
-            let _greenDelta = _selectedGreen - _unselectedGreen
-            let _blueDelta = _selectedBlue - _unselectedBlue
-            let _alphaDelta = _selectedAlpha - _unselectedAlpha
+            let _selectedDiffToUnselectedColorComponents = UIColor.diff(from: _selectedColorComponents, to: _unselectedColorComponents)
             
             if _offsetPosition >= _offsetX { // Will Reach the threshold.
                 if _index > _navigationTitleItems.startIndex {
@@ -931,24 +935,25 @@ extension TabNavigationBar: UIScrollViewDelegate {
                         let _transitionPercent = _relativeOffsetX / _offsetPositionDelta
                         let _relativeOfFontSize = _fontSizeDelta * _transitionPercent
                         
-                        let _red = _unselectedRed + _redDelta * _transitionPercent
-                        let _green = _unselectedGreen + _greenDelta * _transitionPercent
-                        let _blue = _unselectedBlue + _blueDelta * _transitionPercent
-                        let _alpha = _unselectedAlpha + _alphaDelta * _transitionPercent
+                        let _red = _unselectedColorComponents.red + _selectedDiffToUnselectedColorComponents.red * _transitionPercent
+                        let _green = _unselectedColorComponents.green + _selectedDiffToUnselectedColorComponents.green * _transitionPercent
+                        let _blue = _unselectedColorComponents.blue + _selectedDiffToUnselectedColorComponents.blue * _transitionPercent
+                        let _alpha = _unselectedColorComponents.alpha + _selectedDiffToUnselectedColorComponents.alpha * _transitionPercent
                         
                         let _color = UIColor(red: _red, green: _green, blue: _blue, alpha: _alpha)
+                        let _fontName = _comingTitleItem.titleFont(whenSelected: true).fontName
                         
                         if let range = _titleItem.selectedRange {
                             let _ns_range = NSMakeRange(range.lowerBound, range.upperBound - range.lowerBound)
                             
                             let attributedTitle = NSMutableAttributedString(attributedString: _comingTitleItem._button.attributedTitle(for: .normal)!)
-                            attributedTitle.addAttributes([NSFontAttributeName: UIFont(name: _fontName!, size: _comingTitleItem.titleFont(whenSelected: false).pointSize + CGFloat(_relativeOfFontSize))!], range: _ns_range)
+                            attributedTitle.addAttributes([NSFontAttributeName: UIFont(name: _fontName, size: _comingTitleItem.titleFont(whenSelected: false).pointSize + CGFloat(_relativeOfFontSize))!], range: _ns_range)
                             
                             attributedTitle.addAttributes([NSForegroundColorAttributeName: _color], range: _ns_range)
                             
                             _comingTitleItem._button.setAttributedTitle(attributedTitle, for: .normal)
                         } else {
-                            _comingTitleItem._button.titleLabel?.font = UIFont(name: _fontName!, size: _comingTitleItem.titleFont(whenSelected: false).pointSize + CGFloat(_relativeOfFontSize))
+                            _comingTitleItem._button.titleLabel?.font = UIFont(name: _fontName, size: _comingTitleItem.titleFont(whenSelected: false).pointSize + CGFloat(_relativeOfFontSize))
                             
                             _comingTitleItem._button.setTitleColor(_color, for: .normal)
                             _comingTitleItem._button.tintColor = _color
@@ -975,24 +980,26 @@ extension TabNavigationBar: UIScrollViewDelegate {
                         let _transitionPercent = _relativeOffsetX / _offsetPositionDelta
                         let _relativeOfFontSize = _fontSizeDelta * _transitionPercent
                         
-                        let _red = _selectedRed - _redDelta * _transitionPercent
-                        let _green = _selectedGreen - _greenDelta * _transitionPercent
-                        let _blue = _selectedBlue - _blueDelta * _transitionPercent
-                        let _alpha = _selectedAlpha - _alphaDelta * _transitionPercent
+                        let _red = _selectedColorComponents.red - _selectedDiffToUnselectedColorComponents.red * _transitionPercent
+                        let _green = _selectedColorComponents.green - _selectedDiffToUnselectedColorComponents.green * _transitionPercent
+                        let _blue = _selectedColorComponents.blue - _selectedDiffToUnselectedColorComponents.blue * _transitionPercent
+                        let _alpha = _selectedColorComponents.alpha - _selectedDiffToUnselectedColorComponents.alpha * _transitionPercent
                         
                         let _color = UIColor(red: _red, green: _green, blue: _blue, alpha: _alpha)
+                        let _fontName = _comingTitleItem.titleFont(whenSelected: false).fontName
+                        print("Unselected font name: " + _fontName + "Font family: " + _comingTitleItem.titleFont(whenSelected: true).familyName)
                         
                         if let range = _titleItem.selectedRange {
                             let _ns_range = NSMakeRange(range.lowerBound, range.upperBound - range.lowerBound)
                             
                             let attributedTitle = NSMutableAttributedString(attributedString: _comingTitleItem._button.attributedTitle(for: .normal)!)
-                            attributedTitle.addAttributes([NSFontAttributeName: UIFont(name: _fontName!, size: _comingTitleItem.titleFont(whenSelected: true).pointSize - CGFloat(_relativeOfFontSize))!], range: _ns_range)
+                            attributedTitle.addAttributes([NSFontAttributeName: UIFont(name: _fontName, size: _comingTitleItem.titleFont(whenSelected: true).pointSize - CGFloat(_relativeOfFontSize))!], range: _ns_range)
                             
                             attributedTitle.addAttributes([NSForegroundColorAttributeName: _color], range: _ns_range)
                             
                             _comingTitleItem._button.setAttributedTitle(attributedTitle, for: .normal)
                         } else {
-                            _comingTitleItem._button.titleLabel?.font = UIFont(name: _fontName!, size: _comingTitleItem.titleFont(whenSelected: true).pointSize - CGFloat(_relativeOfFontSize))
+                            _comingTitleItem._button.titleLabel?.font = UIFont(name: _fontName, size: _comingTitleItem.titleFont(whenSelected: true).pointSize - CGFloat(_relativeOfFontSize))
                             
                             _comingTitleItem._button.setTitleColor(_color, for: .normal)
                             _comingTitleItem._button.tintColor = _color
@@ -1243,9 +1250,9 @@ extension TabNavigationBar {
             _constraintBetweenTitleContainerAndItemsContainer = _constraint
             navigationItemViews.itemsContainerView.removeFromSuperview()
             
-            setNeedsDisplay()
-            layoutIfNeeded()
-            _scrollToSelectedTitleItem(true)
+            // setNeedsDisplay()
+            // layoutIfNeeded()
+            // _scrollToSelectedTitleItem(true)
         }
     }
     
