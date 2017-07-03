@@ -987,8 +987,7 @@ extension TabNavigationBar: UIScrollViewDelegate {
                         
                         let _color = UIColor(red: _red, green: _green, blue: _blue, alpha: _alpha)
                         let _fontName = _comingTitleItem.titleFont(whenSelected: false).fontName
-                        print("Unselected font name: " + _fontName + "Font family: " + _comingTitleItem.titleFont(whenSelected: true).familyName)
-                        
+
                         if let range = _titleItem.selectedRange {
                             let _ns_range = NSMakeRange(range.lowerBound, range.upperBound - range.lowerBound)
                             
