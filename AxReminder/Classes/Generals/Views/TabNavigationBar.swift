@@ -318,7 +318,12 @@ private func _createGeneralScrollView(alwaysBounceHorizontal: Bool = true) -> UI
 }
 
 extension TabNavigationBar {
-    public typealias TabNavigationItemViews = (itemsContainerView: UIView, itemsScrollView: UIScrollView, navigationItemView: UIView)
+    enum TabNavigationItemViewsType {
+        case titleItem
+        case navigationItem
+    }
+    
+    public typealias TabNavigationItemViews = (itemsContainerView: UIView, itemsScrollView: UIScrollView, itemsView: UIView)
 }
 
 public class TabNavigationBar: UIView, UIBarPositioning {
@@ -599,15 +604,15 @@ public class TabNavigationBar: UIView, UIBarPositioning {
         // Add item to the navigatiom item view.
         var _transitionItems: [TabNavigationItem] = []
         for item in items {
-            _addNavigationItemView(item, in: _transitionItems, to: navigationItemViews.navigationItemView, transition: true)
+            _addNavigationItemView(item, in: _transitionItems, to: navigationItemViews.itemsView, transition: true)
             _transitionItems.append(item)
         }
         
-        navigationItemViews.navigationItemView.alpha = 0.0
+        navigationItemViews.itemsView.alpha = 0.0
         // Animate the trainsition:
         UIView.animate(withDuration: 0.25, delay: 0.0, options: [], animations: { [unowned self] in
             self._navigationItemView.alpha = 0.0
-            navigationItemViews.navigationItemView.alpha = 1.0
+            navigationItemViews.itemsView.alpha = 1.0
         }) { [unowned self] finished in
             if finished {
                 self._commitTransitionNavigationItemViews(navigationItemViews, navigationItems: items)
@@ -620,7 +625,7 @@ public class TabNavigationBar: UIView, UIBarPositioning {
             return
         }
         
-        navigationItemViews.navigationItemView.alpha = 1.0
+        navigationItemViews.itemsView.alpha = 1.0
         
         _itemsContainerView.removeFromSuperview()
         
@@ -629,7 +634,7 @@ public class TabNavigationBar: UIView, UIBarPositioning {
         
         _itemsContainerView = navigationItemViews.itemsContainerView
         _itemsScrollView = navigationItemViews.itemsScrollView
-        _navigationItemView = navigationItemViews.navigationItemView
+        _navigationItemView = navigationItemViews.itemsView
         
         _navigationItems = navigationItems
     }
@@ -681,7 +686,20 @@ public class TabNavigationBar: UIView, UIBarPositioning {
     }
     
     fileprivate func _setNavigationTitleItems(_ items: [TabNavigationTitleItem], animated: Bool = false) {
+        guard animated else {
+            // Remove all the former title items and title action items.
+            while _navigationTitleActionItems.last != nil {
+                removeLastNavigationTitleActionItem()
+            }; while _navigationTitleItems.last != nil {
+                removeLastNavigaitonTitleItem()
+            }
+            // Set new items to the view.
+            navigationTitleItems = items
+            return
+        }
         
+        // Create container views.
+        let titleItemViews = _createAndSetupNavigationItemViews()
     }
     
     fileprivate func _removeNavitationItemView(at index: Array<TabNavigationItem>.Index) -> (Bool, TabNavigationItem?) {
@@ -1145,7 +1163,7 @@ extension TabNavigationBar {
     }
     
     public func setNavigationTitleItems(_ items: [TabNavigationTitleItem], animated: Bool = false) {
-        _setNavigationTitleItems(items, animated: animate)
+        _setNavigationTitleItems(items, animated: animated)
     }
     @discardableResult
     public func removeNavigationTitleItem(_ item: TabNavigationTitleItem) -> (Bool, TabNavigationTitleItem?) {
@@ -1241,11 +1259,11 @@ extension TabNavigationBar {
         }
         // Get the container views.
         let navigationItemViews = itemViews ?? _createAndSetupNavigationItemViews()
-        for _itemView in navigationItemViews.navigationItemView.subviews {
+        for _itemView in navigationItemViews.itemsView.subviews {
             _itemView.removeFromSuperview()
         }
         if _widthOfTransitionNavigationItemViewForZeroContent == nil {
-            let width = navigationItemViews.navigationItemView.widthAnchor.constraint(equalToConstant: 0.0)
+            let width = navigationItemViews.itemsView.widthAnchor.constraint(equalToConstant: 0.0)
             width.isActive = true
             _widthOfTransitionNavigationItemViewForZeroContent = width
         }
@@ -1253,11 +1271,11 @@ extension TabNavigationBar {
         // Add item to the navigatiom item view.
         var _transitionItems: [TabNavigationItem] = []
         for item in items {
-            _addNavigationItemView(item, in: _transitionItems, to: navigationItemViews.navigationItemView, transition: true)
+            _addNavigationItemView(item, in: _transitionItems, to: navigationItemViews.itemsView, transition: true)
             _transitionItems.append(item)
         }
         
-        navigationItemViews.navigationItemView.alpha = 0.0
+        navigationItemViews.itemsView.alpha = 0.0
         
         return navigationItemViews
     }
@@ -1302,7 +1320,7 @@ extension TabNavigationBar {
         
         _titleItemsScrollView.setContentOffset(CGPoint(x: _offsetX, y: 0.0), animated: false)
         
-        if let navigationItemView = itemViews?.navigationItemView {
+        if let navigationItemView = itemViews?.itemsView {
             if _signedPercent >= navigationItemView.alpha {
                 navigationItemView.alpha = _signedPercent
             }
