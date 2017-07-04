@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		CBC829E119C4BD45BA6CBD32 /* Pods_AxReminder.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 719FE2FF805CC657319C7AF4 /* Pods_AxReminder.framework */; };
+		DC1782F01F0A407F000738E9 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC1782EF1F0A407F000738E9 /* SettingsViewController.swift */; };
+		DC1782F31F0A40B5000738E9 /* Settings.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DC1782F51F0A40B5000738E9 /* Settings.storyboard */; };
+		DC1782FA1F0A4DB9000738E9 /* ApplicationColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC1782F91F0A4DB9000738E9 /* ApplicationColor.swift */; };
 		DC2577E21F010FC000C0C98E /* Colours-5.14.0.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC2577E11F010FB200C0C98E /* Colours-5.14.0.swift */; };
 		DC8DD7BD1F00D6C9006D9706 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DC8DD7BC1F00D6C9006D9706 /* Assets.xcassets */; };
 		DC8DD7CB1F00D6C9006D9706 /* AxReminderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC8DD7CA1F00D6C9006D9706 /* AxReminderTests.swift */; };
@@ -52,6 +55,10 @@
 		048C31421983B986DB2EC082 /* Pods-AxReminder.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AxReminder.release.xcconfig"; path = "Pods/Target Support Files/Pods-AxReminder/Pods-AxReminder.release.xcconfig"; sourceTree = "<group>"; };
 		658981E75E76212318520A1E /* Pods-AxReminder.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AxReminder.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AxReminder/Pods-AxReminder.debug.xcconfig"; sourceTree = "<group>"; };
 		719FE2FF805CC657319C7AF4 /* Pods_AxReminder.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AxReminder.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		DC1782EF1F0A407F000738E9 /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
+		DC1782F41F0A40B5000738E9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Settings.storyboard; sourceTree = "<group>"; };
+		DC1782F71F0A40B8000738E9 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Settings.strings"; sourceTree = "<group>"; };
+		DC1782F91F0A4DB9000738E9 /* ApplicationColor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApplicationColor.swift; sourceTree = "<group>"; };
 		DC2577E11F010FB200C0C98E /* Colours-5.14.0.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Colours-5.14.0.swift"; sourceTree = "<group>"; };
 		DC8DD7AF1F00D6C9006D9706 /* AxReminder.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AxReminder.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DC8DD7BC1F00D6C9006D9706 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -128,6 +135,38 @@
 				719FE2FF805CC657319C7AF4 /* Pods_AxReminder.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		DC1782EC1F0A4044000738E9 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				DC1782ED1F0A4044000738E9 /* ViewControllers */,
+				DC1782EE1F0A4044000738E9 /* Views */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		DC1782ED1F0A4044000738E9 /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				DC1782EF1F0A407F000738E9 /* SettingsViewController.swift */,
+			);
+			path = ViewControllers;
+			sourceTree = "<group>";
+		};
+		DC1782EE1F0A4044000738E9 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		DC1782F81F0A4D96000738E9 /* Others */ = {
+			isa = PBXGroup;
+			children = (
+				DC1782F91F0A4DB9000738E9 /* ApplicationColor.swift */,
+			);
+			path = Others;
 			sourceTree = "<group>";
 		};
 		DC2577E01F010F9900C0C98E /* Dependencies */ = {
@@ -225,6 +264,7 @@
 				DC8DD7EC1F00DE8B006D9706 /* Main.storyboard */,
 				DCB259FF1F039647001EFC1C /* Home.storyboard */,
 				DCB25A151F03B048001EFC1C /* Category.storyboard */,
+				DC1782F51F0A40B5000738E9 /* Settings.storyboard */,
 			);
 			path = Storyboards;
 			sourceTree = "<group>";
@@ -243,6 +283,7 @@
 			children = (
 				DC8DD7FB1F00E37B006D9706 /* Home */,
 				DCB25A0C1F03AFF7001EFC1C /* Category */,
+				DC1782EC1F0A4044000738E9 /* Settings */,
 			);
 			path = Modules;
 			sourceTree = "<group>";
@@ -254,6 +295,7 @@
 				DC8DD7F31F00DF4F006D9706 /* Views */,
 				DCB25A191F03B4A2001EFC1C /* Cells */,
 				DCB643631F02479A00D89256 /* Animations */,
+				DC1782F81F0A4D96000738E9 /* Others */,
 			);
 			path = Generals;
 			sourceTree = "<group>";
@@ -440,6 +482,7 @@
 			knownRegions = (
 				en,
 				Base,
+				"zh-Hans",
 			);
 			mainGroup = DC8DD7A61F00D6C9006D9706;
 			productRefGroup = DC8DD7B01F00D6C9006D9706 /* Products */;
@@ -464,6 +507,7 @@
 				DC8DD7F91F00E291006D9706 /* Main.storyboard in Resources */,
 				DC8DD7BD1F00D6C9006D9706 /* Assets.xcassets in Resources */,
 				DCB259FD1F039647001EFC1C /* Home.storyboard in Resources */,
+				DC1782F31F0A40B5000738E9 /* Settings.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -536,6 +580,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DC1782FA1F0A4DB9000738E9 /* ApplicationColor.swift in Sources */,
 				DCB643651F0247F300D89256 /* POPAnimatableProperty.swift in Sources */,
 				DC2577E21F010FC000C0C98E /* Colours-5.14.0.swift in Sources */,
 				DCB25A1D1F03B4D3001EFC1C /* HomeTableViewCell.swift in Sources */,
@@ -545,6 +590,7 @@
 				DC8DD7F71F00E22B006D9706 /* AppDelegate.swift in Sources */,
 				DCC627171F00E77700D79D07 /* NavigationController.swift in Sources */,
 				DC8DD7F61F00DF70006D9706 /* TabNavigationBar.swift in Sources */,
+				DC1782F01F0A407F000738E9 /* SettingsViewController.swift in Sources */,
 				DCB259F81F0395A7001EFC1C /* TableViewController.swift in Sources */,
 				DCB25A1B1F03B4B7001EFC1C /* TableViewCell.swift in Sources */,
 				DCB25A101F03B00C001EFC1C /* CategoryViewController.swift in Sources */,
@@ -584,6 +630,15 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
+		DC1782F51F0A40B5000738E9 /* Settings.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				DC1782F41F0A40B5000738E9 /* Base */,
+				DC1782F71F0A40B8000738E9 /* zh-Hans */,
+			);
+			name = Settings.storyboard;
+			sourceTree = "<group>";
+		};
 		DC8DD7EA1F00DE8B006D9706 /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
