@@ -680,6 +680,10 @@ public class TabNavigationBar: UIView, UIBarPositioning {
         }
     }
     
+    fileprivate func _setNavigationTitleItems(_ items: [TabNavigationTitleItem], animated: Bool = false) {
+        
+    }
+    
     fileprivate func _removeNavitationItemView(at index: Array<TabNavigationItem>.Index) -> (Bool, TabNavigationItem?) {
         guard index < _navigationItems.endIndex, index >= _navigationItems.startIndex else {
             return (false, nil)
@@ -1140,6 +1144,9 @@ extension TabNavigationBar {
         _calculateWidthConstantOfContentAlignmentView()
     }
     
+    public func setNavigationTitleItems(_ items: [TabNavigationTitleItem], animated: Bool = false) {
+        _setNavigationTitleItems(items, animated: animate)
+    }
     @discardableResult
     public func removeNavigationTitleItem(_ item: TabNavigationTitleItem) -> (Bool, TabNavigationTitleItem?) {
         guard let index = _navigationTitleItems.index(of: item) else {
