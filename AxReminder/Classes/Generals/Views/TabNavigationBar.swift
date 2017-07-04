@@ -1043,7 +1043,8 @@ extension TabNavigationBar {
 }
 
 extension TabNavigationBar {
-    // MARK: - Public.
+    // MARK: - Public Property.
+    
     /// Get the selected title item of the tab-navigation bar.
     public var selectedTitleItem: TabNavigationTitleItem? {
         guard _earlyCheckingIndex(_selectedTitleItemIndex, in: _navigationTitleItems) else {
@@ -1051,7 +1052,7 @@ extension TabNavigationBar {
         }
         return _navigationTitleItems[_selectedTitleItemIndex]
     }
-    
+    /// Get all the current navigation items of the tab-navigation bar.
     public var navigationItems: [TabNavigationItem] {
         set(items) {
             for item in items {
@@ -1079,6 +1080,9 @@ extension TabNavigationBar {
         
         get { return _navigationTitleActionItems }
     }
+    
+    // MARK: - Add, Set, Remove Items.
+    // MARK: Navigagtion Item
     
     public func addNavigationItem(_ item: TabNavigationItem) {
         _addNavigationItemView(item)
@@ -1122,6 +1126,8 @@ extension TabNavigationBar {
         return removeNavigationItem(at: _navigationItems.index(before: _navigationItems.endIndex))
     }
     
+    // MARK: Navigation Title Item
+    
     public func addNavigationTitleItem(_ item: TabNavigationTitleItem) {
         _addNavigationTitleItemButton(item)
         
@@ -1164,6 +1170,8 @@ extension TabNavigationBar {
         return _removeNavigationTitleItemButton(at: _navigationTitleItems.index(before: _navigationTitleItems.endIndex))
     }
     
+    // MARK: NavigationTitle Action Item
+    
     public func addNavigationTitleActionItem(_ item: TabNavigationTitleActionItem) {
         addNavigationTitleItem(item)
     }
@@ -1197,7 +1205,7 @@ extension TabNavigationBar {
         }
         return _removeNavigationTitleActionItemButton(at: _navigationTitleActionItems.index(before: _navigationTitleActionItems.endIndex))
     }
-    // MARK: - Selected title.
+    // MARK: - Selecte Title Item.
     public func setSelectedTitle(at index: Int, animated: Bool) {
         guard index >= _navigationTitleItems.startIndex && index < _navigationTitleItems.endIndex else {
             return
@@ -1217,6 +1225,8 @@ extension TabNavigationBar {
             }
         }
     }
+    
+    // MARK: - Tab transitions.
     
     public func beginTransitionNavigationItems(_ items: [TabNavigationItem], on navigatiomItems: [TabNavigationItem] = [], `in` itemViews: TabNavigationItemViews? = nil) -> TabNavigationItemViews {
         if !navigatiomItems.isEmpty {
