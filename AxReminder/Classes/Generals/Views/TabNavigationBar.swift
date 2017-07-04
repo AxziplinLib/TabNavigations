@@ -1030,8 +1030,27 @@ extension _TabNavigationBarScrollViewHooks: UIScrollViewDelegate {
 }
 
 extension TabNavigationBar {
+    /// Checking the index in the bounds.
+    /// - Parameter index: The current index to be checked.
+    /// - Parameter array: The upper and lower bound of the index in a array.
+    /// - Returns: True if index is in the bounds. Otherwise, false.
+    fileprivate func _earlyCheckingIndex<T>(_ index: Array<T>.Index, `in` array: Array<T>) -> Bool {
+        if index >= array.startIndex && index < array.endIndex {
+            return true
+        }
+        return false
+    }
+}
+
+extension TabNavigationBar {
     // MARK: - Public.
-    public var selectedTitleItem: TabNavigationTitleItem { return _navigationTitleItems[_selectedTitleItemIndex] }
+    /// Get the selected title item of the tab-navigation bar.
+    public var selectedTitleItem: TabNavigationTitleItem? {
+        guard _earlyCheckingIndex(_selectedTitleItemIndex, in: _navigationTitleItems) else {
+            return nil
+        }
+        return _navigationTitleItems[_selectedTitleItemIndex]
+    }
     
     public var navigationItems: [TabNavigationItem] {
         set(items) {
@@ -1039,7 +1058,6 @@ extension TabNavigationBar {
                 addNavigationItem(item)
             }
         }
-        
         get { return _navigationItems }
     }
     
@@ -1049,7 +1067,6 @@ extension TabNavigationBar {
                 addNavigationTitleItem(item)
             }
         }
-        
         get { return _navigationTitleItems }
     }
     
