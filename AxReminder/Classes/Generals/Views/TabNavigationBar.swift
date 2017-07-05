@@ -1042,10 +1042,10 @@ public class TabNavigationBar: UIView, UIBarPositioning {
     }
     
     fileprivate func _calculatedPositionUptoTitleItem(at index: Int = 0) -> CGFloat {
-        guard !_navigationTitleItems.isEmpty else {
+        guard !_navigationTitleItems.isEmpty, index < _navigationTitleItems.endIndex else {
             return 0.0
         }
-        assert(index < _navigationTitleItems.endIndex, "Index of title item is out of bounds.")
+        
         var _positionX: CGFloat = 0.0
         
         for index in 0...index {
@@ -1283,6 +1283,7 @@ extension TabNavigationBar {
 extension TabNavigationBar {
     // MARK: - Public Property.
     
+    public var selectedIndex: Array<TabNavigationTitleItem>.Index { return _selectedTitleItemIndex }
     /// Get the selected title item of the tab-navigation bar.
     public var selectedTitleItem: TabNavigationTitleItem? {
         guard _earlyCheckingIndex(_selectedTitleItemIndex, in: _navigationTitleItems) else {
@@ -1388,8 +1389,8 @@ extension TabNavigationBar {
         _calculateWidthConstantOfContentAlignmentView()
     }
     
-    public func setNavigationTitleItems(_ items: [TabNavigationTitleItem], animated: Bool = false, actionsConfig: (() -> (ignore: Bool, actions: [TabNavigationTitleActionItem]?))? = nil) {
-        _setNavigationTitleItems(items, animated: animated, actionConfig: actionsConfig?() ?? (false, nil))
+    public func setNavigationTitleItems(_ items: [TabNavigationTitleItem], animated: Bool = false, selectedIndex index: Array<TabNavigationTitleItem>.Index = 0, actionsConfig: (() -> (ignore: Bool, actions: [TabNavigationTitleActionItem]?))? = nil) {
+        _setNavigationTitleItems(items, animated: animated, selectedIndex: selectedIndex, actionConfig: actionsConfig?() ?? (false, nil))
     }
     @discardableResult
     public func removeNavigationTitleItem(_ item: TabNavigationTitleItem) -> (Bool, TabNavigationTitleItem?) {
