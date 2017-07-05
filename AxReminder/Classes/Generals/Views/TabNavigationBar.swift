@@ -137,6 +137,8 @@ public class TabNavigationItem: NSObject {
     }
 }
 
+private class _TabNavigationBackItem: TabNavigationItem { /* Back navigation item*/ }
+
 public class TabNavigationTitleItem: NSObject {
     public var selected: Bool {
         didSet {
@@ -336,6 +338,7 @@ private func _createGeneralAlignmentLabel<T>(font: UIFont? = nil) -> T where T: 
 extension TabNavigationBar {
     public typealias TabNavigationItemViews = (itemsContainerView: UIView, itemsScrollView: UIScrollView, itemsView: UIView)
     public typealias TabNavigationTitleItemViews = (itemsScrollView: UIScrollView, itemsView: UIView, alignmentContentView: UIView)
+    public typealias TabNavigationTitleItemAnimationParameters = (containerView: UIView, scrollView: UIScrollView, fromItemsView: UIView, toItemsView: UIView)
 }
 
 public class TabNavigationBar: UIView, UIBarPositioning {
@@ -352,6 +355,7 @@ public class TabNavigationBar: UIView, UIBarPositioning {
     
     private var _titleItemsPreviewPanGesture: UIPanGestureRecognizer!
     
+    fileprivate var _navigationBackItem: _TabNavigationBackItem = _TabNavigationBackItem(image:#imageLiteral(resourceName: "back_indicator"))
     fileprivate var _navigationItems: [TabNavigationItem] = []
     fileprivate var _navigationTitleItems: [TabNavigationTitleItem] = []
     fileprivate var _navigationTitleActionItems: [TabNavigationTitleActionItem] = []
@@ -368,6 +372,7 @@ public class TabNavigationBar: UIView, UIBarPositioning {
     
     fileprivate var _titleItemsScrollViewDelegate: _TabNavigationBarScrollViewHooks!
     
+    private weak var _horizontalConstraintOfBackItem: NSLayoutConstraint?
     private weak var _leadingConstraintOfLastItemView: NSLayoutConstraint?
     private weak var _leadingConstraintOfLastTransitionItemView: NSLayoutConstraint?
     private weak var _trailingConstraintOfLastTitleItemLabel: NSLayoutConstraint?
@@ -412,6 +417,7 @@ public class TabNavigationBar: UIView, UIBarPositioning {
         _titleItemsScrollViewDelegate = _TabNavigationBarScrollViewHooks({ [unowned self] in
             self._titleItemsScrollView.delegate = self
         })
+        _navigationBackItem._view._button.addTarget(self, action: #selector(_handleNavigationBack(_:)), for: .touchUpInside)
     }
     
     // MARK: - Actions.
@@ -452,9 +458,19 @@ public class TabNavigationBar: UIView, UIBarPositioning {
         default: break
         }
     }
+    @objc
+    private func _handleNavigationBack(_ sender: UIButton) {
+        
+    }
     
     // MARK: - Private.
     private func _setupContainerViews() {
+        _navigationBackItem._view.isHidden = true
+        addSubview(_navigationBackItem._view)
+        _navigationBackItem._view.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+        let _horizontal = _navigationBackItem._view.trailingAnchor.constraint(equalTo: leadingAnchor)
+        _horizontal.isActive = true
+        _horizontalConstraintOfBackItem = _horizontal
         _setupTitleItemsContainerView(_titleItemsContainerView)
         _setupNavigationItemsContainerView(_itemsContainerView)
     }
@@ -462,7 +478,7 @@ public class TabNavigationBar: UIView, UIBarPositioning {
     private func _setupTitleItemsContainerView(_ itemsContainerView: UIView) {
         addSubview(itemsContainerView)
         
-        self.leadingAnchor.constraint(equalTo: itemsContainerView.leadingAnchor).isActive = true
+        _navigationBackItem._view.trailingAnchor.constraint(equalTo: itemsContainerView.leadingAnchor).isActive = true
         self.topAnchor.constraint(equalTo: itemsContainerView.topAnchor).isActive = true
         self.bottomAnchor.constraint(equalTo: itemsContainerView.bottomAnchor).isActive = true
     }
@@ -537,6 +553,33 @@ public class TabNavigationBar: UIView, UIBarPositioning {
             _widthOfTransitionTitleItemContentAlignmentView = _width
         } else {
             _widthOfTitleItemContentAlignmentView = _width
+        }
+    }
+    
+    fileprivate func _toggleShowingOfNavigationBackItem(shows: Bool, animated: Bool) {
+        if let _horizontal = _horizontalConstraintOfBackItem {
+            removeConstraint(_horizontal)
+        }
+        var _horizontal: NSLayoutConstraint
+        if shows {
+            _horizontal = _navigationBackItem._view.leadingAnchor.constraint(equalTo: leadingAnchor)
+        } else {
+            _horizontal = _navigationBackItem._view.trailingAnchor.constraint(equalTo: leadingAnchor)
+        }
+        _horizontal.isActive = true
+        _horizontalConstraintOfBackItem = _horizontal
+        
+        if shows {
+            _navigationBackItem._view.isHidden = false
+        }
+        if animated {
+            UIView.animate(withDuration: 0.75, delay: 0.0, usingSpringWithDamping: 0.6, initialSpringVelocity: 0.7, options: [], animations: { [unowned self] in
+                self.layoutIfNeeded()
+                }, completion: { [unowned self] finished in
+                if finished && !shows {
+                    self._navigationBackItem._view.isHidden = true
+                }
+            })
         }
     }
     
@@ -737,7 +780,7 @@ public class TabNavigationBar: UIView, UIBarPositioning {
         return (itemsScrollView, itemsView, alignmentContentView)
     }
     
-    fileprivate func _setNavigationTitleItems(_ items: [TabNavigationTitleItem], animated: Bool = false, selectedIndex index: Array<TabNavigationTitleItem>.Index = 0) {
+    fileprivate func _setNavigationTitleItems(_ items: [TabNavigationTitleItem], animated: Bool = false, selectedIndex index: Array<TabNavigationTitleItem>.Index = 0, actionConfig: (ignore: Bool, actions: [TabNavigationTitleActionItem]?) = (false, nil), animation: ((TabNavigationTitleItemAnimationParameters) -> Void)? = nil) {
         guard animated else {
             // Remove all the former title items.
             while _navigationTitleItems.last != nil {
@@ -754,24 +797,30 @@ public class TabNavigationBar: UIView, UIBarPositioning {
         // Create container views.
         let titleItemViews = _createAndSetupTitleItemViews()
         
-        // Make a deep copy of the navigation title action items.
         var navigationTitleActionItems: [TabNavigationTitleActionItem] = []
-        for item in _navigationTitleActionItems {
-            let _deepCpItem = TabNavigationTitleActionItem(title: item._button.title(for: .normal)!)
-            _deepCpItem.setTitleFont(item.titleFont(whenSelected: false), whenSelected: false)
-            _deepCpItem.setTitleColor(item.titleColor(whenSelected: false), whenSelected: false)
-            if let action = item._action, let target = item._target {
-                _deepCpItem._button.addTarget(target, action: action, for: .touchUpInside)
+        if !actionConfig.ignore {
+            if let actions = actionConfig.actions {
+                navigationTitleActionItems = actions
+            } else {
+                // Make a deep copy of the navigation title action items.
+                for item in _navigationTitleActionItems {
+                    let _deepCpItem = TabNavigationTitleActionItem(title: item._button.title(for: .normal)!)
+                    _deepCpItem.setTitleFont(item.titleFont(whenSelected: false), whenSelected: false)
+                    _deepCpItem.setTitleColor(item.titleColor(whenSelected: false), whenSelected: false)
+                    if let action = item._action, let target = item._target {
+                        _deepCpItem._button.addTarget(target, action: action, for: .touchUpInside)
+                    }
+                    _deepCpItem.tintColor = item.tintColor
+                    navigationTitleActionItems.append(_deepCpItem)
+                }
             }
-            _deepCpItem.tintColor = item.tintColor
-            navigationTitleActionItems.append(_deepCpItem)
-        }
-        
-        // Add title action item first.
-        var _transitionActionItems: [TabNavigationTitleActionItem] = []
-        for item in navigationTitleActionItems {
-            _addNavigationTitleItemButton(item, in: _transitionActionItems, possibleActions: _transitionActionItems, to: titleItemViews.itemsView, alignmentContentView: (titleItemViews.alignmentContentView as! TabNavigationBar._TabNavigaitonTitleContentAlignmentView), transition: true)
-            _transitionActionItems.append(item)
+            
+            // Add title action item first.
+            var _transitionActionItems: [TabNavigationTitleActionItem] = []
+            for item in navigationTitleActionItems {
+                _addNavigationTitleItemButton(item, in: _transitionActionItems, possibleActions: _transitionActionItems, to: titleItemViews.itemsView, alignmentContentView: (titleItemViews.alignmentContentView as! TabNavigationBar._TabNavigaitonTitleContentAlignmentView), transition: true)
+                _transitionActionItems.append(item)
+            }
         }
         // Add item to the navigatiom item view.
         var _transitionItems: [TabNavigationTitleItem] = []
@@ -780,18 +829,28 @@ public class TabNavigationBar: UIView, UIBarPositioning {
             _transitionItems.append(item)
         }
         
+        _calculateWidthConstantOfContentAlignmentView(in: items, possibleActions: navigationTitleActionItems, transition: true)
+        
         if !items.isEmpty {
-            _setSelectedTitle(at: index, in: items, possibleActions: navigationTitleActionItems, animated: animated)
+            _setSelectedTitle(at: index, in: items, possibleActions: navigationTitleActionItems, animated: false)
         }
         
-        titleItemViews.itemsView.alpha = 0.0
-        // Animate the trainsition:
-        UIView.animate(withDuration: 0.25, delay: 0.0, options: [], animations: { [unowned self] in
-            self._navigationTitleItemView.alpha = 0.0
-            titleItemViews.itemsView.alpha = 1.0
-        }) { [unowned self] finished in
-            if finished {
-                self._commitTransitionTitleItemViews(titleItemViews, titleItems: items)
+        setNeedsLayout()
+        layoutIfNeeded()
+        
+        if let animationBlock = animation {
+            let parameters = (_titleItemsContainerView, _titleItemsScrollView, _navigationTitleItemView, titleItemViews.itemsView)
+            animationBlock(parameters)
+        } else {
+            titleItemViews.itemsView.alpha = 0.0
+            // Animate the trainsition:
+            UIView.animate(withDuration: 0.25, delay: 0.0, options: [.curveEaseOut], animations: { [unowned self] in
+                self._navigationTitleItemView.alpha = 0.0
+                titleItemViews.itemsView.alpha = 1.0
+            }) { [unowned self] finished in
+                if finished {
+                    self._commitTransitionTitleItemViews(titleItemViews, titleItems: items)
+                }
             }
         }
     }
@@ -947,16 +1006,35 @@ public class TabNavigationBar: UIView, UIBarPositioning {
         _scrollToSelectedTitleItem()
     }
     
-    fileprivate func _calculateWidthConstantOfContentAlignmentView() {
-        if _navigationTitleActionItems.isEmpty && _navigationTitleItems.isEmpty {
-            _widthOfTitleItemContentAlignmentView?.constant = 0.0
-        } else {
-            if _navigationTitleItems.isEmpty {
-                _widthOfTitleItemContentAlignmentView?.constant = -_calculatedPositionsUptoTitleItemAtEndIndex(in: _navigationTitleActionItems).last!
-            } else if _navigationTitleActionItems.isEmpty {
-                _widthOfTitleItemContentAlignmentView?.constant = -_calculatedPositionWidthOfTitleItem(_navigationTitleItems.last!)
+    fileprivate func _calculateWidthConstantOfContentAlignmentView(`in` items: [TabNavigationTitleItem]? = nil, possibleActions actions: [TabNavigationTitleActionItem]? = nil, transition: Bool = false) {
+        let navigationTitleItems = items ?? _navigationTitleItems
+        let navigationTitleActionItems = actions ?? _navigationTitleActionItems
+        
+        if navigationTitleActionItems.isEmpty && navigationTitleItems.isEmpty {
+            if transition {
+                _widthOfTransitionTitleItemContentAlignmentView?.constant = 0.0
             } else {
-                _widthOfTitleItemContentAlignmentView?.constant = -_calculatedPositionWidthOfTitleItem(_navigationTitleItems.last!) - _calculatedPositionsUptoTitleItemAtEndIndex(in: _navigationTitleActionItems).last!
+                _widthOfTitleItemContentAlignmentView?.constant = 0.0
+            }
+        } else {
+            if navigationTitleItems.isEmpty {
+                if transition {
+                    _widthOfTransitionTitleItemContentAlignmentView?.constant = -_calculatedPositionsUptoTitleItemAtEndIndex(in: navigationTitleActionItems).last!
+                } else {
+                    _widthOfTitleItemContentAlignmentView?.constant = -_calculatedPositionsUptoTitleItemAtEndIndex(in: navigationTitleActionItems).last!
+                }
+            } else if navigationTitleActionItems.isEmpty {
+                if transition {
+                    _widthOfTransitionTitleItemContentAlignmentView?.constant = -_calculatedPositionWidthOfTitleItem(navigationTitleItems.last!)
+                } else {
+                    _widthOfTitleItemContentAlignmentView?.constant = -_calculatedPositionWidthOfTitleItem(navigationTitleItems.last!)
+                }
+            } else {
+                if transition {
+                    _widthOfTransitionTitleItemContentAlignmentView?.constant = -_calculatedPositionWidthOfTitleItem(navigationTitleItems.last!) - _calculatedPositionsUptoTitleItemAtEndIndex(in: navigationTitleActionItems).last!
+                } else {
+                    _widthOfTitleItemContentAlignmentView?.constant = -_calculatedPositionWidthOfTitleItem(navigationTitleItems.last!) - _calculatedPositionsUptoTitleItemAtEndIndex(in: navigationTitleActionItems).last!
+                }
             }
         }
     }
@@ -1239,6 +1317,16 @@ extension TabNavigationBar {
         get { return _navigationTitleActionItems }
     }
     
+    // MARK: - Navigation Back Item
+    
+    public func showNavigationBackItem(_ animated: Bool) {
+        _toggleShowingOfNavigationBackItem(shows: true, animated: animated)
+    }
+    
+    public func hideNavigationBackItem(_ animated: Bool) {
+        _toggleShowingOfNavigationBackItem(shows: false, animated: animated)
+    }
+    
     // MARK: - Add, Set, Remove Items.
     // MARK: Navigagtion Item
     
@@ -1298,8 +1386,8 @@ extension TabNavigationBar {
         _calculateWidthConstantOfContentAlignmentView()
     }
     
-    public func setNavigationTitleItems(_ items: [TabNavigationTitleItem], animated: Bool = false) {
-        _setNavigationTitleItems(items, animated: animated)
+    public func setNavigationTitleItems(_ items: [TabNavigationTitleItem], animated: Bool = false, actionsConfig: (() -> (ignore: Bool, actions: [TabNavigationTitleActionItem]?))? = nil) {
+        _setNavigationTitleItems(items, animated: animated, actionConfig: actionsConfig?() ?? (false, nil))
     }
     @discardableResult
     public func removeNavigationTitleItem(_ item: TabNavigationTitleItem) -> (Bool, TabNavigationTitleItem?) {
