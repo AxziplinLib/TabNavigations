@@ -302,6 +302,8 @@ extension TabNavigationBar {
 public protocol TabNavigationBarDelegate {
     @objc
     optional func tabNavigationBar(_ tabNavigationBar: TabNavigationBar, didSelectTitleItemAt index: Int) -> Void
+    @objc
+    optional func tabNavigationBarDidTouchNavigatiomBackItem(_ tabNavigationBar: TabNavigationBar) -> Void
 }
 
 private func _createGeneralContainerView<T>() -> T where T: UIView {
@@ -460,7 +462,7 @@ public class TabNavigationBar: UIView, UIBarPositioning {
     }
     @objc
     private func _handleNavigationBack(_ sender: UIButton) {
-        
+        delegate?.tabNavigationBarDidTouchNavigatiomBackItem?(self)
     }
     
     // MARK: - Private.
