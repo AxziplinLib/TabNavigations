@@ -72,6 +72,17 @@ extension TabNavigationController {
     public typealias TabNavigationItemViewsInfo = (index: Int, navigationItemViews: TabNavigationBar.TabNavigationItemViews?)
 }
 
+private func _createGeneralPagingScrollView() -> UIScrollView {
+    let scrollView = UIScrollView()
+    scrollView.translatesAutoresizingMaskIntoConstraints = false
+    scrollView.showsVerticalScrollIndicator = false
+    scrollView.showsHorizontalScrollIndicator = false
+    scrollView.backgroundColor = UIColor.clear
+    scrollView.decelerationRate = UIScrollViewDecelerationRateFast
+    scrollView.isPagingEnabled = true
+    return scrollView
+}
+
 class TabNavigationController: ViewController {
     /// Tab navigation bar of the tab-navigation controller.
     public var tabNavigationBar: TabNavigationBar { return _tabNavigationBar }
@@ -86,17 +97,10 @@ class TabNavigationController: ViewController {
     }()
     
     fileprivate var _transitionNavigationItemViewsInfo: TabNavigationItemViewsInfo?
+    fileprivate lazy var _contentScrollView: UIScrollView = _createGeneralPagingScrollView()
     
-    fileprivate lazy var _contentScrollView: UIScrollView = { () -> UIScrollView in
-        let scrollView = UIScrollView()
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.showsVerticalScrollIndicator = false
-        scrollView.showsHorizontalScrollIndicator = false
-        scrollView.backgroundColor = UIColor.clear
-        scrollView.decelerationRate = UIScrollViewDecelerationRateFast
-        scrollView.isPagingEnabled = true
-        return scrollView
-    }()
+    fileprivate var _viewControllersStack: [[UIViewController]] = [[]]
+    fileprivate var _headOfViewControllersStack: Array<[UIViewController]>.Index = 0
     
     // MARK: - Overrides.
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
@@ -138,7 +142,7 @@ class TabNavigationController: ViewController {
         
         _contentScrollView.addSubview(viewController.view)
         _contentScrollView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[view]|", options: [], metrics: nil, views: ["view":viewController.view]))
-        viewController.view.leadingAnchor.constraint(equalTo: childViewControllers.last?.view.trailingAnchor ?? _contentScrollView.leadingAnchor).isActive = true
+        viewController.view.leadingAnchor.constraint(equalTo: _viewControllersStack[0].last?.view.trailingAnchor ?? _contentScrollView.leadingAnchor).isActive = true
         if let _trailing = _trailingConstraintOflastViewController {
             _contentScrollView.removeConstraint(_trailing)
         }
@@ -150,6 +154,7 @@ class TabNavigationController: ViewController {
         viewController.view.heightAnchor.constraint(equalTo: _contentScrollView.heightAnchor).isActive = true
         
         self.addChildViewController(viewController)
+        _viewControllersStack[0].append(viewController)
         viewController.didMove(toParentViewController: self)
         
         if let scrollView = viewController.view as? UIScrollView {
@@ -163,7 +168,7 @@ class TabNavigationController: ViewController {
     }
     @discardableResult
     public func removeViewController<T>(_ viewController: T) -> (Bool, UIViewController?) where T: UIViewController, T:TabNavigationReadable {
-        guard let index = childViewControllers.index(of: viewController) else {
+        guard let index = _viewControllersStack[0].index(of: viewController) else {
             return (false, nil)
         }
         
@@ -171,15 +176,15 @@ class TabNavigationController: ViewController {
     }
     @discardableResult
     public func removeViewController(at index: Array<UIViewController>.Index) -> (Bool, UIViewController?) {
-        guard !childViewControllers.isEmpty else {
+        guard !_viewControllersStack[0].isEmpty else {
             return (false, nil)
         }
         
-        guard index >= childViewControllers.startIndex && index < childViewControllers.endIndex else {
+        guard index >= _viewControllersStack[0].startIndex && index < _viewControllersStack[0].endIndex else {
             return (false, nil)
         }
         
-        let viewController = childViewControllers[index]
+        let viewController = _viewControllersStack[0][index]
         viewController.willMove(toParentViewController: nil)
         viewController.removeFromParentViewController()
         
@@ -213,11 +218,14 @@ class TabNavigationController: ViewController {
 
 extension TabNavigationController: TabNavigationBarDelegate {
     func tabNavigationBar(_ tabNavigationBar: TabNavigationBar, didSelectTitleItemAt index: Int) {
-        guard index >= childViewControllers.startIndex && index < childViewControllers.endIndex else {
+        guard _headOfViewControllersStack == _viewControllersStack[0].startIndex else {
+            return
+        }
+        guard index >= _viewControllersStack[0].startIndex && index < _viewControllersStack[0].endIndex else {
             return
         }
         
-        let _selectedViewController = childViewControllers[index]
+        let _selectedViewController = _viewControllersStack[0][index]
         
         _contentScrollView.scrollRectToVisible(_selectedViewController.view.frame, animated: true)
         
@@ -231,21 +239,27 @@ extension TabNavigationController: TabNavigationBarDelegate {
 
 extension TabNavigationController: UIScrollViewDelegate {
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        guard _headOfViewControllersStack == _viewControllersStack[0].startIndex else {
+            return
+        }
         _commitTransitionNavigationItemViews(at: Int(scrollView.contentOffset.x / scrollView.bounds.width))
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        guard _headOfViewControllersStack == _viewControllersStack[0].startIndex else {
+            return
+        }
         if scrollView.isDragging || scrollView.isDecelerating {
             let index = Int(scrollView.contentOffset.x / scrollView.bounds.width)
             
-            if index < childViewControllers.index(before: childViewControllers.endIndex)
+            if index < _viewControllersStack[0].index(before: _viewControllersStack[0].endIndex)
             && scrollView.contentOffset.x >= 0
             && scrollView.contentOffset.x.truncatingRemainder(dividingBy: scrollView.bounds.width) != 0.0
             {
-                let showingIndex = childViewControllers.index(after: index)
-                let viewController = childViewControllers[showingIndex]
+                let showingIndex = _viewControllersStack[0].index(after: index)
+                let viewController = _viewControllersStack[0][showingIndex]
                 
-                let formerViewController = childViewControllers[index]
+                let formerViewController = _viewControllersStack[0][index]
                 let transitionNavigationItemViews = tabNavigationBar.beginTransitionNavigationItems(viewController.tabNavigationItems, on: formerViewController.tabNavigationItems, in: _transitionNavigationItemViewsInfo?.navigationItemViews)
                 
                 _transitionNavigationItemViewsInfo = (showingIndex, transitionNavigationItemViews)
@@ -258,7 +272,7 @@ extension TabNavigationController: UIScrollViewDelegate {
     private func _commitTransitionNavigationItemViews(at index: Int) {
         if let info = _transitionNavigationItemViewsInfo {
             if info.index == index {
-                let viewController = childViewControllers[index]
+                let viewController = _viewControllersStack[0][index]
                 tabNavigationBar.commitTransitionNavigatiomItemViews(info.navigationItemViews, navigationItems: viewController.tabNavigationItems, success: true)
             } else {
                 tabNavigationBar.commitTransitionNavigatiomItemViews(info.navigationItemViews, navigationItems: [], success: false)
