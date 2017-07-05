@@ -1390,7 +1390,7 @@ extension TabNavigationBar {
     }
     
     public func setNavigationTitleItems(_ items: [TabNavigationTitleItem], animated: Bool = false, selectedIndex index: Array<TabNavigationTitleItem>.Index = 0, actionsConfig: (() -> (ignore: Bool, actions: [TabNavigationTitleActionItem]?))? = nil) {
-        _setNavigationTitleItems(items, animated: animated, selectedIndex: selectedIndex, actionConfig: actionsConfig?() ?? (false, nil))
+        _setNavigationTitleItems(items, animated: animated, selectedIndex: index, actionConfig: actionsConfig?() ?? (false, nil))
     }
     @discardableResult
     public func removeNavigationTitleItem(_ item: TabNavigationTitleItem) -> (Bool, TabNavigationTitleItem?) {
