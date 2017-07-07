@@ -340,10 +340,10 @@ private func _createGeneralAlignmentLabel<T>(font: UIFont? = nil) -> T where T: 
 
 extension TabNavigationBar {
     public typealias TabNavigationItemViews = (itemsContainerView: UIView, itemsScrollView: UIScrollView, itemsView: UIView)
-    public typealias TabNavigationItemAnimationViews = (fromItemViews: TabNavigationItemViews, toItemViews: TabNavigationItemViews)
+    public typealias TabNavigationItemAnimationContext = (fromItemViews: TabNavigationItemViews, toItemViews: TabNavigationItemViews)
     public typealias TabNavigationTitleItemViews = (itemsScrollView: UIScrollView, itemsView: UIView, alignmentContentView: UIView)
-    public typealias TabNavigationTitleItemAnimationViews = (containerView: UIView, fromItemViews: TabNavigationTitleItemViews, toItemViews: TabNavigationTitleItemViews)
-    public typealias TabNavigationTransitionViews = (backItem: TabNavigationItem, titleViews: TabNavigationTitleItemAnimationViews, itemViews: TabNavigationItemAnimationViews)
+    public typealias TabNavigationTitleItemAnimationContext = (containerView: UIView, fromItemViews: TabNavigationTitleItemViews, toItemViews: TabNavigationTitleItemViews)
+    public typealias TabNavigationTransitionContext = (backItem: TabNavigationItem, titleViews: TabNavigationTitleItemAnimationContext, itemViews: TabNavigationItemAnimationContext)
 }
 
 public class TabNavigationBar: UIView, UIBarPositioning {
@@ -786,7 +786,7 @@ public class TabNavigationBar: UIView, UIBarPositioning {
         return (itemsScrollView, itemsView, alignmentContentView)
     }
     
-    fileprivate func _setNavigationTitleItems(_ items: [TabNavigationTitleItem], animated: Bool = false, selectedIndex index: Array<TabNavigationTitleItem>.Index = 0, actionConfig: (ignore: Bool, actions: [TabNavigationTitleActionItem]?) = (false, nil), animation: ((TabNavigationTitleItemAnimationViews) -> Void)? = nil) {
+    fileprivate func _setNavigationTitleItems(_ items: [TabNavigationTitleItem], animated: Bool = false, selectedIndex index: Array<TabNavigationTitleItem>.Index = 0, actionConfig: (ignore: Bool, actions: [TabNavigationTitleActionItem]?) = (false, nil), animation: ((TabNavigationTitleItemAnimationContext) -> Void)? = nil) {
         guard animated else {
             // Remove all the former title items.
             while _navigationTitleItems.last != nil {
@@ -1399,7 +1399,7 @@ extension TabNavigationBar {
         _calculateWidthConstantOfContentAlignmentView()
     }
     
-    public func setNavigationTitleItems(_ items: [TabNavigationTitleItem], animated: Bool = false, selectedIndex index: Array<TabNavigationTitleItem>.Index = 0, actionsConfig: (() -> (ignore: Bool, actions: [TabNavigationTitleActionItem]?))? = nil, animation: ((TabNavigationTitleItemAnimationViews) -> Void)? = nil) {
+    public func setNavigationTitleItems(_ items: [TabNavigationTitleItem], animated: Bool = false, selectedIndex index: Array<TabNavigationTitleItem>.Index = 0, actionsConfig: (() -> (ignore: Bool, actions: [TabNavigationTitleActionItem]?))? = nil, animation: ((TabNavigationTitleItemAnimationContext) -> Void)? = nil) {
         _setNavigationTitleItems(items, animated: animated, selectedIndex: index, actionConfig: actionsConfig?() ?? (false, nil), animation: animation)
     }
     @discardableResult
@@ -1474,7 +1474,7 @@ extension TabNavigationBar {
     
     // MARK: - Tab transitions.
     
-    public func beginTransitionNavigationTitleItems(_ items: [TabNavigationTitleItem], selectedIndex index: Array<TabNavigationTitleItem>.Index = 0, actionsConfig: (() -> (ignore: Bool, actions: [TabNavigationTitleActionItem]?))? = nil, navigationItems: [TabNavigationItem]) -> TabNavigationTransitionViews {
+    public func beginTransitionNavigationTitleItems(_ items: [TabNavigationTitleItem], selectedIndex index: Array<TabNavigationTitleItem>.Index = 0, actionsConfig: (() -> (ignore: Bool, actions: [TabNavigationTitleActionItem]?))? = nil, navigationItems: [TabNavigationItem]) -> TabNavigationTransitionContext {
         // Create views.
         let itemViews = _createAndSetupTitleItemViews()
         let _itemViews: TabNavigationTitleItemViews = (_titleItemsScrollView, _navigationTitleItemView, _titleItemContentAlignmentView as UIView)
