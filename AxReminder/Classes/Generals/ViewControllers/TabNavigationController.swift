@@ -14,6 +14,7 @@ private let DefaultTabNavigationBarHeight: CGFloat = 64.0
 protocol TabNavigationReadable: class {
     var tabNavigationController: TabNavigationController? { get }
     var tabNavigationItems: [TabNavigationItem] { get }
+    var tabNavigationTitleActionItemsWhenPushed: [TabNavigationTitleActionItem] { get }
 }
 
 // MARK: Tab Navigation Controller.
@@ -51,6 +52,25 @@ extension UIViewController {
             return objc_getAssociatedObject(self, &_TabNavigationItemsObjectKey.key) as! [TabNavigationItem]
         }
         set { objc_setAssociatedObject(self, &_TabNavigationItemsObjectKey.key, newValue, .OBJC_ASSOCIATION_COPY_NONATOMIC) }
+    }
+}
+
+// MARK: Navigation Title Action Items.
+
+extension UIViewController {
+    private struct _TabNavigationTitleActionItemsObjectKey {
+        static var key = "_TabNavigationTitleActionItems"
+    }
+    
+    public var tabNavigationTitleActionItemsWhenPushed: [TabNavigationTitleActionItem] {
+        get {
+            if let _items = objc_getAssociatedObject(self, &_TabNavigationTitleActionItemsObjectKey.key) {
+                return _items as! [TabNavigationTitleActionItem]
+            }
+            objc_setAssociatedObject(self, &_TabNavigationTitleActionItemsObjectKey.key, [], .OBJC_ASSOCIATION_COPY_NONATOMIC)
+            return objc_getAssociatedObject(self, &_TabNavigationTitleActionItemsObjectKey.key) as! [TabNavigationTitleActionItem]
+        }
+        set { objc_setAssociatedObject(self, &_TabNavigationTitleActionItemsObjectKey.key, newValue, .OBJC_ASSOCIATION_COPY_NONATOMIC) }
     }
 }
 
@@ -93,10 +113,39 @@ private func _createGeneralTabNavigationBar() -> TabNavigationBar {
 class TabNavigationController: ViewController {
     /// Tab navigation bar of the tab-navigation controller.
     public var tabNavigationBar: TabNavigationBar { return _tabNavigationBar }
+    public var tabNavigationTitleActionItems: [TabNavigationTitleActionItem] = [] {
+        didSet {
+            tabNavigationBar.navigationTitleActionItems = tabNavigationTitleActionItems
+        }
+    }
+    override public var tabNavigationTitleActionItemsWhenPushed: [TabNavigationTitleActionItem] {
+        get { return tabNavigationTitleActionItems }
+        set { tabNavigationTitleActionItems = newValue }
+    }
+    
     lazy
     private var _tabNavigationBar: TabNavigationBar = _createGeneralTabNavigationBar()
     
-    private weak var _trailingConstraintOflastViewController: NSLayoutConstraint?
+    public var interactivePopGestureRecognizer: UIPanGestureRecognizer { return _panGestureRecognizer }
+    fileprivate var _panGestureRecognizer: UIPanGestureRecognizer!
+    fileprivate var _panGestureBeginsLocation: CGPoint = .zero
+    fileprivate var _panGestureBeginsClips: Bool = true
+    fileprivate var _panGestureBeginsTransform: (former: CGAffineTransform, top: CGAffineTransform) = (.identity, .identity)
+    fileprivate var _panGestureBeginsTitleItems: [TabNavigationTitleItem] = []
+    
+    fileprivate var _transitionNavigationBarViews: TabNavigationBar.TabNavigationTransitionContext?
+    fileprivate var _panGestureBeginsItemViewsTransform: (fromTransform: CGAffineTransform, toTransform: CGAffineTransform) = (.identity, .identity)
+    
+    public var topViewController: UIViewController? {
+        return _viewControllersStack.last ?? { () -> UIViewController? in
+            guard !_rootViewControllersInfo.viewControllers.isEmpty && _rootViewControllersInfo.selectedIndex >= _rootViewControllersInfo.viewControllers.startIndex && _rootViewControllersInfo.selectedIndex < _rootViewControllersInfo.viewControllers.endIndex else {
+                return nil
+            }
+            return _rootViewControllersInfo.viewControllers[_rootViewControllersInfo.selectedIndex]
+        }()
+    }
+    
+    private weak var _trailingConstraintOfLastViewController: NSLayoutConstraint?
     
     fileprivate var _transitionNavigationItemViewsInfo: TabNavigationItemViewsInfo?
     lazy
@@ -104,7 +153,6 @@ class TabNavigationController: ViewController {
     
     fileprivate var _rootViewControllersInfo: (selectedIndex: Array<UIViewController>.Index, viewControllers: [UIViewController]) = (0, [])
     fileprivate var _viewControllersStack: [UIViewController] = []
-    fileprivate var _headOfViewControllersStack: Array<UIViewController>.Index = 0
     
     // MARK: - Overrides.
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
@@ -117,11 +165,14 @@ class TabNavigationController: ViewController {
     }
     private func _initializer() {
         tabNavigationBar.delegate = self
+        _panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(_handePanGestureRecognizer(_:)))
+        _panGestureRecognizer.isEnabled = false
     }
     
     override func loadView() {
         super.loadView()
         
+        view.addGestureRecognizer(_panGestureRecognizer)
         _setupTabNavigationBar()
         _setupContentScrollView()
     }
@@ -135,6 +186,100 @@ class TabNavigationController: ViewController {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    // MARK: - Actions.
+    
+    @objc
+    private func _handePanGestureRecognizer(_ sender: UIPanGestureRecognizer) {
+        switch sender.state {
+        case .possible: fallthrough
+        case .began:
+            _panGestureBeginsLocation = sender.location(in: view)
+            
+            guard let _topViewController = topViewController else { break }
+            let _formerViewController = _formerViewControllerForPop()!
+            
+            var actionsWhenPushed: [TabNavigationTitleActionItem] = []
+            if _viewControllersStack.startIndex == _viewControllersStack.index(before: _viewControllersStack.endIndex) {
+                actionsWhenPushed = tabNavigationTitleActionItemsWhenPushed
+            } else {
+                actionsWhenPushed = _formerViewController.tabNavigationTitleActionItemsWhenPushed
+            }
+            _panGestureBeginsTitleItems = _fetchFormerNavigationTitleItemsAndSetupViewControllersIfNecessary(former: _formerViewController)
+            
+            _panGestureBeginsTransform = (_formerViewController.view.transform, _topViewController.view.transform)
+            _panGestureBeginsClips = _topViewController.view.clipsToBounds
+            
+            _transitionNavigationBarViews = tabNavigationBar.beginTransitionNavigationTitleItems(_panGestureBeginsTitleItems, actionsConfig: { () -> (ignore: Bool, actions: [TabNavigationTitleActionItem]?) in
+                return (false, actionsWhenPushed)
+            }, navigationItems: _formerViewController.tabNavigationItems)
+            _transitionNavigationBarViews?.titleViews.toItemViews.itemsView.alpha = 0.0
+            _panGestureBeginsItemViewsTransform = (_transitionNavigationBarViews!.titleViews.fromItemViews.itemsView.transform, _transitionNavigationBarViews!.titleViews.toItemViews.itemsView.transform)
+        case .changed:
+            let location = sender.location(in: view)
+            let transitionPercent = max(0.0, location.x - _panGestureBeginsLocation.x) / view.bounds.width
+            
+            guard let _topViewController = topViewController else { break }
+            let _formerViewController = _formerViewControllerForPop()!
+            
+            _topViewController.view.transform = CGAffineTransform(translationX: transitionPercent * _topViewController.view.bounds.width, y: 0.0)
+            _formerViewController.view.transform = CGAffineTransform(translationX: -(1.0-transitionPercent) * _formerViewController.view.bounds.width / 2.0, y: 0.0)
+            _topViewController.view.clipsToBounds = false
+            _setupTransitionShadowOfViewController(_topViewController)
+            _topViewController.view.layer.shadowOpacity = Float(1.0-transitionPercent) * Float(0.5)
+            
+            _transitionTabNavigationBarWithPercent(transitionPercent, transition: _transitionNavigationBarViews)
+        case .cancelled: fallthrough
+        case .failed: fallthrough
+        case .ended:
+            let location = sender.location(in: view)
+            let velocity = sender.velocity(in: view)
+            let translation = sender.translation(in: view)
+            // print("Velocity: \(velocity), Translation: \(translation)")
+
+            let transitionPercent = max(0.0, location.x - _panGestureBeginsLocation.x) / view.bounds.width
+            
+            let _formerViewController = _formerViewControllerForPop()!
+            let shouldCommitTransition = (transitionPercent >= 0.5 || velocity.x > translation.x * 5.0)
+            
+            _commitTransitionOfNavigationTitleItems(_panGestureBeginsTitleItems, navigationItems: _formerViewController.tabNavigationItems, transition: _transitionNavigationBarViews, success: shouldCommitTransition)
+            
+            guard let _topViewController = topViewController else { break }
+            
+            if shouldCommitTransition {
+                let shadowOpacityAnimation = CABasicAnimation(keyPath: "shadowOpacity")
+                shadowOpacityAnimation.toValue = 0.0
+                shadowOpacityAnimation.isRemovedOnCompletion = true
+                shadowOpacityAnimation.duration = 0.25
+                shadowOpacityAnimation.fillMode = kCAFillModeForwards
+                _topViewController.view.layer.removeAnimation(forKey: "shadowOpacity")
+                _topViewController.view.layer.add(shadowOpacityAnimation, forKey: "shadowOpacity")
+                UIView.animate(withDuration: 0.25, delay: 0.0, usingSpringWithDamping: 1.0, initialSpringVelocity: 1.0, options: [.curveEaseIn], animations: { [unowned self] in
+                    _topViewController.view.transform = CGAffineTransform(translationX: _topViewController.view.bounds.width, y: 0.0)
+                    _formerViewController.view.transform = self._panGestureBeginsTransform.former
+                }, completion: { [unowned self] finished in
+                    _topViewController.view.transform = self._panGestureBeginsTransform.top
+                    _topViewController.view.clipsToBounds = self._panGestureBeginsClips
+                    self._popViewController(ignoreBar: true, animated: false)
+                })
+            } else {
+                let shadowOpacityAnimation = CABasicAnimation(keyPath: "shadowOpacity")
+                shadowOpacityAnimation.toValue = 0.5
+                shadowOpacityAnimation.isRemovedOnCompletion = true
+                shadowOpacityAnimation.duration = 0.25
+                shadowOpacityAnimation.fillMode = kCAFillModeForwards
+                _topViewController.view.layer.removeAnimation(forKey: "shadowOpacity")
+                _topViewController.view.layer.add(shadowOpacityAnimation, forKey: "shadowOpacity")
+                UIView.animate(withDuration: 0.25, delay: 0.0, usingSpringWithDamping: 1.0, initialSpringVelocity: 1.0, options: [.curveEaseOut], animations: { [unowned self] in
+                    _topViewController.view.transform = self._panGestureBeginsTransform.top
+                    _topViewController.view.clipsToBounds = self._panGestureBeginsClips
+                    _formerViewController.view.transform = CGAffineTransform(translationX: -_formerViewController.view.bounds.width/2.0, y: 0.0)
+                }, completion: { [unowned self] finished in
+                    _formerViewController.view.transform = self._panGestureBeginsTransform.former
+                })
+            }
+        }
     }
     
     // MARK: - Private.
@@ -153,6 +298,237 @@ class TabNavigationController: ViewController {
         _contentScrollView.heightAnchor.constraint(equalTo: view.heightAnchor).isActive = true
     }
     
+    private func _transitionTabNavigationBarWithPercent(_ perecent: CGFloat, transition views: TabNavigationBar.TabNavigationTransitionContext?) {
+        guard let transitionViews = views else {
+            return
+        }
+        // Get title views.
+        let titleViews = transitionViews.titleViews
+        let itemViews = transitionViews.itemViews
+        // Get translation of the to item views.
+        let translation = min(titleViews.toItemViews.itemsView.bounds.width - titleViews.toItemViews.alignmentContentView.bounds.width, titleViews.containerView.bounds.width) - titleViews.toItemViews.itemsScrollView.contentOffset.x
+        // Update the transform of items views.
+        titleViews.toItemViews.itemsView.transform = CGAffineTransform(translationX: -translation * (1.0 - perecent), y: 0.0)
+        titleViews.toItemViews.itemsView.alpha = perecent
+        titleViews.fromItemViews.itemsView.transform = CGAffineTransform(translationX: translation * perecent, y: 0.0)
+        titleViews.fromItemViews.itemsView.alpha = 1.0 - perecent
+        // Update alpha components of the navigation item views.
+        itemViews.fromItemViews.itemsView.alpha = 1.0 - perecent
+        itemViews.toItemViews.itemsView.alpha = perecent
+        
+        if _viewControllersStack.startIndex == _viewControllersStack.index(before: _viewControllersStack.endIndex) {// Count == 1
+            let backItem = transitionViews.backItem
+            let translation = -perecent*backItem.underlyingView.bounds.width
+            backItem.underlyingView.transform = CGAffineTransform(translationX: translation, y: 0.0)
+            transitionViews.titleViews.containerView.transform = CGAffineTransform(translationX: translation, y: 0.0)
+        }
+    }
+    
+    private func _commitTransitionOfNavigationTitleItems(_ items: [TabNavigationTitleItem], navigationItems: [TabNavigationItem], transition views: TabNavigationBar.TabNavigationTransitionContext?, success: Bool, velocity: CGFloat = 1.0) {
+        guard let transitionViews = views else { return }
+        
+        let titleViews = transitionViews.titleViews
+        let itemViews = transitionViews.itemViews
+        
+        let translation = min(titleViews.toItemViews.itemsView.bounds.width - titleViews.toItemViews.alignmentContentView.bounds.width, titleViews.containerView.bounds.width) - titleViews.toItemViews.itemsScrollView.contentOffset.x
+        
+        if success {
+            if _viewControllersStack.startIndex == _viewControllersStack.index(before: _viewControllersStack.endIndex) {
+                tabNavigationBar._toggleShowingOfNavigationBackItem(shows: false, duration: 0.25, animated: true)
+            }
+            UIView.animate(withDuration: 0.25, delay: 0.0, usingSpringWithDamping: 1.0, initialSpringVelocity: velocity, options: [.curveEaseIn], animations: { [unowned self] in
+                itemViews.toItemViews.itemsView.alpha = 1.0
+                itemViews.fromItemViews.itemsView.alpha = 0.0
+                
+                transitionViews.backItem.underlyingView.transform = .identity
+                titleViews.containerView.transform = .identity
+                titleViews.toItemViews.itemsView.transform = self._panGestureBeginsItemViewsTransform.toTransform
+                titleViews.toItemViews.itemsView.alpha = 1.0
+                titleViews.fromItemViews.itemsView.alpha = 0.0
+                titleViews.fromItemViews.itemsView.transform = CGAffineTransform(translationX: translation, y: 0.0)
+            }, completion: { [unowned self] finished in
+                titleViews.fromItemViews.itemsView.transform = self._panGestureBeginsItemViewsTransform.fromTransform
+                titleViews.fromItemViews.itemsView.alpha = 1.0
+                itemViews.fromItemViews.itemsView.alpha = 1.0
+                
+                self.tabNavigationBar.commitTransitionNavigatiomItemViews(itemViews.toItemViews, navigationItems: navigationItems, success: true)
+                self.tabNavigationBar.commitTransitionTitleItemViews(titleViews.toItemViews, items: items)
+            })
+        } else {
+            UIView.animate(withDuration: 0.25, delay: 0.0, usingSpringWithDamping: 1.0, initialSpringVelocity: velocity, options: [.curveEaseOut], animations: { [unowned self] in
+                itemViews.toItemViews.itemsView.alpha = 0.0
+                itemViews.fromItemViews.itemsView.alpha = 1.0
+                
+                transitionViews.backItem.underlyingView.transform = .identity
+                titleViews.containerView.transform = .identity
+                titleViews.toItemViews.itemsView.transform = CGAffineTransform(translationX: -translation, y: 0.0)
+                titleViews.toItemViews.itemsView.alpha = 0.0
+                titleViews.fromItemViews.itemsView.alpha = 1.0
+                titleViews.fromItemViews.itemsView.transform = self._panGestureBeginsItemViewsTransform.fromTransform
+            }, completion: { [unowned self] finished in
+                titleViews.toItemViews.itemsScrollView.removeFromSuperview()
+                titleViews.toItemViews.itemsView.transform = self._panGestureBeginsItemViewsTransform.toTransform
+                titleViews.toItemViews.itemsView.alpha = 0.0
+                
+                itemViews.toItemViews.itemsView.alpha = 1.0
+                self.tabNavigationBar.commitTransitionNavigatiomItemViews(itemViews.toItemViews, navigationItems: [], success: false)
+            })
+        }
+    }
+    
+    fileprivate func _pushNavigationTitleItems(_ items: [TabNavigationTitleItem], `in` parameters: TabNavigationBar.TabNavigationTitleItemAnimationContext, completion: (() -> Void)? = nil) {
+        let duration: TimeInterval = 0.5
+        let animationParam = parameters
+        let toTransform = animationParam.toItemViews.itemsView.transform
+        
+        let translation = min(animationParam.fromItemViews.itemsView.bounds.width - animationParam.fromItemViews.alignmentContentView.bounds.width, animationParam.containerView.bounds.width) - animationParam.fromItemViews.itemsScrollView.contentOffset.x
+        
+        animationParam.toItemViews.itemsView.transform = CGAffineTransform(translationX: translation, y: 0.0)
+        animationParam.toItemViews.itemsView.alpha = 0.0
+        
+        UIView.animate(withDuration: duration, delay: 0.0, usingSpringWithDamping: 1.0, initialSpringVelocity: 0.0, options: [.curveEaseOut], animations: {
+            animationParam.toItemViews.itemsView.transform = toTransform
+            animationParam.toItemViews.itemsView.alpha = 1.0
+            animationParam.fromItemViews.itemsView.alpha = 0.0
+            animationParam.fromItemViews.itemsView.transform = CGAffineTransform(translationX: -translation, y: 0.0)
+        }, completion: { finished in
+            if finished {
+                completion?()
+            }
+        })
+    }
+    
+    fileprivate func _popNavigationTitleItems(_ items: [TabNavigationTitleItem], `in` parameters: TabNavigationBar.TabNavigationTitleItemAnimationContext, completion: (() -> Void)? = nil) {
+        let duration: TimeInterval = 0.5
+        let animationParam = parameters
+        let toTransform = animationParam.toItemViews.itemsView.transform
+        
+        let translation = min(animationParam.toItemViews.itemsView.bounds.width - animationParam.toItemViews.alignmentContentView.bounds.width, animationParam.containerView.bounds.width) - animationParam.toItemViews.itemsScrollView.contentOffset.x
+        
+        animationParam.toItemViews.itemsView.alpha = 0.0
+        animationParam.toItemViews.itemsView.transform = CGAffineTransform(translationX: -translation, y: 0.0)
+        UIView.animate(withDuration: duration, delay: 0.0, usingSpringWithDamping: 1.0, initialSpringVelocity: 1.0, options: [], animations: {
+            animationParam.toItemViews.itemsView.transform = toTransform
+            animationParam.toItemViews.itemsView.alpha = 1.0
+            animationParam.fromItemViews.itemsView.alpha = 0.0
+            animationParam.fromItemViews.itemsView.transform = CGAffineTransform(translationX: translation, y: 0.0)
+        }, completion: { finished in
+            if finished {
+                completion?()
+            }
+        })
+    }
+    
+    fileprivate func _popViewController(_ viewController: UIViewController? = nil, toRoot: Bool = false, ignoreBar: Bool, animated: Bool) {
+        guard !_viewControllersStack.isEmpty else {
+            return
+        }
+        guard let formerViewController = _formerViewControllerForPop(viewController, toRoot: toRoot) else { return }
+        
+        var navigationTitleItems: [TabNavigationTitleItem] = []
+        var actionsWhenPushed: [TabNavigationTitleActionItem] = []
+        let _removingViewController = _viewControllersStack.last!
+        // Add former view controllers.
+        if _viewControllersStack.startIndex == _viewControllersStack.index(before: _viewControllersStack.endIndex) || toRoot {
+            actionsWhenPushed = tabNavigationTitleActionItemsWhenPushed
+            let rootViewControllers = _rootViewControllersInfo.viewControllers
+            _rootViewControllersInfo.viewControllers.removeAll()
+            for _vc in rootViewControllers {
+                _addViewControllerWithoutUpdatingNavigationTitle(_vc)
+                navigationTitleItems.append(TabNavigationTitleItem(title: _vc.title ?? ""))
+            }
+            _contentScrollView.isScrollEnabled = true
+            _panGestureRecognizer.isEnabled = false
+            tabNavigationBar.hideNavigationBackItem(animated)
+        } else {
+            actionsWhenPushed = formerViewController.tabNavigationTitleActionItemsWhenPushed
+            navigationTitleItems = [TabNavigationTitleItem(title: formerViewController.title ?? "")]
+            _addChildViewController(formerViewController, below: _removingViewController.view)
+        }
+        
+        // Update navigation items.
+        let duration: TimeInterval = 0.5
+        
+        if !ignoreBar {
+            tabNavigationBar.setNavigationTitleItems(navigationTitleItems, animated: animated, selectedIndex: _rootViewControllersInfo.selectedIndex, actionsConfig: { () -> (ignore: Bool, actions: [TabNavigationTitleActionItem]?) in
+                return (false, actionsWhenPushed)
+            }) { [unowned self] animationParameters in
+                if animated {
+                    let fromTransform = animationParameters.fromItemViews.itemsView.transform
+                    
+                    self._popNavigationTitleItems(navigationTitleItems, in: animationParameters) {
+                        animationParameters.fromItemViews.itemsView.transform = fromTransform
+                        animationParameters.fromItemViews.itemsView.alpha = 1.0
+                        self.tabNavigationBar.commitTransitionTitleItemViews(animationParameters.toItemViews, items: navigationTitleItems)
+                    }
+                }
+            }
+            tabNavigationBar.setNavigationItems(formerViewController.tabNavigationItems, animated: animated)
+        }
+        
+        _removingViewController.willMove(toParentViewController: nil)
+        
+        if animated {
+            let formerTransform = formerViewController.view.transform
+            formerViewController.view.transform = CGAffineTransform(translationX: -formerViewController.view.bounds.width / 2.0, y: 0.0)
+            
+            let transform = _removingViewController.view.transform
+            let clipsToBounds = _removingViewController.view.clipsToBounds
+            
+            _removingViewController.view.clipsToBounds = false
+            _setupTransitionShadowOfViewController(_removingViewController)
+            let shadowOpacityAnimation = CABasicAnimation(keyPath: "shadowOpacity")
+            shadowOpacityAnimation.fromValue = 0.5
+            shadowOpacityAnimation.toValue = 0.0
+            shadowOpacityAnimation.duration = duration
+            shadowOpacityAnimation.fillMode = kCAFillModeForwards
+            _removingViewController.view.layer.removeAnimation(forKey: "shadowOpacity")
+            _removingViewController.view.layer.add(shadowOpacityAnimation, forKey: "shadowOpacity")
+            
+            _removingViewController.beginAppearanceTransition(false, animated: animated)
+            UIView.animate(withDuration: duration, delay: 0.0, usingSpringWithDamping: 1.0, initialSpringVelocity: 1.0, options: [.curveEaseIn], animations: {
+                _removingViewController.view.transform = CGAffineTransform(translationX: _removingViewController.view.bounds.width, y: 0.0)
+                formerViewController.view.transform = formerTransform
+            }, completion: { [unowned self] finished in
+                if finished {
+                    _removingViewController.view.removeFromSuperview()
+                    _removingViewController.endAppearanceTransition()
+                    _removingViewController.removeFromParentViewController()
+                    _removingViewController.didMove(toParentViewController: nil)
+                    _removingViewController._tabNavigationController = nil
+                    _removingViewController.view.transform = transform
+                    _removingViewController.view.clipsToBounds = clipsToBounds
+                    if !self._viewControllersStack.isEmpty {
+                        if toRoot {
+                            self._viewControllersStack.removeAll()
+                        } else {
+                            self._viewControllersStack.removeLast()
+                        }
+                    }
+                }
+            })
+        } else {
+            _removingViewController.beginAppearanceTransition(false, animated: false)
+            _removingViewController.view.removeFromSuperview()
+            _removingViewController.endAppearanceTransition()
+            _removingViewController.removeFromParentViewController()
+            _removingViewController.didMove(toParentViewController: nil)
+            _removingViewController._tabNavigationController = nil
+            if !_viewControllersStack.isEmpty {
+                if toRoot {
+                    _viewControllersStack.removeAll()
+                } else {
+                    _viewControllersStack.removeLast()
+                }
+            }
+        }
+    }
+    
+    fileprivate func _setupTransitionShadowOfViewController(_ viewController: UIViewController) {
+        viewController.view.layer.shadowColor = UIColor.lightGray.cgColor
+        viewController.view.layer.shadowOffset = CGSize(width: -4.0, height: 0.0)
+    }
+    
     fileprivate func _addViewControllerWithoutUpdatingNavigationTitle(_ viewController: UIViewController) {
         viewController._tabNavigationController = self
         viewController.view.translatesAutoresizingMaskIntoConstraints = false
@@ -161,12 +537,12 @@ class TabNavigationController: ViewController {
         _contentScrollView.addSubview(viewController.view)
         _contentScrollView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[view]|", options: [], metrics: nil, views: ["view":viewController.view]))
         viewController.view.leadingAnchor.constraint(equalTo: _rootViewControllersInfo.viewControllers.last?.view.trailingAnchor ?? _contentScrollView.leadingAnchor).isActive = true
-        if let _trailing = _trailingConstraintOflastViewController {
+        if let _trailing = _trailingConstraintOfLastViewController {
             _contentScrollView.removeConstraint(_trailing)
         }
         let _trailing = _contentScrollView.trailingAnchor.constraint(equalTo: viewController.view.trailingAnchor)
         _trailing.isActive = true
-        _trailingConstraintOflastViewController = _trailing
+        _trailingConstraintOfLastViewController = _trailing
         
         viewController.view.widthAnchor.constraint(equalTo: _contentScrollView.widthAnchor).isActive = true
         viewController.view.heightAnchor.constraint(equalTo: _contentScrollView.heightAnchor).isActive = true
@@ -199,6 +575,43 @@ class TabNavigationController: ViewController {
             view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-height-[view]|", options: [], metrics: ["height": DefaultTabNavigationBarHeight], views: ["view": viewController.view]))
         }
         viewController.didMove(toParentViewController: self)
+    }
+    
+    fileprivate func _formerViewControllerForPop(_ viewController: UIViewController? = nil, toRoot: Bool = false) -> UIViewController? {
+        guard !toRoot else {
+            return _rootViewControllersInfo.viewControllers[_rootViewControllersInfo.selectedIndex]
+        }
+        var formerViewController: UIViewController
+        if let _viewController = viewController {
+            if _viewControllersStack.contains(_viewController) {
+                formerViewController = _viewController
+            } else {
+                return nil
+            }
+        } else if _viewControllersStack.startIndex == _viewControllersStack.index(before: _viewControllersStack.endIndex) {// Count == 1
+            formerViewController = _rootViewControllersInfo.viewControllers[_rootViewControllersInfo.selectedIndex]
+        } else {
+            formerViewController = _viewControllersStack[_viewControllersStack.index(_viewControllersStack.endIndex, offsetBy: -2)]
+        }
+        
+        return formerViewController
+    }
+    
+    fileprivate func _fetchFormerNavigationTitleItemsAndSetupViewControllersIfNecessary(former viewController: UIViewController) -> [TabNavigationTitleItem] {
+        var navigationTitleItems: [TabNavigationTitleItem] = []
+        // Add former view controllers.
+        if _viewControllersStack.startIndex == _viewControllersStack.index(before: _viewControllersStack.endIndex) {
+            let rootViewControllers = _rootViewControllersInfo.viewControllers
+            _rootViewControllersInfo.viewControllers.removeAll()
+            for _vc in rootViewControllers {
+                _addViewControllerWithoutUpdatingNavigationTitle(_vc)
+                navigationTitleItems.append(TabNavigationTitleItem(title: _vc.title ?? ""))
+            }
+        } else {
+            navigationTitleItems = [TabNavigationTitleItem(title: viewController.title ?? "")]
+        }
+        
+        return navigationTitleItems
     }
     
     private func _setViewControllersWithoutUpdatingNavigationItems(_ viewControllers: [UIViewController]) {
@@ -273,12 +686,13 @@ extension TabNavigationController {
         // Add to child view controllers.
         addChildViewController(viewController)
         if _viewControllersStack.isEmpty {
+            _contentScrollView.isScrollEnabled = false
+            _panGestureRecognizer.isEnabled = true
             tabNavigationBar.showNavigationBackItem(animated)
             // Record the selected index of the root view controllers.
             _rootViewControllersInfo.selectedIndex = tabNavigationBar.selectedIndex
         }
         _viewControllersStack.append(viewController)
-        _headOfViewControllersStack = _viewControllersStack.index(before: _viewControllersStack.endIndex)
         view.insertSubview(viewController.view, belowSubview: tabNavigationBar)
         
         if viewController.view is UIScrollView {
@@ -299,29 +713,16 @@ extension TabNavigationController {
         let duration: TimeInterval = 0.5
         let titleItems = [TabNavigationTitleItem(title: viewController.title ?? "")]
         tabNavigationBar.setNavigationTitleItems(titleItems, animated: animated, actionsConfig: { () -> (ignore: Bool, actions: [TabNavigationTitleActionItem]?) in
-            return (true, nil)
-        }) { animationParameters in
+            return (false, viewController.tabNavigationTitleActionItemsWhenPushed)
+        }) { [unowned self] animationParameters in
             if animated {
-                let toTransform = animationParameters.toItemViews.itemsView.transform
                 let fromTransform = animationParameters.fromItemViews.itemsView.transform
                 
-                let translation = min(animationParameters.fromItemViews.itemsView.bounds.width - animationParameters.fromItemViews.alignmentContentView.bounds.width, animationParameters.containerView.bounds.width) - animationParameters.fromItemViews.itemsScrollView.contentOffset.x
-                
-                animationParameters.toItemViews.itemsView.transform = CGAffineTransform(translationX: translation, y: 0.0)
-                animationParameters.toItemViews.itemsView.alpha = 0.0
-                
-                UIView.animate(withDuration: duration, delay: 0.0, usingSpringWithDamping: 0.8, initialSpringVelocity: 0.8, options: [], animations: {
-                    animationParameters.toItemViews.itemsView.transform = toTransform
-                    animationParameters.toItemViews.itemsView.alpha = 1.0
-                    animationParameters.fromItemViews.itemsView.alpha = 0.0
-                    animationParameters.fromItemViews.itemsView.transform = CGAffineTransform(translationX: -translation, y: 0.0)
-                }, completion: { [unowned self] finished in
-                    if finished {
-                        animationParameters.fromItemViews.itemsView.transform = fromTransform
-                        animationParameters.fromItemViews.itemsView.alpha = 1.0
-                        self.tabNavigationBar.commitTransitionTitleItemViews(animationParameters.toItemViews, items: titleItems)
-                    }
-                })
+                self._pushNavigationTitleItems(titleItems, in: animationParameters) {
+                    animationParameters.fromItemViews.itemsView.transform = fromTransform
+                    animationParameters.fromItemViews.itemsView.alpha = 1.0
+                    self.tabNavigationBar.commitTransitionTitleItemViews(animationParameters.toItemViews, items: titleItems)
+                }
             }
         }
         tabNavigationBar.setNavigationItems(viewController.tabNavigationItems, animated: animated)
@@ -331,6 +732,9 @@ extension TabNavigationController {
         }
         
         if animated {
+            let formerViewController = _formerViewControllerForPop()!
+            let formerTransform = formerViewController.view.transform
+            
             let transform = viewController.view.transform
             viewController.view.transform = CGAffineTransform(translationX: view.bounds.width, y: 0.0)
             for _viewController in _rootViewControllersInfo.viewControllers {
@@ -339,22 +743,22 @@ extension TabNavigationController {
             let clipsToBounds = viewController.view.clipsToBounds
             
             viewController.view.clipsToBounds = false
-            viewController.view.layer.shadowColor = UIColor.lightGray.cgColor
-            viewController.view.layer.shadowOffset = CGSize(width: -4.0, height: 0.0)
+            _setupTransitionShadowOfViewController(viewController)
             let shadowOpacityAnimation = CABasicAnimation(keyPath: "shadowOpacity")
             shadowOpacityAnimation.fromValue = 0.0
             shadowOpacityAnimation.toValue = 0.5
-            shadowOpacityAnimation.duration = duration / 2.0
-            shadowOpacityAnimation.isRemovedOnCompletion = true
+            shadowOpacityAnimation.duration = duration
             shadowOpacityAnimation.fillMode = kCAFillModeForwards
             viewController.view.layer.removeAnimation(forKey: "shadowOpacity")
             viewController.view.layer.add(shadowOpacityAnimation, forKey: "shadowOpacity")
             
             viewController.beginAppearanceTransition(true, animated: animated)
-            UIView.animate(withDuration: duration, delay: 0.0, usingSpringWithDamping: 0.8, initialSpringVelocity: 0.8, options: [], animations: {
+            UIView.animate(withDuration: duration, delay: 0.0, usingSpringWithDamping: 1.0, initialSpringVelocity: 5.0, options: [.curveEaseOut], animations: {
                 viewController.view.transform = transform
+                formerViewController.view.transform = CGAffineTransform(translationX: -formerViewController.view.bounds.width / 2.0, y: 0.0)
             }, completion: { [unowned self] finished in
                 if finished {
+                    formerViewController.view.transform = formerTransform
                     viewController.endAppearanceTransition()
                     viewController.view.clipsToBounds = clipsToBounds
                     for _viewController in self._rootViewControllersInfo.viewControllers {
@@ -379,114 +783,11 @@ extension TabNavigationController {
     }
     
     public func popToRootViewControllers(animated: Bool) {
-        //FIXME: Imp.
+        _popViewController(toRoot: true, ignoreBar: false, animated: animated)
     }
     
     public func pop(to viewController: UIViewController? = nil, animated: Bool) {
-        guard !_viewControllersStack.isEmpty else {
-            return
-        }
-        var formerViewController: UIViewController
-        if let _viewController = viewController {
-            if _viewControllersStack.contains(_viewController) {
-                formerViewController = _viewController
-            } else {
-                return
-            }
-        } else if _viewControllersStack.startIndex == _viewControllersStack.index(before: _viewControllersStack.endIndex) {// Count == 1
-            formerViewController = _rootViewControllersInfo.viewControllers[_rootViewControllersInfo.selectedIndex]
-        } else {
-            formerViewController = _viewControllersStack[_viewControllersStack.index(_viewControllersStack.endIndex, offsetBy: -2)]
-        }
-        
-        var navigationTitleItems: [TabNavigationTitleItem] = []
-        let _removingViewController = _viewControllersStack.last!
-        // Add former view controllers.
-        if _viewControllersStack.startIndex == _viewControllersStack.index(before: _viewControllersStack.endIndex) {
-            let rootViewControllers = _rootViewControllersInfo.viewControllers
-            _rootViewControllersInfo.viewControllers.removeAll()
-            for _vc in rootViewControllers {
-                _addViewControllerWithoutUpdatingNavigationTitle(_vc)
-                navigationTitleItems.append(TabNavigationTitleItem(title: _vc.title ?? ""))
-            }
-            tabNavigationBar.hideNavigationBackItem(animated)
-        } else {
-            navigationTitleItems = [TabNavigationTitleItem(title: formerViewController.title ?? "")]
-            _addChildViewController(formerViewController, below: _removingViewController.view)
-        }
-        
-        // Update navigation items.
-        let duration: TimeInterval = 0.25
-        
-        tabNavigationBar.setNavigationTitleItems(navigationTitleItems, animated: animated, selectedIndex: _rootViewControllersInfo.selectedIndex, actionsConfig: { [unowned self] () -> (ignore: Bool, actions: [TabNavigationTitleActionItem]?) in
-            return (false, self.tabNavigationBar.navigationTitleActionItems)
-        }) { animationParameters in
-            if animated {
-                let toTransform = animationParameters.toItemViews.itemsView.transform
-                let fromTransform = animationParameters.fromItemViews.itemsView.transform
-                
-                let translation = min(animationParameters.toItemViews.itemsView.bounds.width - animationParameters.toItemViews.alignmentContentView.bounds.width, animationParameters.containerView.bounds.width) - animationParameters.toItemViews.itemsScrollView.contentOffset.x
-                
-                animationParameters.toItemViews.itemsView.alpha = 0.0
-                animationParameters.toItemViews.itemsView.transform = CGAffineTransform(translationX: -translation, y: 0.0)
-                UIView.animate(withDuration: duration * 2.0, delay: 0.0, usingSpringWithDamping: 0.8, initialSpringVelocity: 0.8, options: [], animations: {
-                    animationParameters.toItemViews.itemsView.transform = toTransform
-                    animationParameters.toItemViews.itemsView.alpha = 1.0
-                    animationParameters.fromItemViews.itemsView.alpha = 0.0
-                    animationParameters.fromItemViews.itemsView.transform = CGAffineTransform(translationX: translation, y: 0.0)
-                }, completion: { [unowned self] finished in
-                    if finished {
-                        animationParameters.fromItemViews.itemsView.transform = fromTransform
-                        animationParameters.fromItemViews.itemsView.alpha = 1.0
-                        self.tabNavigationBar.commitTransitionTitleItemViews(animationParameters.toItemViews, items: navigationTitleItems)
-                    }
-                })
-            }
-        }
-        tabNavigationBar.setNavigationItems(formerViewController.tabNavigationItems, animated: animated)
-        
-        _removingViewController.willMove(toParentViewController: nil)
-        
-        if animated {
-            let transform = _removingViewController.view.transform
-            let clipsToBounds = _removingViewController.view.clipsToBounds
-            
-            _removingViewController.view.clipsToBounds = false
-            _removingViewController.view.layer.shadowColor = UIColor.lightGray.cgColor
-            _removingViewController.view.layer.shadowOffset = CGSize(width: -4.0, height: 0.0)
-            let shadowOpacityAnimation = CABasicAnimation(keyPath: "shadowOpacity")
-            shadowOpacityAnimation.fromValue = 0.5
-            shadowOpacityAnimation.toValue = 0.0
-            shadowOpacityAnimation.duration = duration
-            shadowOpacityAnimation.isRemovedOnCompletion = true
-            shadowOpacityAnimation.fillMode = kCAFillModeForwards
-            _removingViewController.view.layer.removeAnimation(forKey: "shadowOpacity")
-            _removingViewController.view.layer.add(shadowOpacityAnimation, forKey: "shadowOpacity")
-            
-            _removingViewController.beginAppearanceTransition(false, animated: animated)
-            UIView.animate(withDuration: duration, delay: 0.0, options: [.curveEaseOut], animations: {
-                _removingViewController.view.transform = CGAffineTransform(translationX: _removingViewController.view.bounds.width, y: 0.0)
-            }, completion: { [unowned self] finished in
-                if finished {
-                    _removingViewController.view.removeFromSuperview()
-                    _removingViewController.endAppearanceTransition()
-                    _removingViewController.removeFromParentViewController()
-                    _removingViewController.didMove(toParentViewController: nil)
-                    _removingViewController._tabNavigationController = nil
-                    _removingViewController.view.transform = transform
-                    _removingViewController.view.clipsToBounds = clipsToBounds
-                    self._viewControllersStack.removeLast()
-                }
-            })
-        } else {
-            _removingViewController.beginAppearanceTransition(false, animated: false)
-            _removingViewController.view.removeFromSuperview()
-            _removingViewController.endAppearanceTransition()
-            _removingViewController.removeFromParentViewController()
-            _removingViewController.didMove(toParentViewController: nil)
-            _removingViewController._tabNavigationController = nil
-            _viewControllersStack.removeLast()
-        }
+        _popViewController(viewController, ignoreBar: false, animated: animated)
     }
 }
 
@@ -500,7 +801,7 @@ extension TabNavigationController: TabNavigationBarDelegate {
         guard index >= _rootViewControllersInfo.viewControllers.startIndex && index < _rootViewControllersInfo.viewControllers.endIndex else {
             return
         }
-        
+        _rootViewControllersInfo.selectedIndex = index
         let _selectedViewController = _rootViewControllersInfo.viewControllers[index]
         
         _contentScrollView.scrollRectToVisible(_selectedViewController.view.frame, animated: true)
