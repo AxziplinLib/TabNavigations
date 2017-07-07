@@ -14,6 +14,8 @@ class SettingsViewController: TableViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        tableView.rowHeight = UITableViewAutomaticDimension
+        tableView.estimatedRowHeight = 50.0
     }
 
     override func didReceiveMemoryWarning() {

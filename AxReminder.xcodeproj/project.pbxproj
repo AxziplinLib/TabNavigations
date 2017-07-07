@@ -12,6 +12,7 @@
 		DC1782F31F0A40B5000738E9 /* Settings.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DC1782F51F0A40B5000738E9 /* Settings.storyboard */; };
 		DC1782FA1F0A4DB9000738E9 /* ApplicationColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC1782F91F0A4DB9000738E9 /* ApplicationColor.swift */; };
 		DC2577E21F010FC000C0C98E /* Colours-5.14.0.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC2577E11F010FB200C0C98E /* Colours-5.14.0.swift */; };
+		DC7C77361F0F7C67003C9AF6 /* SettingsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC7C77351F0F7C67003C9AF6 /* SettingsTableViewCell.swift */; };
 		DC8DD7BD1F00D6C9006D9706 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DC8DD7BC1F00D6C9006D9706 /* Assets.xcassets */; };
 		DC8DD7CB1F00D6C9006D9706 /* AxReminderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC8DD7CA1F00D6C9006D9706 /* AxReminderTests.swift */; };
 		DC8DD7D61F00D6C9006D9706 /* AxReminderUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC8DD7D51F00D6C9006D9706 /* AxReminderUITests.swift */; };
@@ -55,11 +56,12 @@
 		048C31421983B986DB2EC082 /* Pods-AxReminder.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AxReminder.release.xcconfig"; path = "Pods/Target Support Files/Pods-AxReminder/Pods-AxReminder.release.xcconfig"; sourceTree = "<group>"; };
 		658981E75E76212318520A1E /* Pods-AxReminder.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AxReminder.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AxReminder/Pods-AxReminder.debug.xcconfig"; sourceTree = "<group>"; };
 		719FE2FF805CC657319C7AF4 /* Pods_AxReminder.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AxReminder.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		DC1782EF1F0A407F000738E9 /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
+		DC1782EF1F0A407F000738E9 /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SettingsViewController.swift; path = ViewControllers/SettingsViewController.swift; sourceTree = "<group>"; };
 		DC1782F41F0A40B5000738E9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Settings.storyboard; sourceTree = "<group>"; };
 		DC1782F71F0A40B8000738E9 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Settings.strings"; sourceTree = "<group>"; };
 		DC1782F91F0A4DB9000738E9 /* ApplicationColor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApplicationColor.swift; sourceTree = "<group>"; };
 		DC2577E11F010FB200C0C98E /* Colours-5.14.0.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Colours-5.14.0.swift"; sourceTree = "<group>"; };
+		DC7C77351F0F7C67003C9AF6 /* SettingsTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsTableViewCell.swift; sourceTree = "<group>"; };
 		DC8DD7AF1F00D6C9006D9706 /* AxReminder.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AxReminder.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DC8DD7BC1F00D6C9006D9706 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		DC8DD7C61F00D6C9006D9706 /* AxReminderTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AxReminderTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -141,7 +143,9 @@
 			isa = PBXGroup;
 			children = (
 				DC1782ED1F0A4044000738E9 /* ViewControllers */,
+				DC1782EF1F0A407F000738E9 /* SettingsViewController.swift */,
 				DC1782EE1F0A4044000738E9 /* Views */,
+				DC7C77341F0F7C45003C9AF6 /* Cells */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -149,7 +153,6 @@
 		DC1782ED1F0A4044000738E9 /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
-				DC1782EF1F0A407F000738E9 /* SettingsViewController.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -175,6 +178,14 @@
 				DC2577E11F010FB200C0C98E /* Colours-5.14.0.swift */,
 			);
 			path = Dependencies;
+			sourceTree = "<group>";
+		};
+		DC7C77341F0F7C45003C9AF6 /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				DC7C77351F0F7C67003C9AF6 /* SettingsTableViewCell.swift */,
+			);
+			path = Cells;
 			sourceTree = "<group>";
 		};
 		DC8DD7A61F00D6C9006D9706 = {
@@ -590,6 +601,7 @@
 				DC8DD7F71F00E22B006D9706 /* AppDelegate.swift in Sources */,
 				DCC627171F00E77700D79D07 /* NavigationController.swift in Sources */,
 				DC8DD7F61F00DF70006D9706 /* TabNavigationBar.swift in Sources */,
+				DC7C77361F0F7C67003C9AF6 /* SettingsTableViewCell.swift in Sources */,
 				DC1782F01F0A407F000738E9 /* SettingsViewController.swift in Sources */,
 				DCB259F81F0395A7001EFC1C /* TableViewController.swift in Sources */,
 				DCB25A1B1F03B4B7001EFC1C /* TableViewCell.swift in Sources */,
