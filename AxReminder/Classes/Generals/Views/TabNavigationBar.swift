@@ -113,6 +113,7 @@ public class TabNavigationItem: NSObject {
         return Selector(_selector)
     }
     
+    internal var underlyingView: UIView { return _view }
     fileprivate var _view: _TabNavigationItemView = _TabNavigationItemView()
     
     public init(title: String?) {
@@ -339,8 +340,10 @@ private func _createGeneralAlignmentLabel<T>(font: UIFont? = nil) -> T where T: 
 
 extension TabNavigationBar {
     public typealias TabNavigationItemViews = (itemsContainerView: UIView, itemsScrollView: UIScrollView, itemsView: UIView)
+    public typealias TabNavigationItemAnimationViews = (fromItemViews: TabNavigationItemViews, toItemViews: TabNavigationItemViews)
     public typealias TabNavigationTitleItemViews = (itemsScrollView: UIScrollView, itemsView: UIView, alignmentContentView: UIView)
-    public typealias TabNavigationTitleItemAnimationParameters = (containerView: UIView, fromItemViews: TabNavigationTitleItemViews, toItemViews: TabNavigationTitleItemViews)
+    public typealias TabNavigationTitleItemAnimationViews = (containerView: UIView, fromItemViews: TabNavigationTitleItemViews, toItemViews: TabNavigationTitleItemViews)
+    public typealias TabNavigationTransitionViews = (backItem: TabNavigationItem, titleViews: TabNavigationTitleItemAnimationViews, itemViews: TabNavigationItemAnimationViews)
 }
 
 public class TabNavigationBar: UIView, UIBarPositioning {
@@ -351,8 +354,8 @@ public class TabNavigationBar: UIView, UIBarPositioning {
     fileprivate lazy var _titleItemsContainerView: UIView = _createGeneralContainerView()
     fileprivate lazy var _itemsContainerView: UIView = _createGeneralContainerView()
     fileprivate lazy var _titleItemsScrollView: UIScrollView = _createGeneralScrollView()
-    private lazy var _itemsScrollView: UIScrollView = _createGeneralScrollView(alwaysBounceHorizontal: false)
-    private lazy var _navigationTitleItemView: UIView = _createGeneralContainerView()
+    fileprivate lazy var _itemsScrollView: UIScrollView = _createGeneralScrollView(alwaysBounceHorizontal: false)
+    fileprivate lazy var _navigationTitleItemView: UIView = _createGeneralContainerView()
     fileprivate lazy var _navigationItemView: UIView = _createGeneralContainerView()
     
     private var _titleItemsPreviewPanGesture: UIPanGestureRecognizer!
@@ -558,7 +561,7 @@ public class TabNavigationBar: UIView, UIBarPositioning {
         }
     }
     
-    fileprivate func _toggleShowingOfNavigationBackItem(shows: Bool, animated: Bool) {
+    internal func _toggleShowingOfNavigationBackItem(shows: Bool, duration: TimeInterval = 0.5, animated: Bool) {
         if let _horizontal = _horizontalConstraintOfBackItem {
             removeConstraint(_horizontal)
         }
@@ -575,11 +578,12 @@ public class TabNavigationBar: UIView, UIBarPositioning {
             _navigationBackItem._view.isHidden = false
         }
         if animated {
-            UIView.animate(withDuration: 0.5, delay: 0.0, usingSpringWithDamping: 0.8, initialSpringVelocity: 0.8, options: [], animations: { [unowned self] in
+            UIView.animate(withDuration: duration, delay: 0.0, usingSpringWithDamping: 1.0, initialSpringVelocity: 1.0, options: [], animations: { [unowned self] in
                 self.layoutIfNeeded()
                 }, completion: { [unowned self] finished in
                 if finished && !shows {
                     self._navigationBackItem._view.isHidden = true
+                    self._navigationBackItem._view.transform = .identity
                 }
             })
         }
@@ -782,7 +786,7 @@ public class TabNavigationBar: UIView, UIBarPositioning {
         return (itemsScrollView, itemsView, alignmentContentView)
     }
     
-    fileprivate func _setNavigationTitleItems(_ items: [TabNavigationTitleItem], animated: Bool = false, selectedIndex index: Array<TabNavigationTitleItem>.Index = 0, actionConfig: (ignore: Bool, actions: [TabNavigationTitleActionItem]?) = (false, nil), animation: ((TabNavigationTitleItemAnimationParameters) -> Void)? = nil) {
+    fileprivate func _setNavigationTitleItems(_ items: [TabNavigationTitleItem], animated: Bool = false, selectedIndex index: Array<TabNavigationTitleItem>.Index = 0, actionConfig: (ignore: Bool, actions: [TabNavigationTitleActionItem]?) = (false, nil), animation: ((TabNavigationTitleItemAnimationViews) -> Void)? = nil) {
         guard animated else {
             // Remove all the former title items.
             while _navigationTitleItems.last != nil {
@@ -1395,7 +1399,7 @@ extension TabNavigationBar {
         _calculateWidthConstantOfContentAlignmentView()
     }
     
-    public func setNavigationTitleItems(_ items: [TabNavigationTitleItem], animated: Bool = false, selectedIndex index: Array<TabNavigationTitleItem>.Index = 0, actionsConfig: (() -> (ignore: Bool, actions: [TabNavigationTitleActionItem]?))? = nil, animation: ((TabNavigationTitleItemAnimationParameters) -> Void)? = nil) {
+    public func setNavigationTitleItems(_ items: [TabNavigationTitleItem], animated: Bool = false, selectedIndex index: Array<TabNavigationTitleItem>.Index = 0, actionsConfig: (() -> (ignore: Bool, actions: [TabNavigationTitleActionItem]?))? = nil, animation: ((TabNavigationTitleItemAnimationViews) -> Void)? = nil) {
         _setNavigationTitleItems(items, animated: animated, selectedIndex: index, actionConfig: actionsConfig?() ?? (false, nil), animation: animation)
     }
     @discardableResult
@@ -1469,6 +1473,59 @@ extension TabNavigationBar {
     }
     
     // MARK: - Tab transitions.
+    
+    public func beginTransitionNavigationTitleItems(_ items: [TabNavigationTitleItem], selectedIndex index: Array<TabNavigationTitleItem>.Index = 0, actionsConfig: (() -> (ignore: Bool, actions: [TabNavigationTitleActionItem]?))? = nil, navigationItems: [TabNavigationItem]) -> TabNavigationTransitionViews {
+        // Create views.
+        let itemViews = _createAndSetupTitleItemViews()
+        let _itemViews: TabNavigationTitleItemViews = (_titleItemsScrollView, _navigationTitleItemView, _titleItemContentAlignmentView as UIView)
+        let animationParameters = (_titleItemsContainerView, _itemViews, itemViews)
+        
+        var navigationTitleActionItems: [TabNavigationTitleActionItem] = []
+        let actionResults = actionsConfig?() ?? (ignore: false, actions: nil)
+        if !actionResults.ignore {
+            if let actions = actionResults.actions {
+                navigationTitleActionItems = actions
+            } else {
+                // Make a deep copy of the navigation title action items.
+                for item in _navigationTitleActionItems {
+                    let _deepCpItem = TabNavigationTitleActionItem(title: item._button.title(for: .normal)!)
+                    _deepCpItem.setTitleFont(item.titleFont(whenSelected: false), whenSelected: false)
+                    _deepCpItem.setTitleColor(item.titleColor(whenSelected: false), whenSelected: false)
+                    if let action = item._action, let target = item._target {
+                        _deepCpItem._button.addTarget(target, action: action, for: .touchUpInside)
+                    }
+                    _deepCpItem.tintColor = item.tintColor
+                    navigationTitleActionItems.append(_deepCpItem)
+                }
+            }
+            
+            // Add title action item first.
+            var _transitionActionItems: [TabNavigationTitleActionItem] = []
+            for item in navigationTitleActionItems {
+                _addNavigationTitleItemButton(item, in: _transitionActionItems, possibleActions: _transitionActionItems, to: itemViews.itemsView, alignmentContentView: (itemViews.alignmentContentView as! TabNavigationBar._TabNavigaitonTitleContentAlignmentView), transition: true)
+                _transitionActionItems.append(item)
+            }
+        }
+        // Add title items.
+        var transitionItems: [TabNavigationTitleItem] = []
+        for item in items {
+            _addNavigationTitleItemButton(item, in: transitionItems, possibleActions: navigationTitleActionItems, to: itemViews.itemsView, alignmentContentView: itemViews.alignmentContentView as? _TabNavigaitonTitleContentAlignmentView, transition: true)
+            transitionItems.append(item)
+        }
+        
+        setNeedsLayout()
+        layoutIfNeeded()
+        
+        if !items.isEmpty {
+            _setSelectedTitle(at: index, in: items, possibleActions: [], animated: false)
+            _scrollToSelectedTitleItem(items: items, in: itemViews.itemsScrollView, animated: false)
+        }
+        
+        let fromNavigationItemViews = (_itemsContainerView, _itemsScrollView, _navigationItemView)
+        let toNavigationItemViews = beginTransitionNavigationItems(navigationItems)
+        
+        return (_navigationBackItem as TabNavigationItem, animationParameters, (fromNavigationItemViews, toNavigationItemViews))
+    }
     
     public func beginTransitionNavigationItems(_ items: [TabNavigationItem], on navigatiomItems: [TabNavigationItem] = [], `in` itemViews: TabNavigationItemViews? = nil) -> TabNavigationItemViews {
         if !navigatiomItems.isEmpty {
