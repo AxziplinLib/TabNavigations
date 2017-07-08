@@ -129,7 +129,6 @@ class TabNavigationController: ViewController {
     public var interactivePopGestureRecognizer: UIPanGestureRecognizer { return _panGestureRecognizer }
     fileprivate var _panGestureRecognizer: UIPanGestureRecognizer!
     fileprivate var _panGestureBeginsLocation: CGPoint = .zero
-    fileprivate var _panGestureBeginsClips: Bool = true
     fileprivate var _panGestureBeginsTransform: (former: CGAffineTransform, top: CGAffineTransform) = (.identity, .identity)
     fileprivate var _panGestureBeginsTitleItems: [TabNavigationTitleItem] = []
     
@@ -209,7 +208,6 @@ class TabNavigationController: ViewController {
             _panGestureBeginsTitleItems = _fetchFormerNavigationTitleItemsAndSetupViewControllersIfNecessary(former: _formerViewController)
             
             _panGestureBeginsTransform = (_formerViewController.view.transform, _topViewController.view.transform)
-            _panGestureBeginsClips = _topViewController.view.clipsToBounds
             
             _transitionNavigationBarViews = tabNavigationBar.beginTransitionNavigationTitleItems(_panGestureBeginsTitleItems, selectedIndex: _viewControllersStack.startIndex == _viewControllersStack.index(before: _viewControllersStack.endIndex) ? _rootViewControllersInfo.selectedIndex : 0, actionsConfig: { () -> (ignore: Bool, actions: [TabNavigationTitleActionItem]?) in
                 return (false, actionsWhenPushed)
@@ -248,32 +246,16 @@ class TabNavigationController: ViewController {
             guard let _topViewController = topViewController else { break }
             
             if shouldCommitTransition {
-                let shadowOpacityAnimation = CABasicAnimation(keyPath: "shadowOpacity")
-                shadowOpacityAnimation.toValue = 0.0
-                shadowOpacityAnimation.isRemovedOnCompletion = true
-                shadowOpacityAnimation.duration = 0.25
-                shadowOpacityAnimation.fillMode = kCAFillModeForwards
-                _topViewController.view.layer.removeAnimation(forKey: "shadowOpacity")
-                _topViewController.view.layer.add(shadowOpacityAnimation, forKey: "shadowOpacity")
                 UIView.animate(withDuration: 0.25, delay: 0.0, usingSpringWithDamping: 1.0, initialSpringVelocity: 1.0, options: [.curveEaseIn], animations: { [unowned self] in
                     _topViewController.view.transform = CGAffineTransform(translationX: _topViewController.view.bounds.width, y: 0.0)
                     _formerViewController.view.transform = self._panGestureBeginsTransform.former
                 }, completion: { [unowned self] finished in
                     _topViewController.view.transform = self._panGestureBeginsTransform.top
-                    _topViewController.view.clipsToBounds = self._panGestureBeginsClips
                     self._popViewController(ignoreBar: true, animated: false)
                 })
             } else {
-                let shadowOpacityAnimation = CABasicAnimation(keyPath: "shadowOpacity")
-                shadowOpacityAnimation.toValue = 0.5
-                shadowOpacityAnimation.isRemovedOnCompletion = true
-                shadowOpacityAnimation.duration = 0.25
-                shadowOpacityAnimation.fillMode = kCAFillModeForwards
-                _topViewController.view.layer.removeAnimation(forKey: "shadowOpacity")
-                _topViewController.view.layer.add(shadowOpacityAnimation, forKey: "shadowOpacity")
                 UIView.animate(withDuration: 0.25, delay: 0.0, usingSpringWithDamping: 1.0, initialSpringVelocity: 1.0, options: [.curveEaseOut], animations: { [unowned self] in
                     _topViewController.view.transform = self._panGestureBeginsTransform.top
-                    _topViewController.view.clipsToBounds = self._panGestureBeginsClips
                     _formerViewController.view.transform = CGAffineTransform(translationX: -_formerViewController.view.bounds.width/2.0, y: 0.0)
                 }, completion: { [unowned self] finished in
                     _formerViewController.view.transform = self._panGestureBeginsTransform.former
@@ -473,18 +455,7 @@ class TabNavigationController: ViewController {
             formerViewController.view.transform = CGAffineTransform(translationX: -formerViewController.view.bounds.width / 2.0, y: 0.0)
             
             let transform = _removingViewController.view.transform
-            // let clipsToBounds = _removingViewController.view.clipsToBounds
-            
-            // _removingViewController.view.clipsToBounds = false
-            // _setupTransitionShadowOfViewController(_removingViewController)
-            // let shadowOpacityAnimation = CABasicAnimation(keyPath: "shadowOpacity")
-            // shadowOpacityAnimation.fromValue = 0.5
-            // shadowOpacityAnimation.toValue = 0.0
-            // shadowOpacityAnimation.duration = duration
-            // shadowOpacityAnimation.fillMode = kCAFillModeForwards
-            // _removingViewController.view.layer.removeAnimation(forKey: "shadowOpacity")
-            // _removingViewController.view.layer.add(shadowOpacityAnimation, forKey: "shadowOpacity")
-            
+
             _removingViewController.beginAppearanceTransition(false, animated: animated)
             UIView.animate(withDuration: duration, delay: 0.0, usingSpringWithDamping: 1.0, initialSpringVelocity: 1.0, options: [.curveEaseIn], animations: {
                 _removingViewController.view.transform = CGAffineTransform(translationX: _removingViewController.view.bounds.width, y: 0.0)
@@ -497,7 +468,6 @@ class TabNavigationController: ViewController {
                     _removingViewController.didMove(toParentViewController: nil)
                     _removingViewController._tabNavigationController = nil
                     _removingViewController.view.transform = transform
-                    // _removingViewController.view.clipsToBounds = clipsToBounds
                     if !self._viewControllersStack.isEmpty {
                         if toRoot {
                             self._viewControllersStack.removeAll()
@@ -740,17 +710,6 @@ extension TabNavigationController {
             for _viewController in _rootViewControllersInfo.viewControllers {
                 _viewController.beginAppearanceTransition(false, animated: animated)
             }
-            // let clipsToBounds = viewController.view.clipsToBounds
-            
-            // viewController.view.clipsToBounds = false
-            // _setupTransitionShadowOfViewController(viewController)
-            // let shadowOpacityAnimation = CABasicAnimation(keyPath: "shadowOpacity")
-            // shadowOpacityAnimation.fromValue = 0.0
-            // shadowOpacityAnimation.toValue = 0.5
-            // shadowOpacityAnimation.duration = duration
-            // shadowOpacityAnimation.fillMode = kCAFillModeForwards
-            // viewController.view.layer.removeAnimation(forKey: "shadowOpacity")
-            // viewController.view.layer.add(shadowOpacityAnimation, forKey: "shadowOpacity")
             
             viewController.beginAppearanceTransition(true, animated: animated)
             UIView.animate(withDuration: duration, delay: 0.0, usingSpringWithDamping: 1.0, initialSpringVelocity: 5.0, options: [.curveEaseOut], animations: {
@@ -760,7 +719,6 @@ extension TabNavigationController {
                 if finished {
                     formerViewController.view.transform = formerTransform
                     viewController.endAppearanceTransition()
-                    // viewController.view.clipsToBounds = clipsToBounds
                     for _viewController in self._rootViewControllersInfo.viewControllers {
                         _viewController.view.removeFromSuperview()
                         _viewController.endAppearanceTransition()
