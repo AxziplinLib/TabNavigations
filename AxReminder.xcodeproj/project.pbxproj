@@ -32,6 +32,8 @@
 		DCB25A1B1F03B4B7001EFC1C /* TableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCB25A1A1F03B4B7001EFC1C /* TableViewCell.swift */; };
 		DCB25A1D1F03B4D3001EFC1C /* HomeTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCB25A1C1F03B4D3001EFC1C /* HomeTableViewCell.swift */; };
 		DCB643651F0247F300D89256 /* POPAnimatableProperty.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCB643641F0247F300D89256 /* POPAnimatableProperty.swift */; };
+		DCC1BFEA1F0F8BFB00E7735C /* GradientColorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCC1BFE91F0F8BFB00E7735C /* GradientColorView.swift */; };
+		DCC1BFED1F0F910200E7735C /* CategoryTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCC1BFEC1F0F910200E7735C /* CategoryTableViewCell.swift */; };
 		DCC627171F00E77700D79D07 /* NavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCC627161F00E77700D79D07 /* NavigationController.swift */; };
 /* End PBXBuildFile section */
 
@@ -56,7 +58,7 @@
 		048C31421983B986DB2EC082 /* Pods-AxReminder.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AxReminder.release.xcconfig"; path = "Pods/Target Support Files/Pods-AxReminder/Pods-AxReminder.release.xcconfig"; sourceTree = "<group>"; };
 		658981E75E76212318520A1E /* Pods-AxReminder.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AxReminder.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AxReminder/Pods-AxReminder.debug.xcconfig"; sourceTree = "<group>"; };
 		719FE2FF805CC657319C7AF4 /* Pods_AxReminder.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AxReminder.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		DC1782EF1F0A407F000738E9 /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SettingsViewController.swift; path = ViewControllers/SettingsViewController.swift; sourceTree = "<group>"; };
+		DC1782EF1F0A407F000738E9 /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		DC1782F41F0A40B5000738E9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Settings.storyboard; sourceTree = "<group>"; };
 		DC1782F71F0A40B8000738E9 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Settings.strings"; sourceTree = "<group>"; };
 		DC1782F91F0A4DB9000738E9 /* ApplicationColor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApplicationColor.swift; sourceTree = "<group>"; };
@@ -93,6 +95,8 @@
 		DCB25A1A1F03B4B7001EFC1C /* TableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TableViewCell.swift; sourceTree = "<group>"; };
 		DCB25A1C1F03B4D3001EFC1C /* HomeTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomeTableViewCell.swift; sourceTree = "<group>"; };
 		DCB643641F0247F300D89256 /* POPAnimatableProperty.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = POPAnimatableProperty.swift; sourceTree = "<group>"; };
+		DCC1BFE91F0F8BFB00E7735C /* GradientColorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GradientColorView.swift; sourceTree = "<group>"; };
+		DCC1BFEC1F0F910200E7735C /* CategoryTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CategoryTableViewCell.swift; sourceTree = "<group>"; };
 		DCC627161F00E77700D79D07 /* NavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -143,7 +147,6 @@
 			isa = PBXGroup;
 			children = (
 				DC1782ED1F0A4044000738E9 /* ViewControllers */,
-				DC1782EF1F0A407F000738E9 /* SettingsViewController.swift */,
 				DC1782EE1F0A4044000738E9 /* Views */,
 				DC7C77341F0F7C45003C9AF6 /* Cells */,
 			);
@@ -153,6 +156,7 @@
 		DC1782ED1F0A4044000738E9 /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
+				DC1782EF1F0A407F000738E9 /* SettingsViewController.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -360,6 +364,7 @@
 			children = (
 				DCB25A0D1F03AFF7001EFC1C /* ViewControllers */,
 				DCB25A0E1F03AFF7001EFC1C /* Views */,
+				DCC1BFEB1F0F90E600E7735C /* Cells */,
 			);
 			path = Category;
 			sourceTree = "<group>";
@@ -375,6 +380,7 @@
 		DCB25A0E1F03AFF7001EFC1C /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				DCC1BFE91F0F8BFB00E7735C /* GradientColorView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -401,6 +407,14 @@
 				DCB643641F0247F300D89256 /* POPAnimatableProperty.swift */,
 			);
 			path = Animations;
+			sourceTree = "<group>";
+		};
+		DCC1BFEB1F0F90E600E7735C /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				DCC1BFEC1F0F910200E7735C /* CategoryTableViewCell.swift */,
+			);
+			path = Cells;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -603,10 +617,12 @@
 				DC8DD7F61F00DF70006D9706 /* TabNavigationBar.swift in Sources */,
 				DC7C77361F0F7C67003C9AF6 /* SettingsTableViewCell.swift in Sources */,
 				DC1782F01F0A407F000738E9 /* SettingsViewController.swift in Sources */,
+				DCC1BFEA1F0F8BFB00E7735C /* GradientColorView.swift in Sources */,
 				DCB259F81F0395A7001EFC1C /* TableViewController.swift in Sources */,
 				DCB25A1B1F03B4B7001EFC1C /* TableViewCell.swift in Sources */,
 				DCB25A101F03B00C001EFC1C /* CategoryViewController.swift in Sources */,
 				DC8DD8011F00E3B2006D9706 /* HomeViewController.swift in Sources */,
+				DCC1BFED1F0F910200E7735C /* CategoryTableViewCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -15,23 +15,59 @@ class CategoryViewController: TableViewController {
 
         // Do any additional setup after loading the view.
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+    }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    
+}
 
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+extension CategoryViewController {
+    override func numberOfSections(in tableView: UITableView) -> Int {
+        return 3
     }
-    */
+    
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 1
+    }
+    
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: CategoryTableViewCell.reusedIdentifier, for: indexPath) as! CategoryTableViewCell
+        switch indexPath.section {
+        case 0:
+            cell.titleLabel.text = "工作"
+            cell.frontGradientView.bringSubview(toFront: cell.titleLabel)
+            cell.beginsColor = UIColor(hex: "C96DD8")
+            cell.endsColor = UIColor(hex: "3023AE")
+        case 1:
+            cell.titleLabel.text = "家庭"
+            cell.beginsColor = UIColor(hex: "B4ED50")
+            cell.endsColor = UIColor(hex: "429321")
+        case 2:
+            cell.titleLabel.text = "旅游"
+            cell.beginsColor = UIColor(hex: "FBDA61")
+            cell.endsColor = UIColor(hex: "F76B1C")
+        default:
+            break
+        }
+        return cell
+    }
+}
 
+extension CategoryViewController {
+    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 20.0
+    }
+    override func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        if section == numberOfSections(in: tableView)-1 {
+            return 10.0
+        }
+        return 0.01 
+    }
 }
 
 extension CategoryViewController: StoryboardLoadable {
