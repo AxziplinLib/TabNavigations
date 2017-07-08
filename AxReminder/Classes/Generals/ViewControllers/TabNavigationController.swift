@@ -153,6 +153,7 @@ class TabNavigationController: ViewController {
     fileprivate var _rootViewControllersInfo: (selectedIndex: Array<UIViewController>.Index, viewControllers: [UIViewController]) = (0, [])
     fileprivate var _viewControllersStack: [UIViewController] = []
     
+    override var shouldAutomaticallyForwardAppearanceMethods: Bool { return false }
     // MARK: - Overrides.
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
@@ -224,8 +225,6 @@ class TabNavigationController: ViewController {
             _topViewController.view.transform = CGAffineTransform(translationX: transitionPercent * _topViewController.view.bounds.width, y: 0.0)
             _formerViewController.view.transform = CGAffineTransform(translationX: -(1.0-transitionPercent) * _formerViewController.view.bounds.width / 2.0, y: 0.0)
             _topViewController.view.clipsToBounds = false
-            // _setupTransitionShadowOfViewController(_topViewController)
-            // _topViewController.view.layer.shadowOpacity = Float(1.0-transitionPercent) * Float(0.5)
             
             _transitionTabNavigationBarWithPercent(transitionPercent, transition: _transitionNavigationBarViews)
         case .cancelled: fallthrough
@@ -234,7 +233,6 @@ class TabNavigationController: ViewController {
             let location = sender.location(in: view)
             let velocity = sender.velocity(in: view)
             let translation = sender.translation(in: view)
-            // print("Velocity: \(velocity), Translation: \(translation)")
 
             let transitionPercent = max(0.0, location.x - _panGestureBeginsLocation.x) / view.bounds.width
             
