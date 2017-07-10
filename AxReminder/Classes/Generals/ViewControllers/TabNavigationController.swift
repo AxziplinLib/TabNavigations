@@ -143,6 +143,7 @@ class TabNavigationController: ViewController {
             return _rootViewControllersInfo.viewControllers[_rootViewControllersInfo.selectedIndex]
         }()
     }
+    fileprivate weak var _selectedViewController: UIViewController?
     
     private weak var _trailingConstraintOfLastViewController: NSLayoutConstraint?
     
@@ -585,6 +586,29 @@ class TabNavigationController: ViewController {
     private func _setViewControllersWithoutUpdatingNavigationItems(_ viewControllers: [UIViewController]) {
         
     }
+    
+    fileprivate func _setSelectedViewController(at index: Array<UIViewController>.Index, updateNavigationItems: Bool, animated: Bool) {
+        guard index >= _rootViewControllersInfo.viewControllers.startIndex && index < _rootViewControllersInfo.viewControllers.endIndex else {
+            return
+        }
+        
+        let viewController = _rootViewControllersInfo.viewControllers[index]
+        guard viewController !== _selectedViewController else {
+            return
+        }
+        
+        if let selectedViewController = _selectedViewController {
+            selectedViewController.beginAppearanceTransition(false, animated: animated)
+            selectedViewController.endAppearanceTransition()
+        }
+        _selectedViewController = viewController
+        _selectedViewController!.beginAppearanceTransition(true, animated: animated)
+        if updateNavigationItems {
+            tabNavigationBar.setNavigationItems(_selectedViewController!.tabNavigationItems, animated: true)
+        }
+        _selectedViewController!.endAppearanceTransition()
+        _rootViewControllersInfo.selectedIndex = index
+    }
 }
 
 extension TabNavigationController {
@@ -593,6 +617,16 @@ extension TabNavigationController {
     
     public func setViewControllers<T>(_ viewControllers: Array<T>, animated: Bool) where T: UIViewController, T: TabNavigationReadable {
         // FIXME:Imp the function.
+    }
+    
+    public func setSelectedViewController(_ viewController: UIViewController, animated: Bool) {
+        if let index = _rootViewControllersInfo.viewControllers.index(of: viewController) {
+            setSelectedViewController(at: index, animated: animated)
+        }
+    }
+    
+    public func setSelectedViewController(at index: Array<UIViewController>.Index, animated: Bool) {
+        _setSelectedViewController(at: index, updateNavigationItems: true, animated: animated)
     }
     
     public func addViewController<T>(_ viewController: T) where T: UIViewController, T: TabNavigationReadable {
@@ -757,14 +791,11 @@ extension TabNavigationController: TabNavigationBarDelegate {
         guard index >= _rootViewControllersInfo.viewControllers.startIndex && index < _rootViewControllersInfo.viewControllers.endIndex else {
             return
         }
-        _rootViewControllersInfo.selectedIndex = index
         let _selectedViewController = _rootViewControllersInfo.viewControllers[index]
         
         _contentScrollView.scrollRectToVisible(_selectedViewController.view.frame, animated: true)
         
-        _selectedViewController.beginAppearanceTransition(true, animated: true)
-        tabNavigationBar.setNavigationItems(_selectedViewController.tabNavigationItems, animated: true)
-        _selectedViewController.endAppearanceTransition()
+        setSelectedViewController(at: index, animated: true)
     }
     
     func tabNavigationBarDidTouchNavigatiomBackItem(_ tabNavigationBar: TabNavigationBar) {
@@ -775,11 +806,19 @@ extension TabNavigationController: TabNavigationBarDelegate {
 // MARK: - UIScrollViewDelegate.
 
 extension TabNavigationController: UIScrollViewDelegate {
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        print("begin dragging: \(scrollView.isDecelerating)")
+    }
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         guard _viewControllersStack.isEmpty else {
             return
         }
         _commitTransitionNavigationItemViews(at: Int(scrollView.contentOffset.x / scrollView.bounds.width))
+    }
+    
+    func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
+        let selectedIndex = Int(targetContentOffset[0].x / scrollView.bounds.width)
+        _setSelectedViewController(at: selectedIndex, updateNavigationItems: false, animated: true)
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
