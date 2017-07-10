@@ -186,7 +186,7 @@ public class TabNavigationTitleItem: NSObject {
         return _selectionTitleFonts[selected]!
     }
     
-    public func setSelected(_ selected: Bool, animated: Bool) {
+    public func setSelected(_ selected: Bool, animated: Bool, completion: (() -> Void)? = nil) {
         if animated {
             if let range = selectedRange {
                 let _ns_range = NSMakeRange(range.lowerBound, range.upperBound - range.lowerBound)
@@ -201,6 +201,9 @@ public class TabNavigationTitleItem: NSObject {
                 _titleColorAnimation.property = POPAnimatableProperty.attributedButtonTextColor(for: _ns_range, state: .normal)
                 _titleColorAnimation.toValue = _selectionTitleColors[selected]
                 _titleColorAnimation.removedOnCompletion = true
+                _titleColorAnimation.completionBlock = { animation, finished in
+                    completion?()
+                }
                 self._button.pop_add(_titleColorAnimation, forKey: "ATTRIBUTEDCOLOR")
             } else {
                 let _fontSizeAnimation = POPSpringAnimation()
@@ -218,6 +221,9 @@ public class TabNavigationTitleItem: NSObject {
                 let _tintColorAnimation = POPSpringAnimation(propertyNamed: kPOPViewTintColor)
                 _tintColorAnimation?.toValue = _selectionTitleColors[selected]
                 _tintColorAnimation?.removedOnCompletion = true
+                _tintColorAnimation?.completionBlock = { animation, finished in
+                    completion?()
+                }
                 self._button.pop_add(_tintColorAnimation, forKey: "TINTCOLOR")
             }
         } else {
@@ -255,8 +261,8 @@ public class TabNavigationTitleItem: NSObject {
 }
 
 public class TabNavigationTitleActionItem: TabNavigationTitleItem {
-    public override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(false, animated: false)
+    public override func setSelected(_ selected: Bool, animated: Bool, completion: (() -> Void)? = nil) {
+        super.setSelected(false, animated: false, completion: completion)
     }
     
     public override func titleFont(whenSelected selected: Bool) -> UIFont {
@@ -301,6 +307,8 @@ extension TabNavigationBar {
 
 @objc
 public protocol TabNavigationBarDelegate {
+    @objc
+    optional func tabNavigationBar(_ tabNavigationBar: TabNavigationBar, willSelectTitleItemAt index: Int) -> Void
     @objc
     optional func tabNavigationBar(_ tabNavigationBar: TabNavigationBar, didSelectTitleItemAt index: Int) -> Void
     @objc
@@ -987,8 +995,10 @@ public class TabNavigationBar: UIView, UIBarPositioning {
         }
         for (idx, item) in items.enumerated() {
             if idx == index {
-                item.setSelected(true, animated: animated)
-                delegate?.tabNavigationBar?(self, didSelectTitleItemAt: index)
+                delegate?.tabNavigationBar?(self, willSelectTitleItemAt: index)
+                item.setSelected(true, animated: animated) { [unowned self] in
+                    self.delegate?.tabNavigationBar?(self, didSelectTitleItemAt: index)
+                }
             } else {
                 item.setSelected(false, animated: animated)
             }
