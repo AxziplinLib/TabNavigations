@@ -17,6 +17,13 @@ class HomeViewController: TableViewController {
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.estimatedRowHeight = 100
     }
+    
+    override func viewDidLoadSetup() {
+        super.viewDidLoadSetup()
+        
+        setTabNavigationTitle("主页")
+        setTabNavigationItems([TabNavigationItem(image: #imageLiteral(resourceName: "add")), TabNavigationItem(image: #imageLiteral(resourceName: "navigation_search"))])
+    }
 }
 
 // MARK: - UITableViewDataSource
