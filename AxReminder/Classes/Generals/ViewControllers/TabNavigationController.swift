@@ -32,7 +32,7 @@ extension TabNavigationController.TabNavigationTitle: ExpressibleByStringLiteral
         self.init(title: value)
     }
     
-    public init(extendedGraphemeClusterLiteral value: Character) {
+    public init(extendedGraphemeClusterLiteral value: TabNavigationController.TabNavigationTitle.ExtendedGraphemeClusterLiteralType) {
         self.init(stringLiteral: String(value))
     }
     
