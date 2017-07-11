@@ -16,6 +16,13 @@ class CategoryViewController: TableViewController {
         // Do any additional setup after loading the view.
     }
     
+    override func viewDidLoadSetup() {
+        super.viewDidLoadSetup()
+        
+        setTabNavigationTitle("分类")
+        setTabNavigationItems([TabNavigationItem(image: #imageLiteral(resourceName: "add"))])
+    }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
     }
