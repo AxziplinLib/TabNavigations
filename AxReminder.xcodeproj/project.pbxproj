@@ -73,7 +73,6 @@
 		DC8DD7D51F00D6C9006D9706 /* AxReminderUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AxReminderUITests.swift; sourceTree = "<group>"; };
 		DC8DD7D71F00D6C9006D9706 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DC8DD7E51F00DE7B006D9706 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		DC8DD7E81F00DE85006D9706 /* AxReminder.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = AxReminder.xcdatamodel; sourceTree = "<group>"; };
 		DC8DD7EB1F00DE8B006D9706 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		DC8DD7ED1F00DE8B006D9706 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		DC8DD7F01F00DED2006D9706 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -221,7 +220,6 @@
 				DC8DD7BC1F00D6C9006D9706 /* Assets.xcassets */,
 				DC2577E01F010F9900C0C98E /* Dependencies */,
 				DC8DD7E91F00DE8B006D9706 /* Storyboards */,
-				DC8DD7E61F00DE85006D9706 /* Data Model Map */,
 				DC8DD7EF1F00DED2006D9706 /* Surpporting Files */,
 			);
 			path = AxReminder;
@@ -262,14 +260,6 @@
 				DCB25A0A1F03A0A7001EFC1C /* AppDelegateHierarchy.swift */,
 			);
 			path = AppDelegates;
-			sourceTree = "<group>";
-		};
-		DC8DD7E61F00DE85006D9706 /* Data Model Map */ = {
-			isa = PBXGroup;
-			children = (
-				DC8DD7E71F00DE85006D9706 /* AxReminder.xcdatamodeld */,
-			);
-			path = "Data Model Map";
 			sourceTree = "<group>";
 		};
 		DC8DD7E91F00DE8B006D9706 /* Storyboards */ = {
@@ -963,19 +953,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCVersionGroup section */
-		DC8DD7E71F00DE85006D9706 /* AxReminder.xcdatamodeld */ = {
-			isa = XCVersionGroup;
-			children = (
-				DC8DD7E81F00DE85006D9706 /* AxReminder.xcdatamodel */,
-			);
-			currentVersion = DC8DD7E81F00DE85006D9706 /* AxReminder.xcdatamodel */;
-			path = AxReminder.xcdatamodeld;
-			sourceTree = "<group>";
-			versionGroupType = wrapper.xcdatamodel;
-		};
-/* End XCVersionGroup section */
 	};
 	rootObject = DC8DD7A71F00D6C9006D9706 /* Project object */;
 }
