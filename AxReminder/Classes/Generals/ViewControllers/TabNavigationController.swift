@@ -89,7 +89,7 @@ extension TableViewController {
 }
 
 extension TabNavigationController {
-    public typealias TabNavigationItemViewsInfo = (index: Int, navigationItemViews: TabNavigationBar.TabNavigationItemViews?)
+    public typealias TabNavigationItemViewsContext = (index: Int, navigationItemViews: TabNavigationBar.TabNavigationItemViews?)
 }
 
 private func _createGeneralPagingScrollView() -> UIScrollView {
@@ -146,7 +146,7 @@ class TabNavigationController: ViewController {
     fileprivate weak var _selectedViewController: UIViewController?
     
     private weak var _trailingConstraintOfLastViewController: NSLayoutConstraint?
-    fileprivate var _transitionNavigationItemViewsInfo: TabNavigationItemViewsInfo?
+    fileprivate var _transitionNavigationItemViewsContext: TabNavigationItemViewsContext?
     lazy
     fileprivate var _contentScrollView: UIScrollView = _createGeneralPagingScrollView()
     
@@ -902,12 +902,12 @@ extension TabNavigationController: UIScrollViewDelegate {
                 let viewController = _rootViewControllersInfo.viewControllers[showingIndex]
                 
                 let formerViewController = _rootViewControllersInfo.viewControllers[index]
-                let transitionNavigationItemViews = tabNavigationBar.beginTransitionNavigationItems(viewController.tabNavigationItems, on: formerViewController.tabNavigationItems, in: _transitionNavigationItemViewsInfo?.navigationItemViews)
+                let transitionNavigationItemViews = tabNavigationBar.beginTransitionNavigationItems(viewController.tabNavigationItems, on: formerViewController.tabNavigationItems, in: _transitionNavigationItemViewsContext?.navigationItemViews)
                 
-                _transitionNavigationItemViewsInfo = (showingIndex, transitionNavigationItemViews)
+                _transitionNavigationItemViewsContext = (showingIndex, transitionNavigationItemViews)
             }
             
-            tabNavigationBar.setNestedScrollViewContentOffset(scrollView.contentOffset, contentSize: scrollView.contentSize, bounds: scrollView.bounds, transition: _transitionNavigationItemViewsInfo?.navigationItemViews)
+            tabNavigationBar.setNestedScrollViewContentOffset(scrollView.contentOffset, contentSize: scrollView.contentSize, bounds: scrollView.bounds, transition: _transitionNavigationItemViewsContext?.navigationItemViews)
         }
     }
     
@@ -916,14 +916,14 @@ extension TabNavigationController: UIScrollViewDelegate {
     }
     
     private func _commitTransitionNavigationItemViews(at index: Int) {
-        if let info = _transitionNavigationItemViewsInfo {
+        if let info = _transitionNavigationItemViewsContext {
             if info.index == index {
                 let viewController = _rootViewControllersInfo.viewControllers[index]
                 tabNavigationBar.commitTransitionNavigatiomItemViews(info.navigationItemViews, navigationItems: viewController.tabNavigationItems, success: true)
             } else {
                 tabNavigationBar.commitTransitionNavigatiomItemViews(info.navigationItemViews, navigationItems: [], success: false)
             }
-            _transitionNavigationItemViewsInfo = nil
+            _transitionNavigationItemViewsContext = nil
         }
     }
 }
