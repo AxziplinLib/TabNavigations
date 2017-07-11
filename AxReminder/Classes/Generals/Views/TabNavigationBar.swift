@@ -257,6 +257,12 @@ public class TabNavigationTitleItem: NSObject {
     public convenience init(title: String, selectedRange: CountableRange<Int>? = nil) {
         self.init(title: title)
         self.selectedRange = selectedRange
+        if let _ = selectedRange {
+            let attributedTitle = NSMutableAttributedString(string: _button.title(for: .normal)!, attributes: [NSFontAttributeName: titleFont(whenSelected: false), NSForegroundColorAttributeName: titleColor(whenSelected: false)])
+            self._button.setAttributedTitle(attributedTitle, for: .normal)
+        } else {
+            self._button.setAttributedTitle(nil, for: .normal)
+        }
     }
 }
 
