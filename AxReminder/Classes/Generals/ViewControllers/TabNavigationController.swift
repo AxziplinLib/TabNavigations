@@ -89,6 +89,7 @@ extension TableViewController {
 }
 
 extension TabNavigationController {
+    fileprivate typealias TabNavigationRootViewControllersContext = (selectedIndex: Array<UIViewController>.Index, viewControllers: [UIViewController])
     public typealias TabNavigationItemViewsContext = (index: Int, navigationItemViews: TabNavigationBar.TabNavigationItemViews?)
 }
 
@@ -137,10 +138,10 @@ class TabNavigationController: ViewController {
     
     public var topViewController: UIViewController? {
         return _viewControllersStack.last ?? { () -> UIViewController? in
-            guard !_rootViewControllersInfo.viewControllers.isEmpty && _rootViewControllersInfo.selectedIndex >= _rootViewControllersInfo.viewControllers.startIndex && _rootViewControllersInfo.selectedIndex < _rootViewControllersInfo.viewControllers.endIndex else {
+            guard !_rootViewControllersContext.viewControllers.isEmpty && _rootViewControllersContext.selectedIndex >= _rootViewControllersContext.viewControllers.startIndex && _rootViewControllersContext.selectedIndex < _rootViewControllersContext.viewControllers.endIndex else {
                 return nil
             }
-            return _rootViewControllersInfo.viewControllers[_rootViewControllersInfo.selectedIndex]
+            return _rootViewControllersContext.viewControllers[_rootViewControllersContext.selectedIndex]
         }()
     }
     fileprivate weak var _selectedViewController: UIViewController?
@@ -150,7 +151,7 @@ class TabNavigationController: ViewController {
     lazy
     fileprivate var _contentScrollView: UIScrollView = _createGeneralPagingScrollView()
     
-    fileprivate var _rootViewControllersInfo: (selectedIndex: Array<UIViewController>.Index, viewControllers: [UIViewController]) = (0, [])
+    fileprivate var _rootViewControllersContext: TabNavigationRootViewControllersContext = (0, [])
     fileprivate var _viewControllersStack: [UIViewController] = []
     fileprivate var _endingAppearanceViewControllers: Set<UIViewController> = []
     
@@ -211,7 +212,7 @@ class TabNavigationController: ViewController {
             
             _panGestureBeginsTransform = (_formerViewController.view.transform, _topViewController.view.transform)
             
-            _transitionNavigationBarViews = tabNavigationBar.beginTransitionNavigationTitleItems(_panGestureBeginsTitleItems, selectedIndex: _viewControllersStack.startIndex == _viewControllersStack.index(before: _viewControllersStack.endIndex) ? _rootViewControllersInfo.selectedIndex : 0, actionsConfig: { () -> (ignore: Bool, actions: [TabNavigationTitleActionItem]?) in
+            _transitionNavigationBarViews = tabNavigationBar.beginTransitionNavigationTitleItems(_panGestureBeginsTitleItems, selectedIndex: _viewControllersStack.startIndex == _viewControllersStack.index(before: _viewControllersStack.endIndex) ? _rootViewControllersContext.selectedIndex : 0, actionsConfig: { () -> (ignore: Bool, actions: [TabNavigationTitleActionItem]?) in
                 return (false, actionsWhenPushed)
             }, navigationItems: _formerViewController.tabNavigationItems)
             _transitionNavigationBarViews?.titleViews.toItemViews.itemsView.alpha = 0.0
@@ -419,7 +420,7 @@ class TabNavigationController: ViewController {
         addChildViewController(viewController)
         var viewControllersToBeRemoved: [UIViewController] = []
         if _viewControllersStack.isEmpty {
-            viewControllersToBeRemoved = _rootViewControllersInfo.viewControllers
+            viewControllersToBeRemoved = _rootViewControllersContext.viewControllers
         } else {
             viewControllersToBeRemoved = Array(_viewControllersStack.suffix(1))
         }
@@ -433,7 +434,7 @@ class TabNavigationController: ViewController {
             _panGestureRecognizer.isEnabled = true
             tabNavigationBar.showNavigationBackItem(animated)
             // Record the selected index of the root view controllers.
-            _rootViewControllersInfo.selectedIndex = tabNavigationBar.selectedIndex
+            _rootViewControllersContext.selectedIndex = tabNavigationBar.selectedIndex
         }
         _viewControllersStack.append(viewController)
         view.insertSubview(viewController.view, belowSubview: tabNavigationBar)
@@ -519,8 +520,8 @@ class TabNavigationController: ViewController {
         // Add former view controllers.
         if _viewControllersStack.startIndex == _viewControllersStack.index(before: _viewControllersStack.endIndex) || toRoot {
             actionsWhenPushed = tabNavigationTitleActionItemsWhenPushed
-            let rootViewControllers = _rootViewControllersInfo.viewControllers
-            _rootViewControllersInfo.viewControllers.removeAll()
+            let rootViewControllers = _rootViewControllersContext.viewControllers
+            _rootViewControllersContext.viewControllers.removeAll()
             for _vc in rootViewControllers {
                 _addViewControllerWithoutUpdatingNavigationTitle(_vc)
                 navigationTitleItems.append(TabNavigationTitleItem(title: _vc.title ?? ""))
@@ -539,7 +540,7 @@ class TabNavigationController: ViewController {
         
         if !ignoreBar {
             // Update title items.
-            tabNavigationBar.setNavigationTitleItems(navigationTitleItems, animated: animated, selectedIndex: _rootViewControllersInfo.selectedIndex, actionsConfig: { () -> (ignore: Bool, actions: [TabNavigationTitleActionItem]?) in
+            tabNavigationBar.setNavigationTitleItems(navigationTitleItems, animated: animated, selectedIndex: _rootViewControllersContext.selectedIndex, actionsConfig: { () -> (ignore: Bool, actions: [TabNavigationTitleActionItem]?) in
                 return (false, actionsWhenPushed)
             }) { [unowned self] animationParameters in
                 if animated {
@@ -630,7 +631,7 @@ class TabNavigationController: ViewController {
             _contentScrollView.addSubview(viewController.view)
             _contentScrollView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-height-[view]|", options: [], metrics: ["height": DefaultTabNavigationBarHeight], views: ["view":viewController.view]))
         }
-        viewController.view.leadingAnchor.constraint(equalTo: _rootViewControllersInfo.viewControllers.last?.view.trailingAnchor ?? _contentScrollView.leadingAnchor).isActive = true
+        viewController.view.leadingAnchor.constraint(equalTo: _rootViewControllersContext.viewControllers.last?.view.trailingAnchor ?? _contentScrollView.leadingAnchor).isActive = true
         // Updating trailing constraint.
         if let _trailing = _trailingConstraintOfLastViewController {
             _contentScrollView.removeConstraint(_trailing)
@@ -642,7 +643,7 @@ class TabNavigationController: ViewController {
         viewController.view.widthAnchor.constraint(equalTo: _contentScrollView.widthAnchor).isActive = true
         viewController.view.heightAnchor.constraint(equalTo: _contentScrollView.heightAnchor).isActive = true
         
-        _rootViewControllersInfo.viewControllers.append(viewController)
+        _rootViewControllersContext.viewControllers.append(viewController)
         viewController.didMove(toParentViewController: self)
     }
     
@@ -671,7 +672,7 @@ class TabNavigationController: ViewController {
     
     fileprivate func _formerViewControllerForPop(_ viewController: UIViewController? = nil, toRoot: Bool = false) -> UIViewController? {
         guard !toRoot else {
-            return _rootViewControllersInfo.viewControllers[_rootViewControllersInfo.selectedIndex]
+            return _rootViewControllersContext.viewControllers[_rootViewControllersContext.selectedIndex]
         }
         var formerViewController: UIViewController
         if let _viewController = viewController {
@@ -681,7 +682,7 @@ class TabNavigationController: ViewController {
                 return nil
             }
         } else if _viewControllersStack.startIndex == _viewControllersStack.index(before: _viewControllersStack.endIndex) {// Count == 1
-            formerViewController = _rootViewControllersInfo.viewControllers[_rootViewControllersInfo.selectedIndex]
+            formerViewController = _rootViewControllersContext.viewControllers[_rootViewControllersContext.selectedIndex]
         } else {
             formerViewController = _viewControllersStack[_viewControllersStack.index(_viewControllersStack.endIndex, offsetBy: -2)]
         }
@@ -693,8 +694,8 @@ class TabNavigationController: ViewController {
         var navigationTitleItems: [TabNavigationTitleItem] = []
         // Add former view controllers.
         if _viewControllersStack.startIndex == _viewControllersStack.index(before: _viewControllersStack.endIndex) {
-            let rootViewControllers = _rootViewControllersInfo.viewControllers
-            _rootViewControllersInfo.viewControllers.removeAll()
+            let rootViewControllers = _rootViewControllersContext.viewControllers
+            _rootViewControllersContext.viewControllers.removeAll()
             for _vc in rootViewControllers {
                 _addViewControllerWithoutUpdatingNavigationTitle(_vc)
                 navigationTitleItems.append(TabNavigationTitleItem(title: _vc.title ?? ""))
@@ -711,11 +712,11 @@ class TabNavigationController: ViewController {
     }
     
     fileprivate func _setSelectedViewController(at index: Array<UIViewController>.Index, updateNavigationItems: Bool, animated: Bool) {
-        guard index >= _rootViewControllersInfo.viewControllers.startIndex && index < _rootViewControllersInfo.viewControllers.endIndex else {
+        guard index >= _rootViewControllersContext.viewControllers.startIndex && index < _rootViewControllersContext.viewControllers.endIndex else {
             return
         }
         
-        let viewController = _rootViewControllersInfo.viewControllers[index]
+        let viewController = _rootViewControllersContext.viewControllers[index]
         guard viewController !== _selectedViewController else {
             return
         }
@@ -728,11 +729,11 @@ class TabNavigationController: ViewController {
     }
     
     fileprivate func _beginsRootViewControllersAppearanceTransition(at index: Array<UIViewController>.Index, updateNavigationItems: Bool, animated: Bool) {
-        guard index >= _rootViewControllersInfo.viewControllers.startIndex && index < _rootViewControllersInfo.viewControllers.endIndex else {
+        guard index >= _rootViewControllersContext.viewControllers.startIndex && index < _rootViewControllersContext.viewControllers.endIndex else {
             return
         }
         
-        let viewController = _rootViewControllersInfo.viewControllers[index]
+        let viewController = _rootViewControllersContext.viewControllers[index]
         guard viewController !== _selectedViewController else {
             return
         }
@@ -747,7 +748,7 @@ class TabNavigationController: ViewController {
         if updateNavigationItems {
             tabNavigationBar.setNavigationItems(_selectedViewController!.tabNavigationItems, animated: true)
         }
-        _rootViewControllersInfo.selectedIndex = index
+        _rootViewControllersContext.selectedIndex = index
     }
     
     fileprivate func _endsRootViewControllersAppearanceTransitionIfNeccessary() {
@@ -766,12 +767,22 @@ extension TabNavigationController {
     // MARK: - Public.
     // MARK: Tab view controllers.
     
-    public func setViewControllers<T>(_ viewControllers: Array<T>, animated: Bool) where T: UIViewController, T: TabNavigationReadable {
-        // FIXME:Imp the function.
+    public func setViewControllers<T>(_ viewControllers: Array<T>) where T: UIViewController, T: TabNavigationReadable {
+        guard _viewControllersStack.isEmpty else {
+            _rootViewControllersContext.viewControllers = viewControllers
+            return
+        }
+        // Remove all the view controllers first.
+        while !_rootViewControllersContext.viewControllers.isEmpty {
+            removeLastViewController()
+        }
+        for viewController in viewControllers {
+            addViewController(viewController)
+        }
     }
     
     public func setSelectedViewController(_ viewController: UIViewController, animated: Bool) {
-        if let index = _rootViewControllersInfo.viewControllers.index(of: viewController) {
+        if let index = _rootViewControllersContext.viewControllers.index(of: viewController) {
             setSelectedViewController(at: index, animated: animated)
         }
     }
@@ -786,7 +797,7 @@ extension TabNavigationController {
     }
     @discardableResult
     public func removeViewController<T>(_ viewController: T) -> (Bool, UIViewController?) where T: UIViewController, T:TabNavigationReadable {
-        guard let index = _rootViewControllersInfo.viewControllers.index(of: viewController) else {
+        guard let index = _rootViewControllersContext.viewControllers.index(of: viewController) else {
             return (false, nil)
         }
         
@@ -794,31 +805,31 @@ extension TabNavigationController {
     }
     @discardableResult
     public func removeFirstViewController() -> (Bool, UIViewController?) {
-        guard !_rootViewControllersInfo.viewControllers.isEmpty else {
+        guard !_rootViewControllersContext.viewControllers.isEmpty else {
             return (false, nil)
         }
         
-        return removeViewController(at: _rootViewControllersInfo.viewControllers.startIndex)
+        return removeViewController(at: _rootViewControllersContext.viewControllers.startIndex)
     }
     @discardableResult
     public func removeLastViewController() -> (Bool, UIViewController?) {
-        guard !_rootViewControllersInfo.viewControllers.isEmpty else {
+        guard !_rootViewControllersContext.viewControllers.isEmpty else {
             return (false, nil)
         }
         
-        return removeViewController(at: _rootViewControllersInfo.viewControllers.index(before: _rootViewControllersInfo.viewControllers.endIndex))
+        return removeViewController(at: _rootViewControllersContext.viewControllers.index(before: _rootViewControllersContext.viewControllers.endIndex))
     }
     @discardableResult
     public func removeViewController(at index: Array<UIViewController>.Index) -> (Bool, UIViewController?) {
-        guard !_rootViewControllersInfo.viewControllers.isEmpty else {
+        guard !_rootViewControllersContext.viewControllers.isEmpty else {
             return (false, nil)
         }
         
-        guard index >= _rootViewControllersInfo.viewControllers.startIndex && index < _rootViewControllersInfo.viewControllers.endIndex else {
+        guard index >= _rootViewControllersContext.viewControllers.startIndex && index < _rootViewControllersContext.viewControllers.endIndex else {
             return (false, nil)
         }
         
-        let viewController = _rootViewControllersInfo.viewControllers[index]
+        let viewController = _rootViewControllersContext.viewControllers[index]
         viewController.willMove(toParentViewController: nil)
         viewController.beginAppearanceTransition(false, animated: false)
         viewController.endAppearanceTransition()
@@ -894,14 +905,14 @@ extension TabNavigationController: UIScrollViewDelegate {
         if scrollView.isDragging || scrollView.isDecelerating {
             let index = Int(scrollView.contentOffset.x / scrollView.bounds.width)
             
-            if index < _rootViewControllersInfo.viewControllers.index(before: _rootViewControllersInfo.viewControllers.endIndex)
+            if index < _rootViewControllersContext.viewControllers.index(before: _rootViewControllersContext.viewControllers.endIndex)
             && scrollView.contentOffset.x >= 0
             && scrollView.contentOffset.x.truncatingRemainder(dividingBy: scrollView.bounds.width) != 0.0
             {
-                let showingIndex = _rootViewControllersInfo.viewControllers.index(after: index)
-                let viewController = _rootViewControllersInfo.viewControllers[showingIndex]
+                let showingIndex = _rootViewControllersContext.viewControllers.index(after: index)
+                let viewController = _rootViewControllersContext.viewControllers[showingIndex]
                 
-                let formerViewController = _rootViewControllersInfo.viewControllers[index]
+                let formerViewController = _rootViewControllersContext.viewControllers[index]
                 let transitionNavigationItemViews = tabNavigationBar.beginTransitionNavigationItems(viewController.tabNavigationItems, on: formerViewController.tabNavigationItems, in: _transitionNavigationItemViewsContext?.navigationItemViews)
                 
                 _transitionNavigationItemViewsContext = (showingIndex, transitionNavigationItemViews)
@@ -918,7 +929,7 @@ extension TabNavigationController: UIScrollViewDelegate {
     private func _commitTransitionNavigationItemViews(at index: Int) {
         if let info = _transitionNavigationItemViewsContext {
             if info.index == index {
-                let viewController = _rootViewControllersInfo.viewControllers[index]
+                let viewController = _rootViewControllersContext.viewControllers[index]
                 tabNavigationBar.commitTransitionNavigatiomItemViews(info.navigationItemViews, navigationItems: viewController.tabNavigationItems, success: true)
             } else {
                 tabNavigationBar.commitTransitionNavigatiomItemViews(info.navigationItemViews, navigationItems: [], success: false)
