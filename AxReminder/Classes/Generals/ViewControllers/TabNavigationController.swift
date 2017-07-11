@@ -11,9 +11,61 @@ import AXResponderSchemaKit
 
 private let DefaultTabNavigationBarHeight: CGFloat = 64.0
 
-protocol TabNavigationReadable: class {
+public extension TabNavigationController {
+    public struct TabNavigationTitle {
+        let title: String
+        let range: Range<Int>?
+        
+        public init(title: String, selectedRange: Range<Int>? = nil) {
+            self.title = title
+            range = selectedRange
+        }
+    }
+}
+
+extension TabNavigationController.TabNavigationTitle: ExpressibleByStringLiteral {
+    public typealias ExtendedGraphemeClusterLiteralType = Character
+    public typealias UnicodeScalarLiteralType = UnicodeScalar
+    public typealias StringLiteralType = String
+    
+    public init(stringLiteral value: TabNavigationController.TabNavigationTitle.StringLiteralType) {
+        self.init(title: value)
+    }
+    
+    public init(extendedGraphemeClusterLiteral value: Character) {
+        self.init(stringLiteral: String(value))
+    }
+    
+    public init(unicodeScalarLiteral value: TabNavigationController.TabNavigationTitle.UnicodeScalarLiteralType) {
+        self.init(extendedGraphemeClusterLiteral: Character(value))
+    }
+}
+
+extension TabNavigationController.TabNavigationTitle: ExpressibleByDictionaryLiteral {
+    public typealias Key = String
+    public typealias Value = Any
+    
+    public init(dictionaryLiteral elements: (String, Any)...) {
+        var _title: String?
+        var _range: Range<Int>?
+        for (key, value) in elements {
+            switch key {
+            case "title":
+                _title = value as? String
+            case "range":
+                _range = value as? Range<Int>
+            default:
+                break
+            }
+        }
+        self.init(title: _title ?? "", selectedRange: _range)
+    }
+}
+
+public protocol TabNavigationReadable: class {
     var tabNavigationController: TabNavigationController? { get }
     var tabNavigationItems: [TabNavigationItem] { get }
+    var tabNavigationTitle: TabNavigationController.TabNavigationTitle? { get }
     var tabNavigationTitleActionItemsWhenPushed: [TabNavigationTitleActionItem] { get }
 }
 
@@ -33,7 +85,7 @@ extension UIViewController: TabNavigationReadable {
         }
     }
     
-    var tabNavigationController: TabNavigationController? { return _tabNavigationController }
+    public var tabNavigationController: TabNavigationController? { return _tabNavigationController }
 }
 
 // MARK: Navigation Items.
@@ -54,10 +106,59 @@ extension UIViewController {
         set { objc_setAssociatedObject(self, &_TabNavigationItemsObjectKey.key, newValue, .OBJC_ASSOCIATION_COPY_NONATOMIC) }
     }
     
-    public func setTabNavigationItems(_ items: [TabNavigationItem], animated: Bool) {
+    public func setTabNavigationItems(_ items: [TabNavigationItem], animated: Bool = false) {
         tabNavigationItems = items
         if _tabNavigationController?._selectedViewController === self {
             _tabNavigationController?.tabNavigationBar.setNavigationItems(items, animated: animated)
+        }
+    }
+}
+
+// MARK: Navigation Items.
+
+extension UIViewController {
+    private struct _TabNavigationTitleObjectKey {
+        static var key = "_TabNavigationTitle"
+    }
+    
+    fileprivate var _tabNavigationTitleItem: TabNavigationTitleItem {
+        var titleItem: TabNavigationTitleItem
+        if let _title = tabNavigationTitle {
+            titleItem = TabNavigationTitleItem(title: _title.title, selectedRange: _title.range)
+        } else {
+            titleItem = TabNavigationTitleItem(title: self.title ?? "")
+        }
+        return titleItem
+    }
+    
+    public var tabNavigationTitle: TabNavigationController.TabNavigationTitle? {
+        get {
+            if let _title = objc_getAssociatedObject(self, &_TabNavigationTitleObjectKey.key) {
+                return _title as? TabNavigationController.TabNavigationTitle
+            }
+            objc_setAssociatedObject(self, &_TabNavigationTitleObjectKey.key, nil, .OBJC_ASSOCIATION_COPY_NONATOMIC)
+            return objc_getAssociatedObject(self, &_TabNavigationTitleObjectKey.key) as? TabNavigationController.TabNavigationTitle
+        }
+        set { objc_setAssociatedObject(self, &_TabNavigationTitleObjectKey.key, newValue, .OBJC_ASSOCIATION_COPY_NONATOMIC) }
+    }
+    
+    public func setTabNavigationTitle(_ title: TabNavigationController.TabNavigationTitle?, animated: Bool = false) {
+        tabNavigationTitle = title
+        
+        if let tabNavigationController = _tabNavigationController {
+            if tabNavigationController.topViewController === self && !tabNavigationController._viewControllersStack.isEmpty {
+                tabNavigationController.tabNavigationBar.setNavigationTitleItems([_tabNavigationTitleItem], animated: animated, actionsConfig: { () -> (ignore: Bool, actions: [TabNavigationTitleActionItem]?) in
+                    return (false, self.tabNavigationTitleActionItemsWhenPushed)
+                })
+            } else if tabNavigationController._rootViewControllersContext.viewControllers.contains(self) {
+                var items: [TabNavigationTitleItem] = []
+                for viewController in tabNavigationController._rootViewControllersContext.viewControllers {
+                    items.append(viewController._tabNavigationTitleItem)
+                }
+                tabNavigationController.tabNavigationBar.setNavigationTitleItems(items, animated: animated, selectedIndex: tabNavigationController._rootViewControllersContext.selectedIndex, actionsConfig: { () -> (ignore: Bool, actions: [TabNavigationTitleActionItem]?) in
+                    return (false, tabNavigationController.tabNavigationTitleActionItemsWhenPushed)
+                })
+            }
         }
     }
 }
@@ -118,7 +219,7 @@ private func _createGeneralTabNavigationBar() -> TabNavigationBar {
     return bar
 }
 
-class TabNavigationController: ViewController {
+public class TabNavigationController: UIViewController {
     /// Tab navigation bar of the tab-navigation controller.
     public var tabNavigationBar: TabNavigationBar { return _tabNavigationBar }
     public var tabNavigationTitleActionItems: [TabNavigationTitleActionItem] = [] {
@@ -162,13 +263,13 @@ class TabNavigationController: ViewController {
     fileprivate var _viewControllersStack: [UIViewController] = []
     fileprivate var _endingAppearanceViewControllers: Set<UIViewController> = []
     
-    override var shouldAutomaticallyForwardAppearanceMethods: Bool { return false }
+    override public var shouldAutomaticallyForwardAppearanceMethods: Bool { return false }
     // MARK: - Overrides.
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
         _initializer()
     }
-    required init?(coder aDecoder: NSCoder) {
+    required public init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         _initializer()
     }
@@ -178,7 +279,7 @@ class TabNavigationController: ViewController {
         _panGestureRecognizer.isEnabled = false
     }
     
-    override func loadView() {
+    override public func loadView() {
         super.loadView()
         
         view.addGestureRecognizer(_panGestureRecognizer)
@@ -186,13 +287,13 @@ class TabNavigationController: ViewController {
         _setupContentScrollView()
     }
     
-    override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
     }
 
-    override func didReceiveMemoryWarning() {
+    override public func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
@@ -800,7 +901,7 @@ extension TabNavigationController {
     
     public func addViewController<T>(_ viewController: T) where T: UIViewController, T: TabNavigationReadable {
         _addViewControllerWithoutUpdatingNavigationTitle(viewController)
-        tabNavigationBar.addNavigationTitleItem(TabNavigationTitleItem(title: viewController.title ?? ""))
+        tabNavigationBar.addNavigationTitleItem(viewController._tabNavigationTitleItem)
     }
     @discardableResult
     public func removeViewController<T>(_ viewController: T) -> (Bool, UIViewController?) where T: UIViewController, T:TabNavigationReadable {
@@ -867,18 +968,18 @@ extension TabNavigationController {
 // MARK: - TabNavigationBarDelegate.
 
 extension TabNavigationController: TabNavigationBarDelegate {
-    func tabNavigationBar(_ tabNavigationBar: TabNavigationBar, willSelectTitleItemAt index: Int) {
+    public func tabNavigationBar(_ tabNavigationBar: TabNavigationBar, willSelectTitleItemAt index: Int) {
         guard _viewControllersStack.isEmpty else {
             return
         }
         setSelectedViewController(at: index, animated: true)
     }
     
-    func tabNavigationBar(_ tabNavigationBar: TabNavigationBar, didSelectTitleItemAt index: Int) {
+    public func tabNavigationBar(_ tabNavigationBar: TabNavigationBar, didSelectTitleItemAt index: Int) {
         _endsRootViewControllersAppearanceTransitionIfNeccessary()
     }
     
-    func tabNavigationBarDidTouchNavigatiomBackItem(_ tabNavigationBar: TabNavigationBar) {
+    public func tabNavigationBarDidTouchNavigatiomBackItem(_ tabNavigationBar: TabNavigationBar) {
         pop(animated: true)
     }
 }
@@ -886,13 +987,13 @@ extension TabNavigationController: TabNavigationBarDelegate {
 // MARK: - UIScrollViewDelegate.
 
 extension TabNavigationController: UIScrollViewDelegate {
-    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+    public func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         if scrollView.isDecelerating {
             _endsRootViewControllersAppearanceTransitionIfNeccessary()
         }
     }
     
-    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+    public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         guard _viewControllersStack.isEmpty else {
             return
         }
@@ -900,12 +1001,12 @@ extension TabNavigationController: UIScrollViewDelegate {
         _endsRootViewControllersAppearanceTransitionIfNeccessary()
     }
     
-    func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
+    public func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
         let selectedIndex = Int(targetContentOffset[0].x / scrollView.bounds.width)
         _beginsRootViewControllersAppearanceTransition(at: selectedIndex, updateNavigationItems: false, animated: true)
     }
     
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+    public func scrollViewDidScroll(_ scrollView: UIScrollView) {
         guard _viewControllersStack.isEmpty else {
             return
         }
@@ -929,7 +1030,7 @@ extension TabNavigationController: UIScrollViewDelegate {
         }
     }
     
-    func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
+    public func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
         _endsRootViewControllersAppearanceTransitionIfNeccessary()
     }
     
@@ -948,6 +1049,6 @@ extension TabNavigationController: UIScrollViewDelegate {
 
 // MARK: - Status Bar Supporting.
 extension TabNavigationController {
-    override var prefersStatusBarHidden: Bool { return true }
-    override var preferredStatusBarUpdateAnimation: UIStatusBarAnimation { return .fade }
+    override public var prefersStatusBarHidden: Bool { return true }
+    override public var preferredStatusBarUpdateAnimation: UIStatusBarAnimation { return .fade }
 }
