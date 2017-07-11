@@ -53,6 +53,13 @@ extension UIViewController {
         }
         set { objc_setAssociatedObject(self, &_TabNavigationItemsObjectKey.key, newValue, .OBJC_ASSOCIATION_COPY_NONATOMIC) }
     }
+    
+    public func setTabNavigationItems(_ items: [TabNavigationItem], animated: Bool) {
+        tabNavigationItems = items
+        if _tabNavigationController?._selectedViewController === self {
+            _tabNavigationController?.tabNavigationBar.setNavigationItems(items, animated: animated)
+        }
+    }
 }
 
 // MARK: Navigation Title Action Items.
