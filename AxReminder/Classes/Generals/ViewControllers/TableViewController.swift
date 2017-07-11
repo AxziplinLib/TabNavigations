@@ -19,6 +19,35 @@ class TableViewController: UITableViewController {
 
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem()
+        viewDidLoadSetup()
+    }
+    
+    public func viewDidLoadSetup() {
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        // print("\(type(of: self)): \(#function), animated: \(animated)")
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        // print("\(type(of: self)): \(#function), animated: \(animated)")
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        // print("\(type(of: self)): \(#function), animated: \(animated)")
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        // print("\(type(of: self)): \(#function), animated: \(animated)")
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        // print("\(type(of: self)): \(#function)")
     }
 
     override func didReceiveMemoryWarning() {
