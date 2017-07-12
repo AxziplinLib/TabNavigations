@@ -9,7 +9,7 @@
 import UIKit
 
 extension CategoryTableViewCell {
-    public class var reusedIdentifier: String { return "_CategoryTableViewCell" }
+    override public class var reusedIdentifier: String { return "_CategoryTableViewCell" }
 }
 
 class CategoryTableViewCell: TableViewCell {
