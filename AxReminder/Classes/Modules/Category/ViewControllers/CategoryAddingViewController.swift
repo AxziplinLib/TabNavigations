@@ -9,6 +9,10 @@
 import UIKit
 
 class CategoryAddingViewController: TableViewController {
+    /// Header view.
+    fileprivate var _headerView: UIView!
+    /// Only text field.
+    fileprivate weak var _textfield: UITextField?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,6 +28,18 @@ class CategoryAddingViewController: TableViewController {
         cancel.tintColor = UIColor.application.red
         let complete = TabNavigationItem(title: "完成", target: self, selector: #selector(_handleCompleteAction(_:)))
         setTabNavigationItems([complete, cancel])
+        // Load data of table view.
+        tableView.reloadData()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        _showContentViews(animated)
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
     }
     
     override func didReceiveMemoryWarning() {
@@ -32,16 +48,39 @@ class CategoryAddingViewController: TableViewController {
     }
 }
 
+// MARK: - Animations.
+
+extension CategoryAddingViewController {
+    fileprivate func _showContentViews(_ animated: Bool) {
+        guard animated else {
+            return
+        }
+        var visibleCells = tableView.visibleCells as [UIView]
+        visibleCells.insert(_headerView, at: 1)
+        for (index, cell) in visibleCells.enumerated() {
+            cell.transform = CGAffineTransform(translationX: 0.0, y: tableView.bounds.height)
+            UIView.animate(withDuration: 0.5, delay: 0.05 * Double(index), usingSpringWithDamping: 1.0, initialSpringVelocity: 1.0, options: [], animations: {
+                cell.transform = .identity
+            }, completion: nil)
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05 * Double(visibleCells.count) / 2.0) { [unowned self] in
+            self._textfield?.becomeFirstResponder()
+        }
+    }
+}
+
 // MARK: - Actions.
 
 extension CategoryAddingViewController {
     @objc
     fileprivate func _handleCancelAction(_ sender: UIButton) {
+        view.endEditing(true)
         self.tabNavigationController?.dismiss(animated: true, completion: nil)
     }
     
     @objc
     fileprivate func _handleCompleteAction(_ sender: UIButton) {
+        view.endEditing(true)
         self.tabNavigationController?.dismiss(animated: true, completion: nil)
     }
 }
@@ -66,7 +105,7 @@ extension CategoryAddingViewController {
         switch indexPath.section {
         case 0:
             let cell = tableView.dequeueReusableCell(withIdentifier: CategoryAddingTextFieldTableViewCell.reusedIdentifier, for: indexPath) as! CategoryAddingTextFieldTableViewCell
-            
+            _textfield = cell.textfield
             return cell
         default:
             let cell = tableView.dequeueReusableCell(withIdentifier: CategoryAddingColorTableViewCell.reusedIdentifier, for: indexPath) as! CategoryAddingColorTableViewCell
@@ -109,21 +148,25 @@ extension CategoryAddingViewController {
         guard section != 0 else {
             return nil
         }
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = UIFont(name: "PingFangTC-Semibold", size: 14)
-        label.textColor = UIColor.application.titleColor
-        label.text = NSLocalizedString("Color_picking", comment: "pick color")
-        let view = UIView()
-        view.backgroundColor = .clear
-        view.frame = CGRect(x: 0.0, y: 0.0, width: tableView.bounds.width, height: self.tableView(tableView, heightForHeaderInSection: section))
+        if _headerView == nil {
+            let label = UILabel()
+            label.translatesAutoresizingMaskIntoConstraints = false
+            label.font = UIFont(name: "PingFangTC-Semibold", size: 14)
+            label.textColor = UIColor.application.titleColor
+            label.text = NSLocalizedString("Color_picking", comment: "pick color")
+            let view = UIView()
+            view.backgroundColor = .clear
+            view.frame = CGRect(x: 0.0, y: 0.0, width: tableView.bounds.width, height: self.tableView(tableView, heightForHeaderInSection: section))
+            
+            view.addSubview(label)
+            label.heightAnchor.constraint(equalToConstant: 20.0).isActive = true
+            view.leadingAnchor.constraint(equalTo: label.leadingAnchor, constant: -15.0).isActive = true
+            view.topAnchor.constraint(equalTo: label.topAnchor, constant: -20.0).isActive = true
+            
+            _headerView = view
+        }
         
-        view.addSubview(label)
-        label.heightAnchor.constraint(equalToConstant: 20.0).isActive = true
-        view.leadingAnchor.constraint(equalTo: label.leadingAnchor, constant: -15.0).isActive = true
-        view.topAnchor.constraint(equalTo: label.topAnchor, constant: -20.0).isActive = true
-        
-        return view
+        return _headerView
     }
     
     override func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
