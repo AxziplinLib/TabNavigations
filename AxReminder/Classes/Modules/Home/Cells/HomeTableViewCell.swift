@@ -9,7 +9,7 @@
 import UIKit
 
 extension HomeTableViewCell {
-    public class var reusedIdentifier: String { return "_HomeTableViweCell" }
+    override public class var reusedIdentifier: String { return "_HomeTableViweCell" }
 }
 
 class HomeTableViewCell: TableViewCell {
