@@ -28,6 +28,9 @@ extension UIColor {
 }
 
 extension ApplicationColorLoadable {
+    var titleColor: UIColor {
+        get { return UIColor(hex: "4A4A4A") }
+    }
     var red: UIColor {
         get { return UIColor(hex: "FE2851") }
     }
