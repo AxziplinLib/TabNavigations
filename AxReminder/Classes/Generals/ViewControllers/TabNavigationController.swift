@@ -264,6 +264,8 @@ public class TabNavigationController: UIViewController {
     fileprivate var _endingAppearanceViewControllers: Set<UIViewController> = []
     
     override public var shouldAutomaticallyForwardAppearanceMethods: Bool { return false }
+    public var isViewAppeared: Bool { return _isViewAppeared }
+    private var _isViewAppeared: Bool = false
     // MARK: - Overrides.
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
@@ -291,6 +293,31 @@ public class TabNavigationController: UIViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        // Load all root view controllers if needed.
+        let viewControllers = _rootViewControllersContext.viewControllers
+        setViewControllers(viewControllers)
+        setSelectedViewController(at: _rootViewControllersContext.selectedIndex, animated: false)
+    }
+    
+    public override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        topViewController?.beginAppearanceTransition(true, animated: animated)
+    }
+    
+    public override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        _isViewAppeared = true
+        topViewController?.endAppearanceTransition()
+    }
+    
+    public override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        topViewController?.beginAppearanceTransition(false, animated: animated)
+    }
+    
+    public override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        topViewController?.endAppearanceTransition()
     }
 
     override public func didReceiveMemoryWarning() {
@@ -754,7 +781,9 @@ public class TabNavigationController: UIViewController {
         viewController.view.widthAnchor.constraint(equalTo: _contentScrollView.widthAnchor).isActive = true
         viewController.view.heightAnchor.constraint(equalTo: _contentScrollView.heightAnchor).isActive = true
         
-        _rootViewControllersContext.viewControllers.append(viewController)
+        if !_rootViewControllersContext.viewControllers.contains(viewController) {
+            _rootViewControllersContext.viewControllers.append(viewController)
+        }
         viewController.didMove(toParentViewController: self)
     }
     
@@ -822,6 +851,10 @@ public class TabNavigationController: UIViewController {
         guard index >= _rootViewControllersContext.viewControllers.startIndex && index < _rootViewControllersContext.viewControllers.endIndex else {
             return
         }
+        guard isViewLoaded else {
+            _rootViewControllersContext.selectedIndex = index;
+            return
+        }
         
         let viewController = _rootViewControllersContext.viewControllers[index]
         guard viewController !== _selectedViewController else {
@@ -831,6 +864,10 @@ public class TabNavigationController: UIViewController {
         _contentScrollView.scrollRectToVisible(viewController.view.frame, animated: animated)
         if updateNavigationBar {
             _tabNavigationBar.setSelectedTitle(at: index, animated: animated)
+        }
+        
+        guard _isViewAppeared else {
+            return
         }
         
         _beginsRootViewControllersAppearanceTransition(at: index, updateNavigationItems: updateNavigationItems, animated: animated)
@@ -903,8 +940,13 @@ extension TabNavigationController {
     }
     
     public func addViewController<T>(_ viewController: T) where T: UIViewController, T: TabNavigationReadable {
-        _addViewControllerWithoutUpdatingNavigationTitle(viewController)
-        tabNavigationBar.addNavigationTitleItem(viewController._tabNavigationTitleItem)
+        if isViewLoaded {
+            // Add view controller as child view controller if view of tab-navigation controller loaded.
+            _addViewControllerWithoutUpdatingNavigationTitle(viewController)
+            tabNavigationBar.addNavigationTitleItem(viewController._tabNavigationTitleItem)
+        } else {
+            _rootViewControllersContext.viewControllers.append(viewController)
+        }
     }
     @discardableResult
     public func removeViewController<T>(_ viewController: T) -> (Bool, UIViewController?) where T: UIViewController, T:TabNavigationReadable {
@@ -948,6 +990,7 @@ extension TabNavigationController {
         viewController.removeFromParentViewController()
         viewController.didMove(toParentViewController: nil)
         
+        _rootViewControllersContext.viewControllers.remove(at: index)
         tabNavigationBar.removeNavigaitonTitleItem(at: index)
         
         return (true, viewController)
