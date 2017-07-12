@@ -17,6 +17,10 @@ private let DefaultTabNavigationItemEdgeMargin: CGFloat = 8.0
 private let DefaultTabNavigationItemHeight: CGFloat = 44.0
 private let DefaultTabNavigationItemWidthThreshold: CGFloat = 30.0
 
+extension TabNavigationBar {
+    public class var paddingOfTitleItems: CGFloat { return DefaultTabNavigationTitleItemPadding }
+}
+
 private class _TabNavigationItemButton: UIButton { /* Custom view hooks. */ }
 private class _TabNavigationTitleItemButton: UIButton { // Custom view hooks.
     weak var _titleItem: TabNavigationTitleItem?
@@ -856,7 +860,7 @@ public class TabNavigationBar: UIView, UIBarPositioning {
         layoutIfNeeded()
         if !items.isEmpty {
             _setSelectedTitle(at: index, in: items, possibleActions: navigationTitleActionItems, animated: false)
-            _scrollToSelectedTitleItem(items: items, in: titleItemViews.itemsScrollView, animated: animated)
+            _scrollToSelectedTitleItem(items: items, in: titleItemViews.itemsScrollView, animated: false)
         }
         
         if let animationBlock = animation {
@@ -1317,6 +1321,8 @@ extension TabNavigationBar {
         return _navigationTitleItems[_selectedTitleItemIndex]
     }
     /// Get all the current navigation items of the tab-navigation bar.
+    public var navigationBackItem: TabNavigationItem { return _navigationBackItem }
+    
     public var navigationItems: [TabNavigationItem] {
         set(items) {
             for item in items {
