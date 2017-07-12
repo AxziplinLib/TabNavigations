@@ -318,7 +318,7 @@ extension TabNavigationBar {
 @objc
 public protocol TabNavigationBarDelegate {
     @objc
-    optional func tabNavigationBar(_ tabNavigationBar: TabNavigationBar, willSelectTitleItemAt index: Int) -> Void
+    optional func tabNavigationBar(_ tabNavigationBar: TabNavigationBar, willSelectTitleItemAt index: Int, animated: Bool) -> Void
     @objc
     optional func tabNavigationBar(_ tabNavigationBar: TabNavigationBar, didSelectTitleItemAt index: Int) -> Void
     @objc
@@ -1004,7 +1004,7 @@ public class TabNavigationBar: UIView, UIBarPositioning {
         }
         for (idx, item) in items.enumerated() {
             if idx == index {
-                delegate?.tabNavigationBar?(self, willSelectTitleItemAt: index)
+                delegate?.tabNavigationBar?(self, willSelectTitleItemAt: index, animated: animated)
                 item.setSelected(true, animated: animated) { [unowned self] in
                     self.delegate?.tabNavigationBar?(self, didSelectTitleItemAt: index)
                 }
