@@ -866,10 +866,6 @@ public class TabNavigationController: UIViewController {
             _tabNavigationBar.setSelectedTitle(at: index, animated: animated)
         }
         
-        guard _isViewAppeared else {
-            return
-        }
-        
         _beginsRootViewControllersAppearanceTransition(at: index, updateNavigationItems: updateNavigationItems, animated: animated)
         if !animated {
             _endsRootViewControllersAppearanceTransitionIfNeccessary()
