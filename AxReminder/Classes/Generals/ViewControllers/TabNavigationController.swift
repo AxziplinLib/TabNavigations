@@ -890,7 +890,7 @@ public class TabNavigationController: UIViewController {
         _selectedViewController!.beginAppearanceTransition(true, animated: animated)
         _endingAppearanceViewControllers.update(with: viewController)
         if updateNavigationItems {
-            tabNavigationBar.setNavigationItems(_selectedViewController!.tabNavigationItems, animated: true)
+            tabNavigationBar.setNavigationItems(_selectedViewController!.tabNavigationItems, animated: animated)
         }
         _rootViewControllersContext.selectedIndex = index
     }
@@ -1010,11 +1010,11 @@ extension TabNavigationController {
 // MARK: - TabNavigationBarDelegate.
 
 extension TabNavigationController: TabNavigationBarDelegate {
-    public func tabNavigationBar(_ tabNavigationBar: TabNavigationBar, willSelectTitleItemAt index: Int) {
+    public func tabNavigationBar(_ tabNavigationBar: TabNavigationBar, willSelectTitleItemAt index: Int, animated: Bool) {
         guard _viewControllersStack.isEmpty else {
             return
         }
-        _setSelectedViewController(at: index, updateNavigationItems: true, animated: true)
+        _setSelectedViewController(at: index, updateNavigationItems: true, animated: animated)
     }
     
     public func tabNavigationBar(_ tabNavigationBar: TabNavigationBar, didSelectTitleItemAt index: Int) {
