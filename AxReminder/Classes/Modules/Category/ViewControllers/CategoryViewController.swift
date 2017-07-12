@@ -20,7 +20,7 @@ class CategoryViewController: TableViewController {
         super.viewDidLoadSetup()
         
         setTabNavigationTitle("分类")
-        setTabNavigationItems([TabNavigationItem(image: #imageLiteral(resourceName: "add"))])
+        setTabNavigationItems([TabNavigationItem(image: #imageLiteral(resourceName: "add"), target: self, selector: #selector(_handleAddingCategory(_:)))])
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -30,6 +30,19 @@ class CategoryViewController: TableViewController {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+}
+
+// MARK: - Actions.
+
+extension CategoryViewController {
+    @objc
+    fileprivate func _handleAddingCategory(_ sender: UIButton) {
+        let categoryAdding = CategoryAddingViewController.instance(from: UIStoryboard(name: "Category", bundle: .main))!
+        let tabNavigationController = TabNavigationController()
+        tabNavigationController.setViewControllers([categoryAdding])
+        tabNavigationController.setSelectedViewController(at: 0, animated: false)
+        self.present(tabNavigationController, animated: true, completion: nil)
     }
 }
 
