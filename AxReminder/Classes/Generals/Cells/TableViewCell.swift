@@ -10,6 +10,9 @@ import UIKit
 
 class TableViewCell: UITableViewCell {
 
+    dynamic
+    public class var reusedIdentifier: String { return "_TableViewCell" }
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
