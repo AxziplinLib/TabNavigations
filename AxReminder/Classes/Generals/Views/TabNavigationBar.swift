@@ -852,13 +852,12 @@ public class TabNavigationBar: UIView, UIBarPositioning {
         
         _calculateWidthConstantOfContentAlignmentView(in: items, possibleActions: navigationTitleActionItems, transition: true)
         
+        setNeedsLayout()
+        layoutIfNeeded()
         if !items.isEmpty {
             _setSelectedTitle(at: index, in: items, possibleActions: navigationTitleActionItems, animated: false)
             _scrollToSelectedTitleItem(items: items, in: titleItemViews.itemsScrollView, animated: animated)
         }
-        
-        setNeedsLayout()
-        layoutIfNeeded()
         
         if let animationBlock = animation {
             let itemViews: TabNavigationTitleItemViews = (_titleItemsScrollView, _navigationTitleItemView, _titleItemContentAlignmentView as UIView)
