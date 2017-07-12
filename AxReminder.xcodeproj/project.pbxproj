@@ -35,6 +35,8 @@
 		DCC1BFEA1F0F8BFB00E7735C /* GradientColorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCC1BFE91F0F8BFB00E7735C /* GradientColorView.swift */; };
 		DCC1BFED1F0F910200E7735C /* CategoryTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCC1BFEC1F0F910200E7735C /* CategoryTableViewCell.swift */; };
 		DCC627171F00E77700D79D07 /* NavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCC627161F00E77700D79D07 /* NavigationController.swift */; };
+		DCF9D7F81F14CB680058B19C /* CategoryAddingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCF9D7F71F14CB680058B19C /* CategoryAddingViewController.swift */; };
+		DCF9D7FA1F15F2D40058B19C /* CategoryAddingTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCF9D7F91F15F2D40058B19C /* CategoryAddingTableViewCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -97,6 +99,8 @@
 		DCC1BFE91F0F8BFB00E7735C /* GradientColorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GradientColorView.swift; sourceTree = "<group>"; };
 		DCC1BFEC1F0F910200E7735C /* CategoryTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CategoryTableViewCell.swift; sourceTree = "<group>"; };
 		DCC627161F00E77700D79D07 /* NavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationController.swift; sourceTree = "<group>"; };
+		DCF9D7F71F14CB680058B19C /* CategoryAddingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CategoryAddingViewController.swift; sourceTree = "<group>"; };
+		DCF9D7F91F15F2D40058B19C /* CategoryAddingTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CategoryAddingTableViewCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -363,6 +367,7 @@
 			isa = PBXGroup;
 			children = (
 				DCB25A0F1F03B00C001EFC1C /* CategoryViewController.swift */,
+				DCF9D7F71F14CB680058B19C /* CategoryAddingViewController.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -403,6 +408,7 @@
 			isa = PBXGroup;
 			children = (
 				DCC1BFEC1F0F910200E7735C /* CategoryTableViewCell.swift */,
+				DCF9D7F91F15F2D40058B19C /* CategoryAddingTableViewCell.swift */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -478,7 +484,7 @@
 				TargetAttributes = {
 					DC8DD7AE1F00D6C9006D9706 = {
 						CreatedOnToolsVersion = 9.0;
-						LastSwiftMigration = 0900;
+						LastSwiftMigration = 0830;
 					};
 					DC8DD7C51F00D6C9006D9706 = {
 						CreatedOnToolsVersion = 9.0;
@@ -605,7 +611,9 @@
 				DC8DD7F71F00E22B006D9706 /* AppDelegate.swift in Sources */,
 				DCC627171F00E77700D79D07 /* NavigationController.swift in Sources */,
 				DC8DD7F61F00DF70006D9706 /* TabNavigationBar.swift in Sources */,
+				DCF9D7F81F14CB680058B19C /* CategoryAddingViewController.swift in Sources */,
 				DC7C77361F0F7C67003C9AF6 /* SettingsTableViewCell.swift in Sources */,
+				DCF9D7FA1F15F2D40058B19C /* CategoryAddingTableViewCell.swift in Sources */,
 				DC1782F01F0A407F000738E9 /* SettingsViewController.swift in Sources */,
 				DCC1BFEA1F0F8BFB00E7735C /* GradientColorView.swift in Sources */,
 				DCB259F81F0395A7001EFC1C /* TableViewController.swift in Sources */,
