@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12121" systemVersion="17A291j" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="T2C-Wu-jUB">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12121" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="T2C-Wu-jUB">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -21,7 +21,7 @@
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="grouped" separatorStyle="none" rowHeight="44" sectionHeaderHeight="18" sectionFooterHeight="18" id="M0c-eR-fDC">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" red="0.97647058819999999" green="0.97647058819999999" blue="0.97647058819999999" alpha="1" colorSpace="calibratedRGB"/>
                         <sections>
                             <tableViewSection id="tAm-nQ-zmx">
                                 <cells>
@@ -45,6 +45,7 @@
                                                 <constraint firstItem="tzN-pF-00b" firstAttribute="top" secondItem="MM1-7l-mFL" secondAttribute="top" id="kfU-0a-fV3"/>
                                             </constraints>
                                         </tableViewCellContentView>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" rowHeight="62" id="LGE-ll-4nF" customClass="SettingsTableViewCell" customModule="AxReminder" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="66" width="375" height="62"/>
@@ -84,7 +85,7 @@
                                                 <constraint firstAttribute="trailing" secondItem="pnc-i8-Qct" secondAttribute="trailing" constant="10" id="pez-NE-EeI"/>
                                             </constraints>
                                         </tableViewCellContentView>
-                                        <color key="backgroundColor" cocoaTouchSystemColor="tableCellGroupedBackgroundColor"/>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         <connections>
                                             <outlet property="backgroundContentView" destination="pnc-i8-Qct" id="qpi-Wh-GXe"/>
                                         </connections>
@@ -130,7 +131,7 @@
                                                 <constraint firstItem="CQE-4v-CJM" firstAttribute="top" secondItem="eQ0-16-aIt" secondAttribute="top" constant="6" id="qo6-9g-ut5"/>
                                             </constraints>
                                         </tableViewCellContentView>
-                                        <color key="backgroundColor" cocoaTouchSystemColor="tableCellGroupedBackgroundColor"/>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         <connections>
                                             <outlet property="backgroundContentView" destination="CQE-4v-CJM" id="s6e-nC-9Qp"/>
                                         </connections>
@@ -159,6 +160,7 @@
                                                 <constraint firstItem="GzL-NC-wPT" firstAttribute="top" secondItem="WtN-LG-VUB" secondAttribute="top" id="tUJ-h7-f1p"/>
                                             </constraints>
                                         </tableViewCellContentView>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
@@ -184,6 +186,7 @@
                                                 <constraint firstItem="qAK-w0-wMe" firstAttribute="leading" secondItem="bth-N6-zyY" secondAttribute="leading" constant="15" id="oS4-Cg-YF5"/>
                                             </constraints>
                                         </tableViewCellContentView>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" rowHeight="62" id="hT4-rJ-Rzq" customClass="SettingsTableViewCell" customModule="AxReminder" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="297" width="375" height="62"/>
@@ -228,7 +231,7 @@
                                                 <constraint firstItem="LEQ-YD-zGr" firstAttribute="leading" secondItem="LCZ-Uf-vh6" secondAttribute="leading" constant="10" id="puG-5X-Ymk"/>
                                             </constraints>
                                         </tableViewCellContentView>
-                                        <color key="backgroundColor" cocoaTouchSystemColor="tableCellGroupedBackgroundColor"/>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         <connections>
                                             <outlet property="backgroundContentView" destination="LEQ-YD-zGr" id="3Hu-of-OK7"/>
                                         </connections>
@@ -277,7 +280,7 @@
                                                 <constraint firstItem="6CG-wI-4ly" firstAttribute="top" secondItem="RTv-6G-buc" secondAttribute="top" constant="6" id="aJB-dq-c3C"/>
                                             </constraints>
                                         </tableViewCellContentView>
-                                        <color key="backgroundColor" cocoaTouchSystemColor="tableCellGroupedBackgroundColor"/>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         <connections>
                                             <outlet property="backgroundContentView" destination="6CG-wI-4ly" id="x7r-RL-1rH"/>
                                         </connections>
@@ -304,6 +307,7 @@
                                                 <constraint firstAttribute="trailing" secondItem="9Gs-In-Yqp" secondAttribute="trailing" constant="15" id="tMn-21-mIl"/>
                                             </constraints>
                                         </tableViewCellContentView>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
@@ -329,6 +333,7 @@
                                                 <constraint firstItem="hLO-hq-lxc" firstAttribute="top" secondItem="cO3-cl-ocN" secondAttribute="top" id="wDE-gh-bsK"/>
                                             </constraints>
                                         </tableViewCellContentView>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" rowHeight="62" id="oBW-r6-wU6" customClass="SettingsTableViewCell" customModule="AxReminder" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="528" width="375" height="62"/>
@@ -367,7 +372,7 @@
                                                 <constraint firstAttribute="bottom" secondItem="7h5-ou-AdH" secondAttribute="bottom" constant="6" id="SVq-JT-Cgx"/>
                                             </constraints>
                                         </tableViewCellContentView>
-                                        <color key="backgroundColor" cocoaTouchSystemColor="tableCellGroupedBackgroundColor"/>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         <connections>
                                             <outlet property="backgroundContentView" destination="7h5-ou-AdH" id="bUj-73-Hx8"/>
                                         </connections>

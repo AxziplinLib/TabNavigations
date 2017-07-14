@@ -21,7 +21,7 @@
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" keyboardDismissMode="onDrag" dataMode="prototypes" style="grouped" separatorStyle="none" allowsSelection="NO" rowHeight="173" sectionHeaderHeight="18" sectionFooterHeight="18" id="UDq-Ui-Fba">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" red="0.97647058819999999" green="0.97647058819999999" blue="0.97647058819999999" alpha="1" colorSpace="calibratedRGB"/>
                         <prototypes>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="_CategoryTableViewCell" rowHeight="173" id="tJG-eC-Z6p" customClass="CategoryTableViewCell" customModule="AxReminder" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="55.5" width="375" height="173"/>
@@ -50,6 +50,9 @@
                                                             <rect key="frame" x="317" y="8.5" width="23" height="23"/>
                                                             <color key="tintColor" white="1" alpha="0.69723886986301364" colorSpace="calibratedWhite"/>
                                                             <state key="normal" image="edit"/>
+                                                            <connections>
+                                                                <action selector="_handleSettingTouchUpInside:" destination="tJG-eC-Z6p" eventType="touchUpInside" id="5wm-hA-n3l"/>
+                                                            </connections>
                                                         </button>
                                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="00H-W1-hoN">
                                                             <rect key="frame" x="60" y="7" width="249" height="30"/>
@@ -62,6 +65,9 @@
                                                             <state key="normal" title="  搜索" image="search">
                                                                 <color key="titleColor" red="1" green="1" blue="1" alpha="0.69999999999999996" colorSpace="calibratedRGB"/>
                                                             </state>
+                                                            <connections>
+                                                                <action selector="_handleSearchTouchUpInside:" destination="tJG-eC-Z6p" eventType="touchDown" id="U9v-FD-2cG"/>
+                                                            </connections>
                                                         </button>
                                                     </subviews>
                                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
@@ -142,6 +148,7 @@
                                         <constraint firstAttribute="trailing" secondItem="xmh-Yg-eUg" secondAttribute="trailing" constant="10" id="yNs-SB-PUZ"/>
                                     </constraints>
                                 </tableViewCellContentView>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <connections>
                                     <outlet property="backGradientView" destination="WYR-Po-hT3" id="U7Z-rA-dJo"/>
                                     <outlet property="countLabel" destination="aZu-LI-dGy" id="yw1-h9-XJO"/>
@@ -173,7 +180,7 @@
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" keyboardDismissMode="onDrag" dataMode="prototypes" style="grouped" separatorStyle="none" rowHeight="44" sectionHeaderHeight="18" sectionFooterHeight="18" id="gSd-RW-DvX">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" red="0.97647058819999999" green="0.97647058819999999" blue="0.97647058819999999" alpha="1" colorSpace="calibratedRGB"/>
                         <prototypes>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="_CategoryAddingTextFieldTableViewCell" rowHeight="40" id="4It-Ro-yp7" customClass="CategoryAddingTextFieldTableViewCell" customModule="AxReminder" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="55.5" width="375" height="40"/>
@@ -183,7 +190,10 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="输入标题" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="60b-ek-JLd">
-                                            <rect key="frame" x="15" y="10" width="345" height="20"/>
+                                            <rect key="frame" x="15" y="5" width="345" height="30"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="30" id="drc-sb-u5L"/>
+                                            </constraints>
                                             <color key="textColor" red="0.2901960784" green="0.2901960784" blue="0.2901960784" alpha="1" colorSpace="calibratedRGB"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                             <textInputTraits key="textInputTraits"/>
@@ -195,6 +205,7 @@
                                         <constraint firstItem="60b-ek-JLd" firstAttribute="centerY" secondItem="EHu-vW-pSc" secondAttribute="centerY" id="kPr-El-9Y4"/>
                                     </constraints>
                                 </tableViewCellContentView>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <connections>
                                     <outlet property="textfield" destination="60b-ek-JLd" id="7X7-Kf-5og"/>
                                 </connections>
@@ -241,6 +252,7 @@
                                         <constraint firstItem="hm6-25-vSy" firstAttribute="leading" secondItem="wuh-9O-bI8" secondAttribute="leading" constant="15" id="zER-wJ-xtT"/>
                                     </constraints>
                                 </tableViewCellContentView>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <connections>
                                     <outlet property="gradientColorView" destination="hm6-25-vSy" id="i9u-ta-Kkg"/>
                                     <outlet property="previewLabel" destination="cUg-pG-ABm" id="3Jp-Hs-fj1"/>
