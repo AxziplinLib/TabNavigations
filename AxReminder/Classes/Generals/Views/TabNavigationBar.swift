@@ -356,6 +356,25 @@ private func _createGeneralAlignmentLabel<T>(font: UIFont? = nil) -> T where T: 
     return label
 }
 
+private func _createGenetalEffectView(style: TabNavigationBar.TranslucentStyle = .light) -> UIVisualEffectView {
+    if style == .light {
+        let effectView = UIVisualEffectView(effect: UIBlurEffect(style: .extraLight))
+        effectView.translatesAutoresizingMaskIntoConstraints = false
+        return effectView
+    } else {
+        let effectView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
+        effectView.translatesAutoresizingMaskIntoConstraints = false
+        return effectView
+    }
+}
+
+extension TabNavigationBar {
+    public enum TranslucentStyle {
+        case light
+        case dark
+    }
+}
+
 extension TabNavigationBar {
     public typealias TabNavigationItemViews = (itemsContainerView: UIView, itemsScrollView: UIScrollView, itemsView: UIView)
     public typealias TabNavigationItemAnimationContext = (fromItemViews: TabNavigationItemViews, toItemViews: TabNavigationItemViews)
@@ -367,7 +386,26 @@ extension TabNavigationBar {
 public class TabNavigationBar: UIView, UIBarPositioning {
     // MARK: - Public Properties.
     public weak var delegate: TabNavigationBarDelegate?
+    public var isTranslucent: Bool = false {
+        didSet {
+            if isTranslucent {
+                _setupEffectView()
+            } else {
+                _effectView.removeFromSuperview()
+                backgroundColor = _normalBackgroundColor
+                _normalBackgroundColor = nil
+            }
+        }
+    }
+    public var translucentStyle: TranslucentStyle = .light {
+        didSet {
+            if isTranslucent {
+                _setupEffectView()
+            }
+        }
+    }
     // MARK: - Private Properties.
+    fileprivate var _normalBackgroundColor: UIColor?
     fileprivate lazy var __titleAlignmentLabel: UILabel = _createGeneralAlignmentLabel()
     fileprivate lazy var _titleItemsContainerView: UIView = _createGeneralContainerView()
     fileprivate lazy var _itemsContainerView: UIView = _createGeneralContainerView()
@@ -375,6 +413,7 @@ public class TabNavigationBar: UIView, UIBarPositioning {
     fileprivate lazy var _itemsScrollView: UIScrollView = _createGeneralScrollView(alwaysBounceHorizontal: false)
     fileprivate lazy var _navigationTitleItemView: UIView = _createGeneralContainerView()
     fileprivate lazy var _navigationItemView: UIView = _createGeneralContainerView()
+    fileprivate lazy var _effectView: UIVisualEffectView = _createGenetalEffectView()
     
     private var _titleItemsPreviewPanGesture: UIPanGestureRecognizer!
     
@@ -487,6 +526,18 @@ public class TabNavigationBar: UIView, UIBarPositioning {
     }
     
     // MARK: - Private.
+    private func _setupEffectView() {
+        if _normalBackgroundColor == nil {
+            _normalBackgroundColor = backgroundColor
+            backgroundColor = .clear
+        }
+        _effectView.removeFromSuperview()
+        _effectView = _createGenetalEffectView(style: translucentStyle)
+        insertSubview(_effectView, at: 0)
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[effectView]|", options: [], metrics: nil, views: ["effectView": _effectView]))
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[effectView]|", options: [], metrics: nil, views: ["effectView": _effectView]))
+    }
+    
     private func _setupContainerViews() {
         _navigationBackItem._view.isHidden = true
         addSubview(_navigationBackItem._view)
