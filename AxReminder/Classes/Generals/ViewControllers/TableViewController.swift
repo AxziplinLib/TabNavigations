@@ -10,7 +10,8 @@ import UIKit
 import AXResponderSchemaKit
 
 class TableViewController: UITableViewController {
-
+    fileprivate lazy var _backgroundFilterView: UIView = UIView()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -22,7 +23,15 @@ class TableViewController: UITableViewController {
         viewDidLoadSetup()
     }
     
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        _backgroundFilterView.frame = CGRect(x: 0.0, y: tableView.contentOffset.y, width: tabNavigationController?.tabNavigationBar.bounds.width ?? 0.0, height: tabNavigationController?.tabNavigationBar.bounds.height ?? 0.0)
+    }
+    
     public func viewDidLoadSetup() {
+        tableView.insertSubview(_backgroundFilterView, at: 0)
+        _backgroundFilterView.backgroundColor = .white
         tabNavigationController?.tabNavigationBar.isTranslucent = true
     }
     
@@ -44,11 +53,6 @@ class TableViewController: UITableViewController {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         // print("\(type(of: self)): \(#function), animated: \(animated)")
-    }
-    
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        // print("\(type(of: self)): \(#function)")
     }
 
     override func didReceiveMemoryWarning() {
