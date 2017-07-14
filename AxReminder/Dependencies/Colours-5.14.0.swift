@@ -96,9 +96,9 @@ public extension Color {
     // MARK: - Color to Hex/RGBA/HSBA/CIE_LAB/CMYK
     func hexString() -> String {
         let rgbaT = rgba()
-        let r: Int = Int(rgbaT.r * 255)
-        let g: Int = Int(rgbaT.g * 255)
-        let b: Int = Int(rgbaT.b * 255)
+        let r: Int = min(255, max(Int(rgbaT.r * 255), 0))
+        let g: Int = min(255, max(Int(rgbaT.g * 255), 0))
+        let b: Int = min(255, max(Int(rgbaT.b * 255), 0))
         let red = NSString(format: "%02x", r)
         let green = NSString(format: "%02x", g)
         let blue = NSString(format: "%02x", b)
