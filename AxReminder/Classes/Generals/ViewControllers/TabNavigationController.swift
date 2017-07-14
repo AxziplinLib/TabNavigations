@@ -979,6 +979,12 @@ extension TabNavigationController {
         }
         
         let viewController = _rootViewControllersContext.viewControllers[index]
+        guard viewController.isViewLoaded else {
+            _rootViewControllersContext.viewControllers.remove(at: index)
+            tabNavigationBar.removeNavigaitonTitleItem(at: index)
+            return (true, viewController)
+        }
+        
         viewController.willMove(toParentViewController: nil)
         viewController.beginAppearanceTransition(false, animated: false)
         viewController.endAppearanceTransition()
