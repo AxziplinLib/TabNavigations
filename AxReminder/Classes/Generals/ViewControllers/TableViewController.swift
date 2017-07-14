@@ -23,6 +23,7 @@ class TableViewController: UITableViewController {
     }
     
     public func viewDidLoadSetup() {
+        tabNavigationController?.tabNavigationBar.isTranslucent = true
     }
     
     override func viewWillAppear(_ animated: Bool) {
