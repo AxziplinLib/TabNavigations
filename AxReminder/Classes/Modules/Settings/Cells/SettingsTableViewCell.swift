@@ -14,12 +14,13 @@ class SettingsTableViewCell: TableViewCell {
     // MARK: - Overrides.
     override func awakeFromNib() {
         super.awakeFromNib()
-        backgroundContentView?.clipsToBounds = false
+        // backgroundContentView?.clipsToBounds = false
         
-        backgroundContentView?.layer.shadowColor = UIColor(white: 0.0, alpha: 0.1).cgColor
-        backgroundContentView?.layer.shadowOpacity = 1.0
+        // backgroundContentView?.layer.shadowColor = UIColor(white: 0.0, alpha: 0.1).cgColor
+        // backgroundContentView?.layer.shadowOpacity = 1.0
         // backgroundContentView?.layer.shadowRadius = 6.0
         backgroundContentView?.layer.cornerRadius = 8.0
-        backgroundContentView?.layer.shadowOffset = .zero
+        backgroundContentView?.layer.masksToBounds = true
+        // backgroundContentView?.layer.shadowOffset = .zero
     }
 }
