@@ -536,6 +536,9 @@ public class TabNavigationBar: UIView, UIBarPositioning {
         insertSubview(_effectView, at: 0)
         addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[effectView]|", options: [], metrics: nil, views: ["effectView": _effectView]))
         addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[effectView]|", options: [], metrics: nil, views: ["effectView": _effectView]))
+        
+        setNeedsLayout()
+        layoutIfNeeded()
     }
     
     private func _setupContainerViews() {
