@@ -182,6 +182,12 @@ extension UIViewController {
     }
 }
 
+// MARK: Layout guide.
+
+extension UIViewController {
+    public var keyboardAlignmentLayoutGuide: UILayoutSupport? { return tabNavigationController?.keyboardAlignmentLayoutGuide }
+}
+
 extension ViewController {
     override func removeFromParentViewController() {
         super.removeFromParentViewController()
@@ -219,6 +225,23 @@ private func _createGeneralTabNavigationBar() -> TabNavigationBar {
     return bar
 }
 
+private func _createGeneralAlignmentView<T>() -> T where T: UIView {
+    let view = T()
+    view.translatesAutoresizingMaskIntoConstraints = false
+    view.backgroundColor = .clear
+    view.clipsToBounds = true
+    view.isUserInteractionEnabled = false
+    return view
+}
+
+extension TabNavigationController {
+    fileprivate class _TabNavigationKeyboardAlignmentLayoutView: UIView { }
+}
+
+extension TabNavigationController._TabNavigationKeyboardAlignmentLayoutView: UILayoutSupport {
+    var length: CGFloat { return bounds.height }
+}
+
 public class TabNavigationController: UIViewController {
     /// Tab navigation bar of the tab-navigation controller.
     public var tabNavigationBar: TabNavigationBar { return _tabNavigationBar }
@@ -232,8 +255,11 @@ public class TabNavigationController: UIViewController {
         set { tabNavigationTitleActionItems = newValue }
     }
     
-    lazy
-    private var _tabNavigationBar: TabNavigationBar = _createGeneralTabNavigationBar()
+    lazy private var _tabNavigationBar: TabNavigationBar = _createGeneralTabNavigationBar()
+    
+    public override var keyboardAlignmentLayoutGuide: UILayoutSupport { return _keyboardAlignmentView }
+    lazy fileprivate var _keyboardAlignmentView: _TabNavigationKeyboardAlignmentLayoutView = _createGeneralAlignmentView()
+    fileprivate var _keyboardAlignmentViewHeightConstraint: NSLayoutConstraint!
     
     public var interactivePopGestureRecognizer: UIPanGestureRecognizer { return _panGestureRecognizer }
     fileprivate var _panGestureRecognizer: UIPanGestureRecognizer!
@@ -279,6 +305,15 @@ public class TabNavigationController: UIViewController {
         tabNavigationBar.delegate = self
         _panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(_handlePanGestureRecognizer(_:)))
         _panGestureRecognizer.isEnabled = false
+        _keyboardAlignmentViewHeightConstraint = _keyboardAlignmentView.heightAnchor.constraint(equalToConstant: 0.0)
+        _keyboardAlignmentViewHeightConstraint.isActive = true
+        // NotificationCenter.default.addObserver(self, selector: #selector(_handleKeyboardWillChangeFrameNotification(_:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(_handleKeyboardWillChangeFrameNotification(_:)), name: NSNotification.Name.UIKeyboardWillChangeFrame, object: nil)
+        // NotificationCenter.default.addObserver(self, selector: #selector(_handleKeyboardWillChangeFrameNotification(_:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
     
     override public func loadView() {
@@ -287,6 +322,7 @@ public class TabNavigationController: UIViewController {
         view.addGestureRecognizer(_panGestureRecognizer)
         _setupTabNavigationBar()
         _setupContentScrollView()
+        _setupKeyboardAlignmentView()
     }
     
     override public func viewDidLoad() {
@@ -413,6 +449,13 @@ public class TabNavigationController: UIViewController {
         view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[_contentScrollView]|", options: [], metrics: nil, views: ["_contentScrollView":_contentScrollView]))
         _contentScrollView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
         _contentScrollView.heightAnchor.constraint(equalTo: view.heightAnchor).isActive = true
+    }
+    
+    private func _setupKeyboardAlignmentView() {
+        view.insertSubview(_keyboardAlignmentView, belowSubview: _contentScrollView)
+        _keyboardAlignmentView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        _keyboardAlignmentView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        _keyboardAlignmentView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
     }
     
     private func _transitionTabNavigationBarWithPercent(_ perecent: CGFloat, transition views: TabNavigationBar.TabNavigationTransitionContext?) {
@@ -904,6 +947,19 @@ public class TabNavigationController: UIViewController {
             viewController.endAppearanceTransition()
         }
         _endingAppearanceViewControllers.removeAll()
+    }
+}
+
+extension TabNavigationController {
+    @objc
+    fileprivate func _handleKeyboardWillChangeFrameNotification(_ notification: NSNotification) {
+        if let keyboardFrame = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue, let duration = notification.userInfo?[UIKeyboardAnimationDurationUserInfoKey] as? TimeInterval, let curve = notification.userInfo?[UIKeyboardAnimationCurveUserInfoKey] as? UInt {
+            print("Keyboard height: \(keyboardFrame.height)")
+            self._keyboardAlignmentViewHeightConstraint.constant = keyboardFrame.height
+            UIView.animate(withDuration: duration, delay: 0.0, options: UIViewAnimationOptions(rawValue: curve), animations: { [unowned self] in
+                self.view.layoutIfNeeded()
+            }, completion: nil)
+        }
     }
 }
 
