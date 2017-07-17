@@ -26,7 +26,7 @@ class TableViewController: UITableViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
-        _backgroundFilterView.frame = CGRect(x: 0.0, y: tableView.contentOffset.y, width: tabNavigationController?.tabNavigationBar.bounds.width ?? 0.0, height: tabNavigationController?.tabNavigationBar.bounds.height ?? 0.0)
+        _backgroundFilterView.frame = CGRect(x: 0.0, y: min(0.0, tableView.contentOffset.y), width: tabNavigationController?.tabNavigationBar.bounds.width ?? 0.0, height: tabNavigationController?.tabNavigationBar.bounds.height ?? 0.0)
     }
     
     public func viewDidLoadSetup() {
