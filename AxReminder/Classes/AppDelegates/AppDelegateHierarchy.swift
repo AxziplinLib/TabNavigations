@@ -10,8 +10,8 @@ import UIKit
 import UserNotifications
 
 extension AppDelegate {
-    public var tabNavigationController: TabNavigationController? {
-        return window?.rootViewController as? TabNavigationController
+    public var tabNavigationController: AxTabNavigationController? {
+        return window?.rootViewController as? AxTabNavigationController
     }
     
     public func loadViewControllers() {

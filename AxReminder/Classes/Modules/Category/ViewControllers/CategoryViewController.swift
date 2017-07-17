@@ -77,7 +77,7 @@ extension CategoryViewController {
     @objc
     fileprivate func _handleAddingCategory(_ sender: UIButton) {
         let categoryAdding = CategoryAddingViewController.instance(from: UIStoryboard(name: "Category", bundle: .main))!
-        let tabNavigationController = TabNavigationController()
+        let tabNavigationController = AxTabNavigationController()
         tabNavigationController.setViewControllers([categoryAdding])
         tabNavigationController.setSelectedViewController(at: 0, animated: false)
         self.present(tabNavigationController, animated: true, completion: nil)

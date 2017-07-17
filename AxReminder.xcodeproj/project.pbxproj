@@ -38,6 +38,7 @@
 		DCC1BFEA1F0F8BFB00E7735C /* GradientColorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCC1BFE91F0F8BFB00E7735C /* GradientColorView.swift */; };
 		DCC1BFED1F0F910200E7735C /* CategoryTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCC1BFEC1F0F910200E7735C /* CategoryTableViewCell.swift */; };
 		DCC627171F00E77700D79D07 /* NavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCC627161F00E77700D79D07 /* NavigationController.swift */; };
+		DCCFDD041F1CB77F007CC8A0 /* AxTabNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCCFDD031F1CB77F007CC8A0 /* AxTabNavigationController.swift */; };
 		DCF9D7F81F14CB680058B19C /* CategoryAddingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCF9D7F71F14CB680058B19C /* CategoryAddingViewController.swift */; };
 		DCF9D7FA1F15F2D40058B19C /* CategoryAddingTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCF9D7F91F15F2D40058B19C /* CategoryAddingTableViewCell.swift */; };
 		DCF9D8711F170D270058B19C /* ImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCF9D8701F170D270058B19C /* ImageView.swift */; };
@@ -124,6 +125,7 @@
 		DCC1BFE91F0F8BFB00E7735C /* GradientColorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GradientColorView.swift; sourceTree = "<group>"; };
 		DCC1BFEC1F0F910200E7735C /* CategoryTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CategoryTableViewCell.swift; sourceTree = "<group>"; };
 		DCC627161F00E77700D79D07 /* NavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationController.swift; sourceTree = "<group>"; };
+		DCCFDD031F1CB77F007CC8A0 /* AxTabNavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AxTabNavigationController.swift; sourceTree = "<group>"; };
 		DCF9D7F71F14CB680058B19C /* CategoryAddingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CategoryAddingViewController.swift; sourceTree = "<group>"; };
 		DCF9D7F91F15F2D40058B19C /* CategoryAddingTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CategoryAddingTableViewCell.swift; sourceTree = "<group>"; };
 		DCF9D8701F170D270058B19C /* ImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageView.swift; sourceTree = "<group>"; };
@@ -369,6 +371,7 @@
 				DCB259F71F0395A7001EFC1C /* TableViewController.swift */,
 				DCC627161F00E77700D79D07 /* NavigationController.swift */,
 				DCB259F51F0381A7001EFC1C /* TabNavigationController.swift */,
+				DCCFDD031F1CB77F007CC8A0 /* AxTabNavigationController.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -671,6 +674,7 @@
 			files = (
 				DC1782FA1F0A4DB9000738E9 /* ApplicationColor.swift in Sources */,
 				DCB643651F0247F300D89256 /* POPAnimatableProperty.swift in Sources */,
+				DCCFDD041F1CB77F007CC8A0 /* AxTabNavigationController.swift in Sources */,
 				DC2577E21F010FC000C0C98E /* Colours-5.14.0.swift in Sources */,
 				DC291AFC1F1655E50013E124 /* Types.swift in Sources */,
 				DCF9D8711F170D270058B19C /* ImageView.swift in Sources */,
