@@ -7,3 +7,10 @@
 */
 "Home" = "Home";
 "Color_picking" = "Color";
+"Delete" = "Delete";
+"PickHandler" = "Pick handler";
+"Notice" = "Notice";
+"DangerousDeleteHandler_Category" = "Deletion cannot be revoked, this action will delete the category and all stuff under the category. Are you sure?";
+"Cancel" = "Cancel";
+"Confirm" = "OK";
+"AddStuff" = "Add Stuff";

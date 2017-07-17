@@ -35,6 +35,8 @@ class CategoryTableViewCell: TableViewCell {
         }
     }
     
+    public var searchHandler: AxButtonHandler?
+    public var settingHandler: AxButtonHandler?
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -45,5 +47,15 @@ class CategoryTableViewCell: TableViewCell {
         frontGradientView.layer.masksToBounds = true
         seachButton.layer.cornerRadius = 5.0
         seachButton.layer.masksToBounds = true
+    }
+    
+    @objc
+    @IBAction private func _handleSearchTouchUpInside(_ sender: UIButton) {
+        searchHandler?(sender)
+    }
+    
+    @objc
+    @IBAction private func _handleSettingTouchUpInside(_ sender: UIButton) {
+        settingHandler?(sender)
     }
 }

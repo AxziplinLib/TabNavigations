@@ -1,0 +1,6 @@
+framework module AXAttributedLabel {
+  umbrella header "AXAttributedLabel-umbrella.h"
+
+  export *
+  module * { export * }
+}

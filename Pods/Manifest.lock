@@ -1,27 +1,59 @@
 PODS:
+  - AGGeometryKit (1.2.5):
+    - AGGeometryKit/CALayerProperties (= 1.2.5)
+    - AGGeometryKit/UIViewProperties (= 1.2.5)
+  - AGGeometryKit+POP (0.1):
+    - AGGeometryKit+POP/Default (= 0.1)
+  - AGGeometryKit+POP/Default (0.1):
+    - AGGeometryKit (~> 1.0)
+    - pop (~> 1.0.4)
+  - AGGeometryKit/CALayerProperties (1.2.5)
+  - AGGeometryKit/UIViewProperties (1.2.5)
   - AXAnimationChain-Swift (0.4.1):
     - AXAnimationChainSwift
   - AXAnimationChainSwift (0.4.1)
+  - AXAttributedLabel (0.2.10)
   - AXIndicatorView (0.0.7)
+  - AXPopoverView (0.6.3):
+    - AGGeometryKit (~> 1.0)
+    - AGGeometryKit+POP
+    - AXAttributedLabel
+    - pop (~> 1.0.4)
   - AXPracticalHUD (1.1.6):
     - AXIndicatorView
   - AXResponderSchemaKit (0.3.0)
   - pop (1.0.9)
+  - Realm (2.8.3):
+    - Realm/Headers (= 2.8.3)
+  - Realm/Headers (2.8.3)
+  - RealmSwift (2.8.3):
+    - Realm (= 2.8.3)
+  - YYText (1.0.7)
 
 DEPENDENCIES:
   - AXAnimationChain-Swift
+  - AXPopoverView
   - AXPracticalHUD
   - AXResponderSchemaKit
   - pop
+  - RealmSwift
+  - YYText
 
 SPEC CHECKSUMS:
+  AGGeometryKit: ad2aa0c4daaad6d199d92ae6fe8e7e42c38d97ca
+  AGGeometryKit+POP: 72c980191db0646c31bed0b1ffd571e05f9ad029
   AXAnimationChain-Swift: b7518ed0de3751b0899f97274f8696873fe191a8
   AXAnimationChainSwift: 5c1b6431c6847bfd199a311d8420aec302d27bbd
+  AXAttributedLabel: e8a7bb85ca1c7dd9ef55cdd065d2bcc607a4ef73
   AXIndicatorView: caa6c08cc6b732fad163fa26197e3c34b1339060
+  AXPopoverView: 17c04c05d424ba0ab180e9e6abee644fc1f982f5
   AXPracticalHUD: eba707b5515a4da7424ac3d36f07e643df1c8fc3
   AXResponderSchemaKit: 9b8077f88b6ff2803171deaf8085b45d5189dcfd
   pop: f667631a5108a2e60d9e8797c9b32ddaf2080bce
+  Realm: 3601ef091c8c499a31101d8563b991e75546cdce
+  RealmSwift: 8183818515471b01a99abdd2970f8e4fd52b6f4a
+  YYText: 5c461d709e24d55a182d1441c41dc639a18a4849
 
-PODFILE CHECKSUM: 8c2941b88001de15f6849f4337f8fe6cc4643112
+PODFILE CHECKSUM: d789a9e243db96a17cb910da4819a9590b99e0a3
 
 COCOAPODS: 1.2.0
