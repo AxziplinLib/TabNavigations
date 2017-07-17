@@ -7,3 +7,10 @@
 */
 "Home" = "主页";
 "Color_picking" = "颜色选择";
+"Delete" = "删除";
+"PickHandler" = "选择操作";
+"Notice" = "提示";
+"DangerousDeleteHandler_Category" = "删除操作不可恢复，将会直接删除此分类以及包含的所有事项, 确定删除？";
+"Cancel" = "取消";
+"Confirm" = "确定";
+"AddStuff" = "添加事项";

@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import YYText
 
 class HomeViewController: TableViewController {
     
@@ -30,17 +31,56 @@ class HomeViewController: TableViewController {
 
 extension HomeViewController {
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
+        return 3
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 10
+        return 3
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: HomeTableViewCell.reusedIdentifier, for: indexPath) as! HomeTableViewCell
-        
+        cell.showsImageContent = false
+        cell.showsTimingContent = false
+        cell.showsLocationContent = false
         return cell
+    }
+    
+    override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = UIFont(name: "PingFangTC-Semibold", size: 14)
+        label.textColor = UIColor.application.titleColor
+        label.text = NSLocalizedString("Color_picking", comment: "pick color")
+        let view = UIView()
+        view.backgroundColor = .clear
+        view.frame = CGRect(x: 0.0, y: 0.0, width: tableView.bounds.width, height: self.tableView(tableView, heightForHeaderInSection: section))
+        
+        view.addSubview(label)
+        label.heightAnchor.constraint(equalToConstant: 20.0).isActive = true
+        view.leadingAnchor.constraint(equalTo: label.leadingAnchor, constant: -15.0).isActive = true
+        view.bottomAnchor.constraint(equalTo: label.bottomAnchor, constant: 20.0).isActive = true
+        
+        switch section {
+        case 0:
+            label.text = "紧急"
+            return view
+        case 1:
+            label.text = "星标"
+            return view
+        case 2:
+            label.text = "待办"
+            return view
+        default:
+            return nil
+        }
+    }
+    
+    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 60.0
+    }
+    override func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return 10.0
     }
 }
 

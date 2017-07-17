@@ -36,13 +36,9 @@ class CategoryAddingColorTableViewCell: CategoryAddingTableViewCell {
     
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-        
-        if animated {
-            UIView.animate(withDuration: 0.25, animations: { [unowned self] in
-                self.selectionImg.alpha = selected ? 1.0 : 0.0
-            })
-        } else {
-            selectionImg.alpha = selected ? 1.0 : 0.0
-        }
+        // Ignored unanimated.
+        UIView.animate(withDuration: 0.25, animations: { [unowned self] in
+            self.selectionImg.alpha = selected ? 1.0 : 0.0
+        })
     }
 }

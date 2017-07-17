@@ -4,6 +4,16 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
+		<key>AGGeometryKit+POP.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>AGGeometryKit.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>AXAnimationChain-Swift.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -14,7 +24,17 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>AXAttributedLabel.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>AXIndicatorView.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>AXPopoverView.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
@@ -30,6 +50,21 @@
 			<false/>
 		</dict>
 		<key>Pods-AxReminder.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>Realm.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>RealmSwift.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>YYText.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
@@ -52,17 +87,37 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>2919C46B96048BA673A3AE5159E961A3</key>
+		<key>3C7C2D74EAC29CB62CD82C0517E2EC10</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>2B0CAD03F118EA6BFCE41BD82624037C</key>
+		<key>60179C4FD131F6497D152226CA124335</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>6E38C905AF37782EA030A5F2A886F1A3</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>723CC005AE09DD77F809B1166E55C996</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
 		<key>8B74B139F8A1995AAAFC6F31D3AB9E2B</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>92C8BD694D857D57A8DC3F757FF2E63B</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>A5BDDCE9981002EF74C697E43538D377</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -73,6 +128,21 @@
 			<true/>
 		</dict>
 		<key>D5DA3EA0A2CED17263F3EF85CA86C054</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>D7460F5D97BAA25A0E53AB97541A5688</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>E1068922A008157D8FE69D6F8684A581</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>E3C9C4D041CFA8F022876D19B3116E3D</key>
 		<dict>
 			<key>primary</key>
 			<true/>

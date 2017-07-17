@@ -7,12 +7,19 @@
 //
 
 import UIKit
+import RealmSwift
+import AXPracticalHUD
 
 class CategoryAddingViewController: TableViewController {
     /// Header view.
     fileprivate var _headerView: UIView!
     /// Only text field.
     fileprivate weak var _textfield: UITextField?
+    /// Scroll to top button.
+    fileprivate var _backToTopButton: UIButton!
+    
+    /// Colors.
+    fileprivate let _colors: [NSDictionary] = NSArray(contentsOfFile: Bundle.main.path(forResource: "Colors", ofType: "plist")!) as! [NSDictionary]
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,6 +35,8 @@ class CategoryAddingViewController: TableViewController {
         cancel.tintColor = UIColor.application.red
         let complete = TabNavigationItem(title: "完成", target: self, selector: #selector(_handleCompleteAction(_:)))
         setTabNavigationItems([complete, cancel])
+        
+        _setupBackToTopButton()
         // Load data of table view.
         tableView.reloadData()
     }
@@ -36,6 +45,9 @@ class CategoryAddingViewController: TableViewController {
         super.viewWillAppear(animated)
         
         _showContentViews(animated)
+        if tableView.numberOfSections > 0 && tableView.numberOfRows(inSection: 1) > 0 {
+            tableView.selectRow(at: IndexPath(row: 0, section: 1), animated: animated, scrollPosition: .none)
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -55,12 +67,14 @@ extension CategoryAddingViewController {
         guard animated else {
             return
         }
+        let contentOffset = CGPoint(x: 0.0, y: -tableView.contentInset.top)
         var visibleCells = tableView.visibleCells as [UIView]
         visibleCells.insert(_headerView, at: 1)
         for (index, cell) in visibleCells.enumerated() {
             cell.transform = CGAffineTransform(translationX: 0.0, y: tableView.bounds.height)
-            UIView.animate(withDuration: 0.5, delay: 0.05 * Double(index), usingSpringWithDamping: 1.0, initialSpringVelocity: 1.0, options: [], animations: {
+            UIView.animate(withDuration: 0.5, delay: 0.05 * Double(index), usingSpringWithDamping: 1.0, initialSpringVelocity: 1.0, options: [], animations: { [unowned self] in
                 cell.transform = .identity
+                self.tableView.contentOffset = contentOffset
             }, completion: nil)
         }
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.05 * Double(visibleCells.count) / 2.0) { [unowned self] in
@@ -81,7 +95,43 @@ extension CategoryAddingViewController {
     @objc
     fileprivate func _handleCompleteAction(_ sender: UIButton) {
         view.endEditing(true)
+        guard _textfield?.text?.lengthOfBytes(using: .utf8) ?? 0 > 0 else {
+            AXPracticalHUD.shared().showText(in: tabNavigationController?.view, text: "请输入标题", detail: nil) { hud in
+                hud?.lockBackground = true
+            }
+            AXPracticalHUD.shared().hide(true, afterDelay: 1.5) { [unowned self] in
+                self._textfield?.becomeFirstResponder()
+            }
+            if tableView.numberOfSections > 0 && tableView.numberOfRows(inSection: 0) > 0 {
+                tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
+            }
+            return
+        }
+        guard tableView.indexPathForSelectedRow != nil else {
+            AXPracticalHUD.shared().showText(in: tabNavigationController?.view, text: "请选择颜色", detail: nil) { hud in
+                hud?.lockBackground = true
+            }
+            AXPracticalHUD.shared().hide(true, afterDelay: 1.5, completion: nil)
+            return
+        }
+        // Insert the category object into realm database.
+        let category = Category()
+        category.id = Date().description
+        category.title = _textfield?.text ?? ""
+        let colorInfo = _colors[tableView.indexPathForSelectedRow!.row]
+        let color = UIColor(hex: colorInfo.object(forKey: "color") as! String)
+        let colors = _getColors(on: color)
+        category.beginsColorHex = colors.begins.hexString()
+        category.endsColorHex = colors.ends.hexString()
+        AxRealmManager.default.synsWrites { realm in
+            realm.add(category)
+        }
         self.tabNavigationController?.dismiss(animated: true, completion: nil)
+    }
+    
+    @objc
+    fileprivate func _handleBackToTop(_ sender: UIButton) {
+        tableView.scrollRectToVisible(CGRect(origin: .zero, size: CGSize(width: tableView.bounds.width, height: 1.0)), animated: true)
     }
 }
 
@@ -97,7 +147,7 @@ extension CategoryAddingViewController {
         case 0:
             return 1
         default:
-            return 3
+            return _colors.count
         }
     }
     
@@ -109,19 +159,12 @@ extension CategoryAddingViewController {
             return cell
         default:
             let cell = tableView.dequeueReusableCell(withIdentifier: CategoryAddingColorTableViewCell.reusedIdentifier, for: indexPath) as! CategoryAddingColorTableViewCell
-            switch indexPath.row {
-            case 0:
-                cell.gradientColorView.beginsColor = UIColor(hex: "C96DD8")
-                cell.gradientColorView.endsColor = UIColor(hex: "3023AE")
-            case 1:
-                cell.gradientColorView.beginsColor = UIColor(hex: "B4ED50")
-                cell.gradientColorView.endsColor = UIColor(hex: "429321")
-            case 2:
-                cell.gradientColorView.beginsColor = UIColor(hex: "FBDA61")
-                cell.gradientColorView.endsColor = UIColor(hex: "F76B1C")
-            default:
-                break
-            }
+            let colorInfo = _colors[indexPath.row]
+            let color = UIColor(hex: colorInfo.object(forKey: "color") as! String)
+            let colors = _getColors(on: color)
+            
+            cell.gradientColorView.beginsColor = colors.begins
+            cell.gradientColorView.endsColor = colors.ends
             return cell
         }
     }
@@ -171,6 +214,53 @@ extension CategoryAddingViewController {
     
     override func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         return 0.001
+    }
+    
+    override func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
+        guard indexPath.section != 0 else {
+            return false
+        }
+        return true
+    }
+}
+
+// MARK: - Private
+
+extension CategoryAddingViewController {
+    fileprivate func _getColors(on color: UIColor) -> (begins: UIColor, ends: UIColor) {
+        let LAB = color.CIE_LAB()
+        var lighterL: CGFloat
+        var darkerL: CGFloat
+        if LAB.l + 20.0 > 99.0 {
+            lighterL = LAB.l
+            darkerL = LAB.l - 30
+        } else if LAB.l - 10.0 < 20.0 {
+            lighterL = LAB.l + 30.0
+            darkerL = LAB.l
+        } else {
+            lighterL = LAB.l + 20.0
+            darkerL = LAB.l - 10.0
+        }
+        let lightColor = UIColor(CIE_LAB: (lighterL, LAB.a, LAB.b, LAB.alpha))
+        let darkColor = UIColor(CIE_LAB: (darkerL, LAB.a, LAB.b, LAB.alpha))
+        
+        return (lightColor, darkColor)
+    }
+    
+    fileprivate func _setupBackToTopButton() {
+        guard let tabNavigationBar = tabNavigationController?.tabNavigationBar else {
+            return
+        }
+        _backToTopButton = UIButton(type: .system)
+        _backToTopButton.translatesAutoresizingMaskIntoConstraints = false
+        _backToTopButton.setImage(#imageLiteral(resourceName: "back_to_top"), for: .normal)
+        _backToTopButton.tintColor = UIColor.application.titleColor
+        _backToTopButton.addTarget(self, action: #selector(_handleBackToTop(_:)), for: .touchUpInside)
+        tabNavigationBar.addSubview(_backToTopButton)
+        _backToTopButton.centerXAnchor.constraint(equalTo: tabNavigationBar.centerXAnchor).isActive = true
+        _backToTopButton.widthAnchor.constraint(equalToConstant: 44.0).isActive = true
+        _backToTopButton.heightAnchor.constraint(equalToConstant: 44.0).isActive = true
+        _backToTopButton.lastBaselineAnchor.constraint(equalTo: tabNavigationBar.lastBaselineAnchor).isActive = true
     }
 }
 

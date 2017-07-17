@@ -12,14 +12,59 @@ extension HomeTableViewCell {
     override public class var reusedIdentifier: String { return "_HomeTableViweCell" }
 }
 
+extension HomeTableViewCell {
+}
+
 class HomeTableViewCell: TableViewCell {
-
-    /*
-    // Only override draw() if you perform custom drawing.
-    // An empty implementation adversely affects performance during animation.
-    override func draw(_ rect: CGRect) {
-        // Drawing code
+    @IBOutlet weak var readedIndicator: UIButton!
+    @IBOutlet weak var contentLabel: Label!
+    @IBOutlet weak var contentImageView: ImageView!
+    @IBOutlet weak var createTimeLabel: Label!
+    @IBOutlet weak var deadlineTimeLabel: Label!
+    @IBOutlet weak var locationLabel: Label!
+    @IBOutlet weak var locationIndicatorLabel: Label!
+    
+    @IBOutlet private weak var _imageTopConstraint: NSLayoutConstraint!
+    @IBOutlet private weak var _timingTopConstraint: NSLayoutConstraint!
+    @IBOutlet private weak var _locationTopConstraint: NSLayoutConstraint!
+    
+    public var showsImageContent: Bool = true {
+        didSet {
+            if showsImageContent {
+                _imageTopConstraint.constant = 8.0
+                contentImageView.isHidden = false
+            } else {
+                _imageTopConstraint.constant = 0.0
+                contentImageView.isHidden = true
+            }
+        }
     }
-    */
-
+    
+    public var showsTimingContent: Bool = true {
+        didSet {
+            if showsTimingContent {
+                _timingTopConstraint.constant = 6.0
+                createTimeLabel.isHidden = false
+                deadlineTimeLabel.isHidden = false
+            } else {
+                _timingTopConstraint.constant = 0.0
+                createTimeLabel.isHidden = true
+                deadlineTimeLabel.isHidden = true
+            }
+        }
+    }
+    
+    public var showsLocationContent: Bool = true {
+        didSet {
+            if showsLocationContent {
+                _locationTopConstraint.constant = 2.0
+                locationLabel.isHidden = false
+                locationIndicatorLabel.isHidden = false
+            } else {
+                _locationTopConstraint.constant = 0.0
+                locationLabel.isHidden = true
+                locationIndicatorLabel.isHidden = true
+            }
+        }
+    }
 }
