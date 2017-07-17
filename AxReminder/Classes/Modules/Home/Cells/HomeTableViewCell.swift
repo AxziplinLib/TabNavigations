@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import YYText
 
 extension HomeTableViewCell {
     override public class var reusedIdentifier: String { return "_HomeTableViweCell" }
@@ -17,7 +18,7 @@ extension HomeTableViewCell {
 
 class HomeTableViewCell: TableViewCell {
     @IBOutlet weak var readedIndicator: UIButton!
-    @IBOutlet weak var contentLabel: Label!
+    @IBOutlet weak var contentLabel: AxLabel!
     @IBOutlet weak var contentImageView: ImageView!
     @IBOutlet weak var createTimeLabel: Label!
     @IBOutlet weak var deadlineTimeLabel: Label!
@@ -27,6 +28,12 @@ class HomeTableViewCell: TableViewCell {
     @IBOutlet private weak var _imageTopConstraint: NSLayoutConstraint!
     @IBOutlet private weak var _timingTopConstraint: NSLayoutConstraint!
     @IBOutlet private weak var _locationTopConstraint: NSLayoutConstraint!
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        contentLabel.text = nil
+        contentLabel.attributedText = nil
+    }
     
     public var showsImageContent: Bool = true {
         didSet {

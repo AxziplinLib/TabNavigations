@@ -8,11 +8,6 @@
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12089"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
-    <customFonts key="customFonts">
-        <array key="PingFang.ttc">
-            <string>PingFangSC-Regular</string>
-        </array>
-    </customFonts>
     <scenes>
         <!--Home-->
         <scene sceneID="I8o-qi-0GR">
@@ -31,21 +26,15 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cJA-68-e1b">
-                                            <rect key="frame" x="3" y="9" width="44" height="44"/>
+                                            <rect key="frame" x="3" y="9.5" width="44" height="44"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="44" id="GQP-GY-OXH"/>
                                                 <constraint firstAttribute="width" constant="44" id="vf3-Vr-f11"/>
                                             </constraints>
                                             <state key="normal" image="unselected"/>
                                         </button>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="#工作#明天给省公司发邮件，说明项目进度以及后期安排" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="k46-dr-8K1" customClass="Label" customModule="AxReminder" customModuleProvider="target">
-                                            <rect key="frame" x="50" y="10" width="315" height="42"/>
-                                            <fontDescription key="fontDescription" name="PingFangSC-Regular" family="PingFang SC" pointSize="15"/>
-                                            <color key="textColor" red="0.2901960784" green="0.2901960784" blue="0.2901960784" alpha="1" colorSpace="calibratedRGB"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
-                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" placeholderIntrinsicWidth="315" placeholderIntrinsicHeight="53" translatesAutoresizingMaskIntoConstraints="NO" id="8zs-5g-yIr" customClass="ImageView" customModule="AxReminder" customModuleProvider="target">
-                                            <rect key="frame" x="50" y="60" width="315" height="53"/>
+                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" placeholderIntrinsicWidth="315" placeholderIntrinsicHeight="52" translatesAutoresizingMaskIntoConstraints="NO" id="8zs-5g-yIr" customClass="ImageView" customModule="AxReminder" customModuleProvider="target">
+                                            <rect key="frame" x="50" y="61" width="315" height="52"/>
                                         </imageView>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="2017.05.06" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gNh-Oi-rkF" customClass="Label" customModule="AxReminder" customModuleProvider="target">
                                             <rect key="frame" x="50" y="119" width="209.5" height="15"/>
@@ -71,36 +60,57 @@
                                             <color key="textColor" red="0.60784313729999995" green="0.60784313729999995" blue="0.60784313729999995" alpha="1" colorSpace="calibratedRGB"/>
                                             <nil key="highlightedColor"/>
                                         </label>
+                                        <view contentMode="scaleToFill" verticalCompressionResistancePriority="751" translatesAutoresizingMaskIntoConstraints="NO" id="GzO-eG-7NO" customClass="AxLabel" customModule="AxReminder" customModuleProvider="target">
+                                            <rect key="frame" x="50" y="10" width="315" height="43"/>
+                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="text" value="#工作#明天给省公司发邮件，说明项目进度以及后期安排"/>
+                                                <userDefinedRuntimeAttribute type="number" keyPath="numberOfLines">
+                                                    <integer key="value" value="0"/>
+                                                </userDefinedRuntimeAttribute>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="fontName_" value="PingFangSC-Regular"/>
+                                                <userDefinedRuntimeAttribute type="number" keyPath="fontSize_">
+                                                    <real key="value" value="15"/>
+                                                </userDefinedRuntimeAttribute>
+                                                <userDefinedRuntimeAttribute type="color" keyPath="textColor">
+                                                    <color key="value" red="0.2901960784" green="0.2901960784" blue="0.2901960784" alpha="1" colorSpace="calibratedRGB"/>
+                                                </userDefinedRuntimeAttribute>
+                                                <userDefinedRuntimeAttribute type="boolean" keyPath="fontIsBold_" value="NO"/>
+                                                <userDefinedRuntimeAttribute type="number" keyPath="preferredMaxLayoutWidth">
+                                                    <real key="value" value="315"/>
+                                                </userDefinedRuntimeAttribute>
+                                            </userDefinedRuntimeAttributes>
+                                        </view>
                                     </subviews>
                                     <constraints>
+                                        <constraint firstItem="GzO-eG-7NO" firstAttribute="centerY" secondItem="cJA-68-e1b" secondAttribute="centerY" id="1dE-c4-XtP"/>
                                         <constraint firstItem="nOH-hG-2N9" firstAttribute="trailing" secondItem="8zs-5g-yIr" secondAttribute="trailing" id="7xp-L0-JPu"/>
                                         <constraint firstItem="nOH-hG-2N9" firstAttribute="top" secondItem="gNh-Oi-rkF" secondAttribute="top" id="KAo-Jo-0fv"/>
                                         <constraint firstItem="MIK-Yq-LPC" firstAttribute="top" secondItem="nOH-hG-2N9" secondAttribute="bottom" constant="2" id="KlY-CP-ja0"/>
-                                        <constraint firstItem="8zs-5g-yIr" firstAttribute="trailing" secondItem="k46-dr-8K1" secondAttribute="trailing" id="ME0-uE-ycL"/>
                                         <constraint firstAttribute="bottom" secondItem="JMm-uq-iiC" secondAttribute="bottom" constant="5" id="MXa-KK-OaS"/>
                                         <constraint firstItem="JMm-uq-iiC" firstAttribute="leading" secondItem="gNh-Oi-rkF" secondAttribute="leading" id="U3g-qN-mNv"/>
                                         <constraint firstItem="MIK-Yq-LPC" firstAttribute="leading" secondItem="JMm-uq-iiC" secondAttribute="trailing" constant="8" id="VPS-7t-tx5"/>
-                                        <constraint firstItem="k46-dr-8K1" firstAttribute="leading" secondItem="cJA-68-e1b" secondAttribute="trailing" constant="3" id="X7S-Dh-9X7"/>
                                         <constraint firstItem="nOH-hG-2N9" firstAttribute="leading" secondItem="gNh-Oi-rkF" secondAttribute="trailing" constant="8" id="XZ8-Xj-icW"/>
-                                        <constraint firstItem="8zs-5g-yIr" firstAttribute="top" secondItem="k46-dr-8K1" secondAttribute="bottom" constant="8" id="YTK-BP-aht"/>
+                                        <constraint firstItem="8zs-5g-yIr" firstAttribute="trailing" secondItem="GzO-eG-7NO" secondAttribute="trailing" id="czw-xj-a4o"/>
                                         <constraint firstItem="gNh-Oi-rkF" firstAttribute="leading" secondItem="8zs-5g-yIr" secondAttribute="leading" id="dG0-zb-Ngn"/>
-                                        <constraint firstItem="k46-dr-8K1" firstAttribute="top" secondItem="8Ge-fM-X7A" secondAttribute="top" constant="10" id="fdg-gC-HPD"/>
+                                        <constraint firstItem="8zs-5g-yIr" firstAttribute="top" secondItem="GzO-eG-7NO" secondAttribute="bottom" constant="8" id="eau-pa-dOO"/>
                                         <constraint firstItem="MIK-Yq-LPC" firstAttribute="trailing" secondItem="nOH-hG-2N9" secondAttribute="trailing" id="fsK-n0-KKd"/>
-                                        <constraint firstAttribute="trailing" secondItem="k46-dr-8K1" secondAttribute="trailing" constant="10" id="fuq-jY-WwX"/>
-                                        <constraint firstItem="k46-dr-8K1" firstAttribute="centerY" secondItem="cJA-68-e1b" secondAttribute="centerY" id="i3H-ug-yc6"/>
+                                        <constraint firstItem="GzO-eG-7NO" firstAttribute="leading" secondItem="cJA-68-e1b" secondAttribute="trailing" constant="3" id="gso-9Y-Wjd"/>
                                         <constraint firstItem="cJA-68-e1b" firstAttribute="leading" secondItem="8Ge-fM-X7A" secondAttribute="leading" constant="3" id="nvT-HL-jUi"/>
+                                        <constraint firstAttribute="trailing" secondItem="GzO-eG-7NO" secondAttribute="trailing" constant="10" id="oH1-DR-MaU"/>
+                                        <constraint firstItem="GzO-eG-7NO" firstAttribute="top" secondItem="8Ge-fM-X7A" secondAttribute="top" constant="10" id="quD-Qp-hag"/>
                                         <constraint firstItem="JMm-uq-iiC" firstAttribute="top" secondItem="gNh-Oi-rkF" secondAttribute="bottom" constant="2" id="vvI-bA-6Sv"/>
                                         <constraint firstItem="gNh-Oi-rkF" firstAttribute="top" secondItem="8zs-5g-yIr" secondAttribute="bottom" constant="6" id="wSN-dD-GCF"/>
-                                        <constraint firstItem="8zs-5g-yIr" firstAttribute="leading" secondItem="k46-dr-8K1" secondAttribute="leading" id="zOq-Tp-wG8"/>
+                                        <constraint firstItem="8zs-5g-yIr" firstAttribute="leading" secondItem="GzO-eG-7NO" secondAttribute="leading" id="zjy-pL-6Jn"/>
                                     </constraints>
                                 </tableViewCellContentView>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <connections>
-                                    <outlet property="_imageTopConstraint" destination="YTK-BP-aht" id="Hqe-7f-B8K"/>
+                                    <outlet property="_imageTopConstraint" destination="eau-pa-dOO" id="oZr-Ze-q3Q"/>
                                     <outlet property="_locationTopConstraint" destination="vvI-bA-6Sv" id="cTk-0U-bkt"/>
                                     <outlet property="_timingTopConstraint" destination="wSN-dD-GCF" id="oxg-KC-Biy"/>
                                     <outlet property="contentImageView" destination="8zs-5g-yIr" id="ZE6-if-7J0"/>
-                                    <outlet property="contentLabel" destination="k46-dr-8K1" id="MI2-D5-Sar"/>
+                                    <outlet property="contentLabel" destination="GzO-eG-7NO" id="5eG-88-bLy"/>
                                     <outlet property="createTimeLabel" destination="gNh-Oi-rkF" id="nKe-HU-ayd"/>
                                     <outlet property="deadlineTimeLabel" destination="nOH-hG-2N9" id="nuO-Ri-SGH"/>
                                     <outlet property="locationIndicatorLabel" destination="MIK-Yq-LPC" id="IvS-eo-2lP"/>
