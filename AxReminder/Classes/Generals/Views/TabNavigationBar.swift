@@ -1363,6 +1363,13 @@ extension TabNavigationBar {
     }
 }
 
+// MARK: - Layout support.
+
+extension TabNavigationBar {
+    public var firstBaseLineAnchor: NSLayoutYAxisAnchor { return __titleAlignmentLabel.firstBaselineAnchor }
+    override public var lastBaselineAnchor: NSLayoutYAxisAnchor { return __titleAlignmentLabel.lastBaselineAnchor }
+}
+
 extension TabNavigationBar {
     // MARK: - Public Property.
     
