@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import YYText
 
 class Label: UILabel {
     override var isHidden: Bool {
@@ -19,5 +20,15 @@ class Label: UILabel {
     
     override var intrinsicContentSize: CGSize {
         return isHidden ? .zero : super.intrinsicContentSize
+    }
+}
+
+class AxLabel: YYLabel {
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        if preferredMaxLayoutWidth != bounds.width {
+            preferredMaxLayoutWidth = bounds.width
+        }
     }
 }
