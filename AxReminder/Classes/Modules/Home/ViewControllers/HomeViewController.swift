@@ -46,14 +46,14 @@ extension HomeViewController {
         let range = NSMakeRange(0, category.characters.count)
         let categoryColor = UIColor.orange
         
-        let attributedContent = NSMutableAttributedString(string: category+content, attributes: [NSFontAttributeName: UIFont(name: "PingFangSC-Regular", size: 15)!, NSForegroundColorAttributeName: cell.contentLabel.textColor])
+        let attributedContent = NSMutableAttributedString(string: category+content, attributes: [NSFontAttributeName: UIFont(name: "PingFangSC-Regular", size: 15)!, NSForegroundColorAttributeName: UIColor.application.titleColor])
         attributedContent.addAttributes([NSForegroundColorAttributeName: categoryColor, NSFontAttributeName: UIFont(name: "PingFangSC-Semibold", size: 15)!], range: range)
         let highlight = YYTextHighlight(backgroundColor: UIColor.clear)
         // let textBorder = YYTextBorder(fill: UIColor.black.withAlphaComponent(0.1), cornerRadius: 4.0)
         // highlight.setBackgroundBorder(textBorder)
         highlight.setColor(categoryColor.withAlphaComponent(0.3))
         highlight.tapAction = { (containerView, attributedText, range, rect) in
-            print(attributedText.string + " " + "Highlighted.")
+            print(category + " " + "Highlighted.")
         }
         attributedContent.yy_setTextHighlight(highlight, range: range)
 
