@@ -47,9 +47,9 @@
                                                             <nil key="highlightedColor"/>
                                                         </label>
                                                         <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" horizontalCompressionResistancePriority="1000" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NE2-h8-RRw">
-                                                            <rect key="frame" x="320" y="5" width="20" height="30"/>
+                                                            <rect key="frame" x="320" y="-2" width="20" height="44"/>
                                                             <constraints>
-                                                                <constraint firstAttribute="height" constant="30" id="f5E-q9-0fx"/>
+                                                                <constraint firstAttribute="height" constant="44" id="f5E-q9-0fx"/>
                                                             </constraints>
                                                             <color key="tintColor" white="1" alpha="0.69723886986301364" colorSpace="calibratedWhite"/>
                                                             <state key="normal" image="more"/>
@@ -58,11 +58,11 @@
                                                             </connections>
                                                         </button>
                                                         <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" horizontalCompressionResistancePriority="1000" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="00H-W1-hoN">
-                                                            <rect key="frame" x="288" y="7" width="24" height="30"/>
+                                                            <rect key="frame" x="288" y="0.0" width="24" height="44"/>
                                                             <constraints>
                                                                 <constraint firstAttribute="width" constant="24" id="Fce-DQ-Se8"/>
                                                                 <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="30" id="Ptu-lv-zWH"/>
-                                                                <constraint firstAttribute="height" constant="30" id="TRa-7f-ffw"/>
+                                                                <constraint firstAttribute="height" constant="44" id="TRa-7f-ffw"/>
                                                             </constraints>
                                                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                             <color key="tintColor" red="1" green="1" blue="1" alpha="0.69999999999999996" colorSpace="calibratedRGB"/>

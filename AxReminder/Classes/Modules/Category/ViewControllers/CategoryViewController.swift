@@ -102,7 +102,7 @@ extension CategoryViewController {
         cell.endsColor = UIColor(hex: category.endsColorHex)
         
         cell.settingHandler = { [unowned self] sender in
-            AXPopoverView.showLabel(from: sender, in: self.view, animated: true, duration: 10000.0, title: NSLocalizedString("PickHandler", comment: "Pick handler"), detail: " ", configuration: { (popoverView) in
+            AXPopoverView.showLabel(from: sender.imageView!, in: self.view, animated: true, duration: 10000.0, title: NSLocalizedString("PickHandler", comment: "Pick handler"), detail: " ", configuration: { (popoverView) in
                 popoverView?.isTranslucent = true
                 popoverView?.translucentStyle = .default
                 popoverView?.isLockBackground = true
