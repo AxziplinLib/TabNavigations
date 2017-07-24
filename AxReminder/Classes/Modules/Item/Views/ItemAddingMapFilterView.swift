@@ -115,9 +115,9 @@ class ItemAddingMapFilterView: UIView {
         context.strokePath()
         
         context.beginPath()
-        context.setLineWidth(1.0)
+        context.setLineWidth(1.5)
         context.setStrokeColor(UIColor.black.cgColor)
-        context.setLineDash(phase: 2.0, lengths: [4.0, 2.0])
+        context.setLineDash(phase: 2.0, lengths: [2.0, 2.0])
         context.setStrokeColor(UIColor.black.cgColor)
         context.move(to: _center)
         context.addLine(to: _handlerView.center)
