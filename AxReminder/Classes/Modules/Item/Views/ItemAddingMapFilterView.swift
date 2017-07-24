@@ -10,8 +10,14 @@ import UIKit
 
 private let RadiusMinimalThreshold: CGFloat = 20.0
 
+extension ItemAddingMapFilterView {
+    enum DrawingMode {
+        case inside
+        case outside
+    }
+}
+
 class ItemAddingMapFilterView: UIView {
-    fileprivate var _circleView: UIView
     fileprivate var _handlerView: UIView
     public var widthOfHandler: CGFloat = 20.0 {
         didSet {
@@ -26,13 +32,17 @@ class ItemAddingMapFilterView: UIView {
         }
     }
     
+    public var drawingMode: DrawingMode = .outside {
+        didSet {
+            setNeedsDisplay()
+        }
+    }
+    
     override init(frame: CGRect) {
-        _circleView = UIView()
         _handlerView = UIView()
         super.init(frame: frame)
     }
     required init?(coder aDecoder: NSCoder) {
-        _circleView = UIView()
         _handlerView = UIView()
         super.init(coder: aDecoder)
     }
@@ -41,17 +51,13 @@ class ItemAddingMapFilterView: UIView {
         _initializer()
     }
     private func _initializer() {
-        _circleView.isUserInteractionEnabled = false
-        _circleView.backgroundColor = UIColor.clear
-        _circleView.layer.borderWidth = 5.0
-        _circleView.layer.borderColor = UIColor.application.blue.cgColor
+        backgroundColor = .clear
         
         _handlerView.backgroundColor = .black
         _handlerView.layer.cornerRadius = widthOfHandler * 0.5
         _handlerView.layer.masksToBounds = true
         _handlerView.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(_handleSliderPanGesture(_:))))
         
-        addSubview(_circleView)
         addSubview(_handlerView)
     }
     
@@ -60,12 +66,10 @@ class ItemAddingMapFilterView: UIView {
         
         let size = CGSize(width: radius*2.0, height: radius*2.0)
         let origin = CGPoint(x: bounds.width * 0.5 - size.width * 0.5, y: bounds.height * 0.5 - size.height * 0.5)
-        _circleView.frame = CGRect(origin: origin, size: size)
-        _circleView.layer.cornerRadius = radius
-        _circleView.layer.masksToBounds = true
+        let frame = CGRect(origin: origin, size: size)
         
         _handlerView.frame = CGRect(origin: .zero, size: CGSize(width: widthOfHandler, height: widthOfHandler))
-        _handlerView.center = CGPoint(x: _circleView.center.x + _circleView.bounds.width * 0.5 - _circleView.layer.borderWidth * 0.5, y: _circleView.center.y)
+        _handlerView.center = CGPoint(x: bounds.width * 0.5 + frame.width * 0.5 - 5.0 * 0.5, y: bounds.height * 0.5)
         
         setNeedsDisplay()
     }
@@ -83,23 +87,39 @@ class ItemAddingMapFilterView: UIView {
         // Drawing code
         super.draw(rect)
         guard let context = UIGraphicsGetCurrentContext() else { return }
-        context.setFillColor(UIColor.application.blue.withAlphaComponent(0.05).cgColor)
+        let _center = CGPoint(x: bounds.width * 0.5, y: bounds.height * 0.5)
         
-        let outterPath = CGPath(rect: bounds, transform: nil)
-        context.addPath(outterPath)
+        context.setFillColor(UIColor.application.blue.withAlphaComponent(0.15).cgColor)
+        
+        if drawingMode == .outside {
+            let outterPath = CGPath(rect: bounds, transform: nil)
+            context.addPath(outterPath)
+            context.fillPath()
+        }
+        
+        context.addArc(center: _center, radius: radius - 2.5, startAngle: 0.0, endAngle: CGFloat.pi * 2.0, clockwise: true)
+        
+        if drawingMode == .outside {
+            context.setBlendMode(.clear)
+        }
         context.fillPath()
         
-        let innerPath = CGPath(roundedRect: _circleView.frame, cornerWidth: radius, cornerHeight: radius, transform: nil)
-        context.addPath(innerPath)
+        if drawingMode == .outside {
+            context.setBlendMode(.normal)
+        }
         
-        context.setBlendMode(.clear)
-        context.fillPath()
+        context.beginPath()
+        context.setLineWidth(5.0)
+        context.setStrokeColor(UIColor.application.blue.cgColor)
+        context.addArc(center: _center, radius: radius - 2.5, startAngle: 0.0, endAngle: CGFloat.pi * 2.0, clockwise: true)
+        context.strokePath()
         
-        // context.beginPath()
+        context.beginPath()
         context.setLineWidth(1.0)
-        context.setLineDash(phase: 1.0, lengths: [1.0, 2])
         context.setStrokeColor(UIColor.black.cgColor)
-        context.move(to: _circleView.center)
+        context.setLineDash(phase: 2.0, lengths: [4.0, 2.0])
+        context.setStrokeColor(UIColor.black.cgColor)
+        context.move(to: _center)
         context.addLine(to: _handlerView.center)
         context.strokePath()
     }
