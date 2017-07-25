@@ -9,6 +9,7 @@
 import UIKit
 
 private let RadiusMinimalThreshold: CGFloat = 20.0
+public let DefaultMapViewFilterRadius: CGFloat = 68.0
 
 extension ItemAddingMapFilterView {
     enum DrawingMode {
@@ -29,17 +30,35 @@ protocol ItemAddingMapFilterViewDelegate {
 
 class ItemAddingMapFilterView: UIView {
     fileprivate var _handlerView: UIView
+    @IBOutlet fileprivate weak var _distanceLabel: UILabel!
+    @IBOutlet fileprivate weak var _distanceWidthConstraint: NSLayoutConstraint!
     @IBOutlet public weak var delegate: ItemAddingMapFilterViewDelegate?
+    public var isDistanceLabelHidden: Bool = true {
+        didSet {
+            _distanceLabel.isHidden = isDistanceLabelHidden
+        }
+    }
+    
+    public var distance: Double = 100.0 {
+        didSet {
+            _distanceLabel.text = "\(Int(distance))" + "m"
+        }
+    }
+    
     public var widthOfHandler: CGFloat = 20.0 {
         didSet {
             _handlerView.layer.cornerRadius = widthOfHandler * 0.5
             _handlerView.layer.masksToBounds = true
         }
     }
-    public var radius: CGFloat = 50.0 {
+    public var radius: CGFloat = 68.0 {
         didSet {
+            _distanceWidthConstraint.constant = radius - widthOfHandler * 0.5 - 8.0
             setNeedsLayout()
             layoutIfNeeded()
+            setNeedsDisplay()
+            
+            delegate?.mapFilterView?(self, updatingRadius: radius)
         }
     }
     
@@ -142,13 +161,14 @@ class ItemAddingMapFilterView: UIView {
         switch sender.state {
         case .possible: fallthrough
         case .began:
+            _distanceLabel.isHidden = false
             delegate?.mapFilterViewWillBeginUpdatingRadius?(self)
         case .changed:
             self.radius = min(bounds.height * 0.5, max(RadiusMinimalThreshold, sender.location(in: self).x - center.x))
-            delegate?.mapFilterView?(self, updatingRadius: self.radius)
         case .failed: fallthrough
         case .cancelled: fallthrough
         case .ended:
+            _distanceLabel.isHidden = true
             delegate?.mapFilterViewDidEndUpdatingRadius?(self)
         }
     }
