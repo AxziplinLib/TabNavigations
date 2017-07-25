@@ -17,8 +17,19 @@ extension ItemAddingMapFilterView {
     }
 }
 
+@objc
+protocol ItemAddingMapFilterViewDelegate {
+    @objc
+    optional func mapFilterViewWillBeginUpdatingRadius(_ mapFilterView: ItemAddingMapFilterView) -> Void
+    @objc
+    optional func mapFilterViewDidEndUpdatingRadius(_ mapFilterView: ItemAddingMapFilterView) -> Void
+    @objc
+    optional func mapFilterView(_ mapFilterView: ItemAddingMapFilterView, updatingRadius radius: CGFloat) -> Void
+}
+
 class ItemAddingMapFilterView: UIView {
     fileprivate var _handlerView: UIView
+    @IBOutlet public weak var delegate: ItemAddingMapFilterViewDelegate?
     public var widthOfHandler: CGFloat = 20.0 {
         didSet {
             _handlerView.layer.cornerRadius = widthOfHandler * 0.5
@@ -129,9 +140,16 @@ class ItemAddingMapFilterView: UIView {
     @objc
     private func _handleSliderPanGesture(_ sender: UIPanGestureRecognizer) {
         switch sender.state {
+        case .possible: fallthrough
+        case .began:
+            delegate?.mapFilterViewWillBeginUpdatingRadius?(self)
         case .changed:
             self.radius = min(bounds.height * 0.5, max(RadiusMinimalThreshold, sender.location(in: self).x - center.x))
-        default: break
+            delegate?.mapFilterView?(self, updatingRadius: self.radius)
+        case .failed: fallthrough
+        case .cancelled: fallthrough
+        case .ended:
+            delegate?.mapFilterViewDidEndUpdatingRadius?(self)
         }
     }
 }
