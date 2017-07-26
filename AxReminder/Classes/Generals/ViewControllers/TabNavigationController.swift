@@ -114,7 +114,7 @@ extension UIViewController {
     }
 }
 
-// MARK: Navigation Items.
+// MARK: Navigation Title Items.
 
 extension UIViewController {
     private struct _TabNavigationTitleObjectKey {
@@ -186,6 +186,16 @@ extension UIViewController {
 
 extension UIViewController {
     public var keyboardAlignmentLayoutGuide: UILayoutSupport? { return tabNavigationController?.keyboardAlignmentLayoutGuide }
+}
+
+extension UIViewController {
+    public var layoutInsets: UIEdgeInsets {
+        if self.view is UIScrollView {
+            return .zero
+        } else {
+            return UIEdgeInsets(top: DefaultTabNavigationBarHeight, left: 0.0, bottom: 0.0, right: 0.0)
+        }
+    }
 }
 
 extension ViewController {
@@ -806,11 +816,13 @@ public class TabNavigationController: UIViewController {
         // Add view of view controller to container controller.
         if viewController.view is UIScrollView {
             _contentScrollView.addSubview(viewController.view)
-            _contentScrollView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[view]|", options: [], metrics: nil, views: ["view":viewController.view]))
-            (viewController.view as! UIScrollView).contentInset = UIEdgeInsets(top: DefaultTabNavigationBarHeight, left: 0.0, bottom: 0.0, right: 0.0)
+            _contentScrollView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-top-[view]-bottom-|", options: [], metrics: ["top": viewController.layoutInsets.top, "bottom": viewController.layoutInsets.bottom], views: ["view":viewController.view]))
+            if viewController.automaticallyAdjustsScrollViewInsets {
+                (viewController.view as! UIScrollView).contentInset = UIEdgeInsets(top: DefaultTabNavigationBarHeight, left: 0.0, bottom: 0.0, right: 0.0)
+            }
         } else {
             _contentScrollView.addSubview(viewController.view)
-            _contentScrollView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-height-[view]|", options: [], metrics: ["height": DefaultTabNavigationBarHeight], views: ["view":viewController.view]))
+            _contentScrollView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-top-[view]-bottom-|", options: [], metrics: ["top": viewController.layoutInsets.top, "bottom": viewController.layoutInsets.bottom], views: ["view":viewController.view]))
         }
         viewController.view.leadingAnchor.constraint(equalTo: _rootViewControllersContext.viewControllers.last?.view.trailingAnchor ?? _contentScrollView.leadingAnchor).isActive = true
         // Updating trailing constraint.
