@@ -141,8 +141,16 @@ extension _AssetCollectionViewController {
     }
 }
 
+// MARK: Overrides.
+
 extension _AssetCollectionViewController {
     override var layoutInsets: UIEdgeInsets { return .zero }
+}
+
+extension _AssetCollectionViewController {
+    override func makeViewScrollToTopIfNecessary(at location: CGPoint) {
+        collectionView!.scrollRectToVisible(CGRect(origin: CGPoint(x: 0.0, y: 0.0), size: CGSize(width: collectionView!.bounds.width, height: collectionView!.bounds.height - collectionView!.contentInset.top - collectionView!.contentInset.bottom)), animated: true)
+    }
 }
 
 extension _AssetCollectionViewController {
