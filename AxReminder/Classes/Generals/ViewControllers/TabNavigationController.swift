@@ -339,6 +339,10 @@ public class TabNavigationController: UIViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        
+        // Layout the navigation bar.
+        view!.setNeedsLayout()
+        view!.layoutIfNeeded()
         // Load all root view controllers if needed.
         let viewControllers = _rootViewControllersContext.viewControllers
         setViewControllers(viewControllers)
