@@ -343,6 +343,7 @@ private func _createGeneralScrollView<T>(alwaysBounceHorizontal: Bool = true) ->
     scrollView.backgroundColor = UIColor.clear
     scrollView.decelerationRate = UIScrollViewDecelerationRateFast
     scrollView.alwaysBounceHorizontal = alwaysBounceHorizontal
+    scrollView.delaysContentTouches = false
     return scrollView
 }
 
