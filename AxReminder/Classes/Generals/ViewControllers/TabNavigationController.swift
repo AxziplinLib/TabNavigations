@@ -225,6 +225,7 @@ private func _createGeneralPagingScrollView() -> UIScrollView {
     scrollView.backgroundColor = UIColor.clear
     scrollView.decelerationRate = UIScrollViewDecelerationRateFast
     scrollView.isPagingEnabled = true
+    scrollView.scrollsToTop = false
     return scrollView
 }
 
