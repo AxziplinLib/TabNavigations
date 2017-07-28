@@ -198,6 +198,12 @@ extension UIViewController {
     }
 }
 
+// MARK: ScrollView's scrolling to top.
+
+extension UIViewController {
+    open func makeViewScrollToTopIfNecessary(at location: CGPoint) {}
+}
+
 extension ViewController {
     override func removeFromParentViewController() {
         super.removeFromParentViewController()
@@ -321,6 +327,8 @@ public class TabNavigationController: UIViewController {
         // NotificationCenter.default.addObserver(self, selector: #selector(_handleKeyboardWillChangeFrameNotification(_:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(_handleKeyboardWillChangeFrameNotification(_:)), name: NSNotification.Name.UIKeyboardWillChangeFrame, object: nil)
         // NotificationCenter.default.addObserver(self, selector: #selector(_handleKeyboardWillChangeFrameNotification(_:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
+        // Add tap to scroll to top gesture.
+        _tabNavigationBar.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(_handleTapTopOfTabNavigationBar(_:))))
     }
     
     deinit {
@@ -377,6 +385,16 @@ public class TabNavigationController: UIViewController {
     }
     
     // MARK: - Actions.
+    
+    @objc
+    private func _handleTapTopOfTabNavigationBar(_ sender: UITapGestureRecognizer) {
+        let location = sender.location(in: _tabNavigationBar)
+        if CGRect(origin: .zero, size: CGSize(width: UIScreen.main.bounds.width, height: 20.0)).contains(location) {
+            if let top = topViewController {
+                top.makeViewScrollToTopIfNecessary(at: location)
+            }
+        }
+    }
     
     @objc
     private func _handlePanGestureRecognizer(_ sender: UIPanGestureRecognizer) {
