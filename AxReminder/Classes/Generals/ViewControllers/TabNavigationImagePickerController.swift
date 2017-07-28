@@ -222,6 +222,10 @@ extension _AssetCollectionViewController {
         return cell
     }
     
+    override func collectionView(_ collectionView: UICollectionView, shouldHighlightItemAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+    
     override func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
         let indexPaths = imagePickerController._selectedIndexPathsOfAssets.flatMap { $0.value }
         if indexPaths.count >= imagePickerController.allowedSelectionCounts {
@@ -292,7 +296,7 @@ extension _AssetCollectionViewController {
             imageView.contentMode = .scaleAspectFill
             imageView.clipsToBounds = true
             _selectionIndicator.backgroundColor = .clear
-            _selectionIndicator.isHidden = true
+            isSelected = false
         }
         
         override func prepareForReuse() {
@@ -304,20 +308,11 @@ extension _AssetCollectionViewController {
         override var isSelected: Bool {
             didSet {
                 if !isSelected {
-                    UIView.animate(withDuration: 0.25, delay: 0.0, options: [], animations: { [unowned self] in
-                        self._selectionIndicator.alpha = 0.0
-                    }, completion: { [unowned self] finished in
-                        if finished {
-                            self._selectionIndicator.isHidden = true
-                        }
-                    })
-                } else {
-                    _selectionIndicator.isHidden = false
-                    _selectionIndicator.alpha = 1.0
+                    self._selectionIndicator.alpha = 0.0
                     _selectionIndicator.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
-                    UIView.animate(withDuration: 0.5, delay: 0.0, usingSpringWithDamping: 0.6, initialSpringVelocity: 0.8, options: [], animations: { [unowned self] in
-                        self._selectionIndicator.transform = .identity
-                    }, completion: nil)
+                } else {
+                    _selectionIndicator.alpha = 1.0
+                    self._selectionIndicator.transform = .identity
                 }
             }
         }
