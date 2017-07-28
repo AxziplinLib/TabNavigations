@@ -22,7 +22,7 @@ protocol TabNavigationImagePickerControllerDelegate {
 }
 
 class TabNavigationImagePickerController: TabNavigationController {
-    fileprivate var _photoAssetCollections: [PHAssetCollection] = { () -> [PHAssetCollection] in
+    fileprivate lazy var _photoAssetCollections: [PHAssetCollection] = { () -> [PHAssetCollection] in
         let results = TabNavigationImagePickerController.generatePhotoAssetCollections()
         let assets = results.objects(at: IndexSet(integersIn: 0..<results.count)).filter{ PHAsset.fetchAssets(in: $0, options: nil).count > 0 }.sorted { PHAsset.fetchAssets(in: $0, options: nil).count > PHAsset.fetchAssets(in: $1, options: nil).count
         }
