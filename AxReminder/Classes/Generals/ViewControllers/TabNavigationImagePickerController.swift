@@ -10,6 +10,10 @@ import UIKit
 import Photos
 import AXPracticalHUD
 
+extension TabNavigationImagePickerController {
+    public typealias ImagesResultHandler = (([UIImage]) -> Void)
+}
+
 class TabNavigationImagePickerController: TabNavigationController {
     fileprivate var _photoAssetCollections: [PHAssetCollection] = { () -> [PHAssetCollection] in
         AXPracticalHUD.shared().showSimple(in: UIApplication.shared.keyWindow!)
@@ -19,6 +23,15 @@ class TabNavigationImagePickerController: TabNavigationController {
         AXPracticalHUD.shared().hide(true, afterDelay: 0.5, completion: nil)
         return assets
     }()
+    fileprivate var _selectedIndexPathsOfAssets: /*[String: [IndexPath]]*/Dictionary<String, [IndexPath]> = [:]
+    open var allowedSelectionCounts: Int = 9
+    
+    fileprivate var imagesResult: ImagesResultHandler?
+    
+    convenience init(imagesResult: ImagesResultHandler? = nil) {
+        self.init(nibName: nil, bundle: nil)
+        self.imagesResult = imagesResult
+    }
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
@@ -85,6 +98,7 @@ fileprivate class _AssetCollectionViewController: UICollectionViewController {
     fileprivate var _backgroundFilterView: UIView = UIView()
     var _photoAssetCollection: PHAssetCollection!
     var _photoAssets: PHFetchResult<PHAsset>!
+    var imagePickerController: TabNavigationImagePickerController { return tabNavigationController as! TabNavigationImagePickerController }
     
     convenience init(collectionViewLayout layout: UICollectionViewLayout, photoAlbum assetCollection: PHAssetCollection) {
         self.init(collectionViewLayout: layout)
@@ -129,6 +143,7 @@ fileprivate class _AssetCollectionViewController: UICollectionViewController {
         
         collectionView!.contentInset = UIEdgeInsets(top: tabNavigationController!.tabNavigationBar.bounds.height, left: 0.0, bottom: 0.0, right: 0.0)
         collectionView!.scrollIndicatorInsets = collectionView!.contentInset
+        collectionView!.allowsMultipleSelection = true
     }
 }
 
@@ -206,6 +221,34 @@ extension _AssetCollectionViewController {
         
         return cell
     }
+    
+    override func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
+        let indexPaths = imagePickerController._selectedIndexPathsOfAssets.flatMap { $0.value }
+        if indexPaths.count >= imagePickerController.allowedSelectionCounts {
+            return false
+        }
+        return true
+    }
+    
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        if let indexPaths = imagePickerController._selectedIndexPathsOfAssets[_photoAssetCollection.localIdentifier] {
+            var _indexPaths = indexPaths
+            _indexPaths.append(indexPath)
+            imagePickerController._selectedIndexPathsOfAssets[_photoAssetCollection.localIdentifier] = _indexPaths
+        } else {
+            imagePickerController._selectedIndexPathsOfAssets[_photoAssetCollection.localIdentifier] = [indexPath]
+        }
+    }
+    
+    override func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
+        if let indexPaths = imagePickerController._selectedIndexPathsOfAssets[_photoAssetCollection.localIdentifier] {
+            var _indexPaths = indexPaths
+            if let index = indexPaths.index(of: indexPath) {
+                _indexPaths.remove(at: index)
+            }
+            imagePickerController._selectedIndexPathsOfAssets[_photoAssetCollection.localIdentifier] = _indexPaths
+        }
+    }
 }
 
 // MARK: UIScrollViewDelegate.
@@ -221,6 +264,7 @@ extension _AssetCollectionViewController {
 extension _AssetCollectionViewController {
     class _AssetCollectionCell: UICollectionViewCell {
         let imageView: UIImageView = UIImageView()
+        let _selectionIndicator = UIImageView(image: #imageLiteral(resourceName: "image_selected"))
         
         override init(frame: CGRect) {
             super.init(frame: frame)
@@ -233,20 +277,42 @@ extension _AssetCollectionViewController {
         
         private func _initializer() {
             imageView.translatesAutoresizingMaskIntoConstraints = false
+            _selectionIndicator.translatesAutoresizingMaskIntoConstraints = false
+            
             contentView.addSubview(imageView)
-            imageView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
-            imageView.topAnchor.constraint(equalTo: topAnchor).isActive = true
-            imageView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
-            imageView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
+            contentView.addSubview(_selectionIndicator)
+            
+            imageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor).isActive = true
+            imageView.topAnchor.constraint(equalTo: contentView.topAnchor).isActive = true
+            imageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor).isActive = true
+            imageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor).isActive = true
+            _selectionIndicator.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8.0).isActive = true
+            _selectionIndicator.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8.0).isActive = true
             
             imageView.contentMode = .scaleAspectFill
             imageView.clipsToBounds = true
+            _selectionIndicator.backgroundColor = .clear
+            _selectionIndicator.isHidden = true
         }
         
         override func prepareForReuse() {
             super.prepareForReuse()
             
             imageView.image = nil
+        }
+        
+        override var isSelected: Bool {
+            didSet {
+                if !isSelected {
+                    _selectionIndicator.isHidden = true
+                } else {
+                    _selectionIndicator.isHidden = false
+                    _selectionIndicator.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
+                    UIView.animate(withDuration: 0.5, delay: 0.0, usingSpringWithDamping: 0.6, initialSpringVelocity: 0.8, options: [], animations: { [unowned self] in
+                        self._selectionIndicator.transform = .identity
+                    }, completion: nil)
+                }
+            }
         }
     }
 }
