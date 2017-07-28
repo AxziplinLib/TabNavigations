@@ -8,29 +8,37 @@
 
 import UIKit
 import Photos
-import AXPracticalHUD
 
 extension TabNavigationImagePickerController {
     public typealias ImagesResultHandler = (([UIImage]) -> Void)
 }
 
+@objc
+protocol TabNavigationImagePickerControllerDelegate {
+    @objc
+    optional func imagePickerWillBeginFetchingAssetCollection(_ imagePicker: TabNavigationImagePickerController)
+    @objc
+    optional func imagePickerDidFinishFetchingAssetCollection(_ imagePicker: TabNavigationImagePickerController)
+}
+
 class TabNavigationImagePickerController: TabNavigationController {
     fileprivate var _photoAssetCollections: [PHAssetCollection] = { () -> [PHAssetCollection] in
-        AXPracticalHUD.shared().showSimple(in: UIApplication.shared.keyWindow!)
         let results = TabNavigationImagePickerController.generatePhotoAssetCollections()
         let assets = results.objects(at: IndexSet(integersIn: 0..<results.count)).filter{ PHAsset.fetchAssets(in: $0, options: nil).count > 0 }.sorted { PHAsset.fetchAssets(in: $0, options: nil).count > PHAsset.fetchAssets(in: $1, options: nil).count
         }
-        AXPracticalHUD.shared().hide(true, afterDelay: 0.5, completion: nil)
         return assets
     }()
-    fileprivate var _selectedIndexPathsOfAssets: /*[String: [IndexPath]]*/Dictionary<String, [IndexPath]> = [:]
+    fileprivate var _selectedIndexPathsOfAssets: [String: [IndexPath]] = [:]
     open var allowedSelectionCounts: Int = 9
+    open weak var delegate: TabNavigationImagePickerControllerDelegate?
     
     fileprivate var imagesResult: ImagesResultHandler?
     
-    convenience init(imagesResult: ImagesResultHandler? = nil) {
-        self.init(nibName: nil, bundle: nil)
+    init(delegate: TabNavigationImagePickerControllerDelegate? = nil, imagesResult: ImagesResultHandler? = nil) {
+        super.init(nibName: nil, bundle: nil)
+        self.delegate = delegate
         self.imagesResult = imagesResult
+        _initializer()
     }
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
@@ -44,6 +52,7 @@ class TabNavigationImagePickerController: TabNavigationController {
     
     private func _initializer() {
         // Enumerate the asset collections.
+        willBeginFetchingAssetCollection()
         if !shouldIncludeHiddenAssets {
             _photoAssetCollections = _photoAssetCollections.filter{ $0.assetCollectionSubtype != .smartAlbumAllHidden }
         }
@@ -54,6 +63,7 @@ class TabNavigationImagePickerController: TabNavigationController {
             let assetViewController = _AssetCollectionViewController(collectionViewLayout: flowLayout, photoAlbum: assetCollection)
             self.addViewController(assetViewController)
         }
+        didFinishFetchingAssetCollection()
     }
     
     override func viewDidLoad() {
@@ -91,6 +101,14 @@ extension TabNavigationImagePickerController {
         option.includeAllBurstAssets = false
         // option.predicate = NSPredicate(format: "")
         return PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .any, options: option)
+    }
+    
+    open func willBeginFetchingAssetCollection() {
+        delegate?.imagePickerWillBeginFetchingAssetCollection?(self)
+    }
+    
+    open func didFinishFetchingAssetCollection() {
+        delegate?.imagePickerDidFinishFetchingAssetCollection?(self)
     }
 }
 
