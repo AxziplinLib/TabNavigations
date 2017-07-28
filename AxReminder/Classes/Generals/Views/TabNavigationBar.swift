@@ -1186,16 +1186,16 @@ public class TabNavigationBar: UIView, UIBarPositioning {
     }
     
     fileprivate func _calculatedPositionWidthOfTitleItem(_ lastItem: TabNavigationTitleItem) -> CGFloat {
-        var accumulatedPosition: CGFloat = /*DefaultTabNavigationTitleItemPadding*/0.0
+        var accumulatedPosition: CGFloat = DefaultTabNavigationTitleItemPadding
         
-        var titleString = lastItem._button.currentTitle
-        if let _ = lastItem.selectedRange {
-            titleString = lastItem._button.currentAttributedTitle?.string
+        if let _ = lastItem.selectedRange, let attributedString = lastItem._button.currentAttributedTitle {
+            let sizeOfTitleItem = attributedString.boundingRect(with: CGSize(width: CGFloat.greatestFiniteMagnitude, height: self.bounds.height), options: [.usesLineFragmentOrigin], context: nil).size
+            accumulatedPosition += sizeOfTitleItem.width
+        } else {
+            let titleString = lastItem._button.currentTitle
+            let sizeOfTitleItem = (titleString as NSString?)?.boundingRect(with: CGSize(width: CGFloat.greatestFiniteMagnitude, height: self.bounds.height), options: [.usesLineFragmentOrigin], attributes: [NSFontAttributeName:lastItem.titleFont(whenSelected: true) as Any], context: nil).size
+            accumulatedPosition += sizeOfTitleItem!.width
         }
-        
-        let sizeOfTitleItem = (titleString as NSString?)?.boundingRect(with: CGSize(width: CGFloat.greatestFiniteMagnitude, height: self.bounds.height), options: [.usesLineFragmentOrigin], attributes: [NSFontAttributeName:lastItem.titleFont(whenSelected: true) as Any], context: nil).size
-        accumulatedPosition += DefaultTabNavigationTitleItemPadding
-        accumulatedPosition += sizeOfTitleItem!.width
         
         return accumulatedPosition
     }
