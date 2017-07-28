@@ -82,7 +82,7 @@ extension TabNavigationImagePickerController {
 }
 
 fileprivate class _AssetCollectionViewController: UICollectionViewController {
-    private var _backgroundFilterView: UIView = UIView()
+    fileprivate var _backgroundFilterView: UIView = UIView()
     var _photoAssetCollection: PHAssetCollection!
     var _photoAssets: PHFetchResult<PHAsset>!
     
@@ -92,7 +92,7 @@ fileprivate class _AssetCollectionViewController: UICollectionViewController {
         
         // Fetch assets from asset collection.
         let option = PHFetchOptions()
-        option.sortDescriptors = [NSSortDescriptor(key: "modificationDate", ascending: false)]
+        option.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
         _photoAssets = PHAsset.fetchAssets(in: _photoAssetCollection, options: option)
     }
     
@@ -129,12 +129,6 @@ fileprivate class _AssetCollectionViewController: UICollectionViewController {
         
         collectionView!.contentInset = UIEdgeInsets(top: tabNavigationController!.tabNavigationBar.bounds.height, left: 0.0, bottom: 0.0, right: 0.0)
         collectionView!.scrollIndicatorInsets = collectionView!.contentInset
-    }
-    
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        
-        _backgroundFilterView.frame = CGRect(x: 0.0, y: min(0.0, collectionView!.contentOffset.y), width: tabNavigationController?.tabNavigationBar.bounds.width ?? 0.0, height: tabNavigationController?.tabNavigationBar.bounds.height ?? 0.0)
     }
 }
 
@@ -203,6 +197,14 @@ extension _AssetCollectionViewController {
         }
         
         return cell
+    }
+}
+
+// MARK: UIScrollViewDelegate.
+
+extension _AssetCollectionViewController {
+    override func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        _backgroundFilterView.frame = CGRect(x: 0.0, y: min(0.0, collectionView!.contentOffset.y), width: tabNavigationController?.tabNavigationBar.bounds.width ?? 0.0, height: tabNavigationController?.tabNavigationBar.bounds.height ?? 0.0)
     }
 }
 
