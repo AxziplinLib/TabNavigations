@@ -232,6 +232,7 @@ private func _createGeneralPagingScrollView() -> UIScrollView {
     scrollView.decelerationRate = UIScrollViewDecelerationRateFast
     scrollView.isPagingEnabled = true
     scrollView.scrollsToTop = false
+    scrollView.delaysContentTouches = false
     return scrollView
 }
 
