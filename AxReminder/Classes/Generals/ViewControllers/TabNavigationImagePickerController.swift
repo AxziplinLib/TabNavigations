@@ -82,6 +82,7 @@ extension TabNavigationImagePickerController {
 }
 
 fileprivate class _AssetCollectionViewController: UICollectionViewController {
+    private var _backgroundFilterView: UIView = UIView()
     var _photoAssetCollection: PHAssetCollection!
     var _photoAssets: PHFetchResult<PHAsset>!
     
@@ -109,7 +110,7 @@ fileprivate class _AssetCollectionViewController: UICollectionViewController {
     }
     
     private func _initializer() {
-        
+        _backgroundFilterView.backgroundColor = .white
     }
     
     // Life cycle.
@@ -132,6 +133,8 @@ fileprivate class _AssetCollectionViewController: UICollectionViewController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+        
+        _backgroundFilterView.frame = CGRect(x: 0.0, y: min(0.0, collectionView!.contentOffset.y), width: tabNavigationController?.tabNavigationBar.bounds.width ?? 0.0, height: tabNavigationController?.tabNavigationBar.bounds.height ?? 0.0)
     }
 }
 
