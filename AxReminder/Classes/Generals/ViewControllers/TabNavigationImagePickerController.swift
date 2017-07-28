@@ -233,7 +233,7 @@ extension _AssetCollectionViewController {
         
         private func _initializer() {
             imageView.translatesAutoresizingMaskIntoConstraints = false
-            addSubview(imageView)
+            contentView.addSubview(imageView)
             imageView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
             imageView.topAnchor.constraint(equalTo: topAnchor).isActive = true
             imageView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
