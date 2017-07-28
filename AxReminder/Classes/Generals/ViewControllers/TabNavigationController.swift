@@ -970,7 +970,7 @@ extension TabNavigationController {
     @objc
     fileprivate func _handleKeyboardWillChangeFrameNotification(_ notification: NSNotification) {
         if let keyboardFrame = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue, let duration = notification.userInfo?[UIKeyboardAnimationDurationUserInfoKey] as? TimeInterval, let curve = notification.userInfo?[UIKeyboardAnimationCurveUserInfoKey] as? UInt {
-            print("Keyboard height: \(keyboardFrame.height)")
+            // print("Keyboard height: \(keyboardFrame.height)")
             self._keyboardAlignmentViewHeightConstraint.constant = keyboardFrame.height
             UIView.animate(withDuration: duration, delay: 0.0, options: UIViewAnimationOptions(rawValue: curve), animations: { [unowned self] in
                 self.view.layoutIfNeeded()
