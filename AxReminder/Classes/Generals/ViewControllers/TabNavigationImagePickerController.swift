@@ -24,7 +24,9 @@ protocol TabNavigationImagePickerControllerDelegate {
 class TabNavigationImagePickerController: TabNavigationController {
     fileprivate lazy var _photoAssetCollections: [PHAssetCollection] = { () -> [PHAssetCollection] in
         let results = TabNavigationImagePickerController.generatePhotoAssetCollections()
-        let assets = results.objects(at: IndexSet(integersIn: 0..<results.count)).filter{ PHAsset.fetchAssets(in: $0, options: nil).count > 0 }.sorted { PHAsset.fetchAssets(in: $0, options: nil).count > PHAsset.fetchAssets(in: $1, options: nil).count
+        let option = PHFetchOptions()
+        option.predicate = NSPredicate(format: "mediaType == \(PHAssetMediaType.image.rawValue)")
+        let assets = results.objects(at: IndexSet(integersIn: 0..<results.count)).filter{ PHAsset.fetchAssets(in: $0, options: option).count > 0 }.sorted { PHAsset.fetchAssets(in: $0, options: option).count > PHAsset.fetchAssets(in: $1, options: option).count
         }
         return assets
     }()
@@ -51,6 +53,7 @@ class TabNavigationImagePickerController: TabNavigationController {
     }
     
     private func _initializer() {
+        isTabNavigationItemsUpdatingDisabledInRootViewControllers = true
         // Enumerate the asset collections.
         willBeginFetchingAssetCollection()
         if !shouldIncludeHiddenAssets {
@@ -72,6 +75,8 @@ class TabNavigationImagePickerController: TabNavigationController {
         // Do any additional setup after loading the view.
         view.backgroundColor = UIColor(colorLiteralRed: 0.976, green: 0.976, blue: 0.976, alpha: 1.0)
         tabNavigationBar.isTranslucent = true
+        let cancel = TabNavigationItem(title: "取消", target: self, selector: #selector(_handleCancelAction(_:)))
+        tabNavigationBar.navigationItems = [cancel]
     }
 
     override func didReceiveMemoryWarning() {
@@ -79,6 +84,16 @@ class TabNavigationImagePickerController: TabNavigationController {
         // Dispose of any resources that can be recreated.
     }
 }
+
+// MARK: Actions.
+
+extension TabNavigationImagePickerController {
+    @objc
+    fileprivate func _handleCancelAction(_ sender: UIButton) {
+        self.dismiss(animated: true, completion: nil)
+    }
+}
+
 // MARK: - Public.
 
 extension TabNavigationImagePickerController {
@@ -99,7 +114,6 @@ extension TabNavigationImagePickerController {
         let option = PHFetchOptions()
         option.includeHiddenAssets = true
         option.includeAllBurstAssets = false
-        // option.predicate = NSPredicate(format: "")
         return PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .any, options: option)
     }
     
@@ -125,6 +139,7 @@ fileprivate class _AssetCollectionViewController: UICollectionViewController {
         // Fetch assets from asset collection.
         let option = PHFetchOptions()
         option.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
+        option.predicate = NSPredicate(format: "mediaType == \(PHAssetMediaType.image.rawValue)")
         _photoAssets = PHAsset.fetchAssets(in: _photoAssetCollection, options: option)
     }
     
@@ -154,23 +169,12 @@ fileprivate class _AssetCollectionViewController: UICollectionViewController {
         collectionView!.alwaysBounceVertical = true
         
         setTabNavigationTitle(["title": _photoAssetCollection.localizedTitle ?? "", "range": 0..<2])
-        let cancel = TabNavigationItem(title: "取消", target: self, selector: #selector(_handleCancelAction(_:)))
-        setTabNavigationItems([cancel])
         // Register asset collection cell.
         collectionView!.register(_AssetCollectionCell.self, forCellWithReuseIdentifier: String(describing: _AssetCollectionCell.self))
         
         collectionView!.contentInset = UIEdgeInsets(top: tabNavigationController!.tabNavigationBar.bounds.height, left: 0.0, bottom: 0.0, right: 0.0)
         collectionView!.scrollIndicatorInsets = collectionView!.contentInset
         collectionView!.allowsMultipleSelection = true
-    }
-}
-
-// MARK: Actions.
-
-extension _AssetCollectionViewController {
-    @objc
-    fileprivate func _handleCancelAction(_ sender: UIButton) {
-        self.tabNavigationController!.dismiss(animated: true, completion: nil)
     }
 }
 
