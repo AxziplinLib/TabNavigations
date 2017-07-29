@@ -18,6 +18,7 @@ class CollectionViewController: UICollectionViewController {
         // self.clearsSelectionOnViewWillAppear = false
 
         // Do any additional setup after loading the view.
+        print(String(describing: type(of: self)) + " " + #function)
         viewDidLoadSetup()
     }
     
@@ -31,6 +32,30 @@ class CollectionViewController: UICollectionViewController {
         collectionView!.insertSubview(_backgroundFilterView, at: 0)
         _backgroundFilterView.backgroundColor = .white
         tabNavigationController?.tabNavigationBar.isTranslucent = true
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        print(String(describing: type(of: self)) + " " + #function + " " + String(describing: animated))
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        print(String(describing: type(of: self)) + " " + #function + " " + String(describing: animated))
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        print(String(describing: type(of: self)) + " " + #function + " " + String(describing: animated))
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        print(String(describing: type(of: self)) + " " + #function + " " + String(describing: animated))
+    }
+    
+    deinit {
+        print(String(describing: type(of: self)) + " " + #function)
     }
 
     override func didReceiveMemoryWarning() {
