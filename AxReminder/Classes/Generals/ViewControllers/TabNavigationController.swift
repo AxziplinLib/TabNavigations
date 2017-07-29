@@ -108,7 +108,7 @@ extension UIViewController {
     
     public func setTabNavigationItems(_ items: [TabNavigationItem], animated: Bool = false) {
         tabNavigationItems = items
-        if _tabNavigationController?._selectedViewController === self {
+        if _tabNavigationController?._selectedViewController === self && !(_tabNavigationController?.isTabNavigationItemsUpdatingDisabledInRootViewControllers ?? false) {
             _tabNavigationController?.tabNavigationBar.setNavigationItems(items, animated: animated)
         }
     }
@@ -310,6 +310,14 @@ public class TabNavigationController: UIViewController {
     override public var shouldAutomaticallyForwardAppearanceMethods: Bool { return false }
     public var isViewAppeared: Bool { return _isViewAppeared }
     private var _isViewAppeared: Bool = false
+    
+    open var isTabNavigationItemsUpdatingDisabledInRootViewControllers: Bool = false {
+        didSet {
+            _backupedTabNavigationItems = _tabNavigationBar.navigationItems
+        }
+    }
+    fileprivate var _backupedTabNavigationItems: [TabNavigationItem] = []
+    
     // MARK: - Overrides.
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
@@ -679,6 +687,9 @@ public class TabNavigationController: UIViewController {
                 }
             }
         }
+        if _viewControllersStack.isEmpty && isTabNavigationItemsUpdatingDisabledInRootViewControllers {
+            _backupedTabNavigationItems = tabNavigationBar.navigationItems
+        }
         tabNavigationBar.setNavigationItems(viewController.tabNavigationItems, animated: animated)
         
         if animated {
@@ -765,7 +776,11 @@ public class TabNavigationController: UIViewController {
                 }
             }
             // Update navigation items.
-            tabNavigationBar.setNavigationItems(formerViewController.tabNavigationItems, animated: animated)
+            if _viewControllersStack.startIndex == _viewControllersStack.index(before: _viewControllersStack.endIndex) && isTabNavigationItemsUpdatingDisabledInRootViewControllers {
+                tabNavigationBar.setNavigationItems(_backupedTabNavigationItems, animated: animated)
+            } else {
+                tabNavigationBar.setNavigationItems(formerViewController.tabNavigationItems, animated: animated)
+            }
         }
         // Will remove view controller to be popped.
         _removingViewController.willMove(toParentViewController: nil)
@@ -1024,7 +1039,7 @@ extension TabNavigationController {
     }
     
     public func setSelectedViewController(at index: Array<UIViewController>.Index, animated: Bool) {
-        _setSelectedViewController(at: index, updateNavigationBar: true, updateNavigationItems: true, animated: animated)
+        _setSelectedViewController(at: index, updateNavigationBar: true, updateNavigationItems: !isTabNavigationItemsUpdatingDisabledInRootViewControllers, animated: animated)
     }
     
     public func addViewController<T>(_ viewController: T) where T: UIViewController, T: TabNavigationReadable {
@@ -1112,7 +1127,7 @@ extension TabNavigationController: TabNavigationBarDelegate {
         guard _viewControllersStack.isEmpty else {
             return
         }
-        _setSelectedViewController(at: index, updateNavigationItems: true, animated: animated)
+        _setSelectedViewController(at: index, updateNavigationItems: !isTabNavigationItemsUpdatingDisabledInRootViewControllers, animated: animated)
     }
     
     public func tabNavigationBar(_ tabNavigationBar: TabNavigationBar, didSelectTitleItemAt index: Int) {
@@ -1156,6 +1171,7 @@ extension TabNavigationController: UIScrollViewDelegate {
             if index < _rootViewControllersContext.viewControllers.index(before: _rootViewControllersContext.viewControllers.endIndex)
             && scrollView.contentOffset.x >= 0
             && scrollView.contentOffset.x.truncatingRemainder(dividingBy: scrollView.bounds.width) != 0.0
+            && !isTabNavigationItemsUpdatingDisabledInRootViewControllers
             {
                 let showingIndex = _rootViewControllersContext.viewControllers.index(after: index)
                 let viewController = _rootViewControllersContext.viewControllers[showingIndex]
