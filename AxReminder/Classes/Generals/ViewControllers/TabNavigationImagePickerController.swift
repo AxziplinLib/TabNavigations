@@ -63,7 +63,7 @@ class TabNavigationImagePickerController: TabNavigationController {
             // Add image collection view controllers.
             let flowLayout = UICollectionViewFlowLayout()
             flowLayout.scrollDirection = .vertical
-            let assetViewController = _AssetCollectionViewController(collectionViewLayout: flowLayout, photoAlbum: assetCollection)
+            let assetViewController = _AssetsViewController(collectionViewLayout: flowLayout, photoAlbum: assetCollection)
             self.addViewController(assetViewController)
         }
         didFinishFetchingAssetCollection()
@@ -126,7 +126,7 @@ extension TabNavigationImagePickerController {
     }
 }
 
-fileprivate class _AssetCollectionViewController: UICollectionViewController {
+fileprivate class _AssetsViewController: UICollectionViewController {
     fileprivate var _backgroundFilterView: UIView = UIView()
     var _photoAssetCollection: PHAssetCollection!
     var _photoAssets: PHFetchResult<PHAsset>!
@@ -170,7 +170,7 @@ fileprivate class _AssetCollectionViewController: UICollectionViewController {
         
         setTabNavigationTitle(["title": _photoAssetCollection.localizedTitle ?? "", "range": 0..<2])
         // Register asset collection cell.
-        collectionView!.register(_AssetCollectionCell.self, forCellWithReuseIdentifier: String(describing: _AssetCollectionCell.self))
+        collectionView!.register(_AssetsCollectionCell.self, forCellWithReuseIdentifier: String(describing: _AssetsCollectionCell.self))
         
         collectionView!.contentInset = UIEdgeInsets(top: tabNavigationController!.tabNavigationBar.bounds.height, left: 0.0, bottom: 0.0, right: 0.0)
         collectionView!.scrollIndicatorInsets = collectionView!.contentInset
@@ -188,7 +188,7 @@ fileprivate class _AssetCollectionViewController: UICollectionViewController {
 
 // MARK: Actions.
 
-extension _AssetCollectionViewController {
+extension _AssetsViewController {
     @objc
     fileprivate func _handleOrientationDidChange(_ sender: NSNotification) {
         collectionView!.collectionViewLayout.invalidateLayout()
@@ -197,22 +197,22 @@ extension _AssetCollectionViewController {
 
 // MARK: Overrides.
 
-extension _AssetCollectionViewController {
+extension _AssetsViewController {
     override var layoutInsets: UIEdgeInsets { return .zero }
 }
 
-extension _AssetCollectionViewController {
+extension _AssetsViewController {
     override func makeViewScrollToTopIfNecessary(at location: CGPoint) {
         collectionView!.scrollRectToVisible(CGRect(origin: CGPoint(x: 0.0, y: 0.0), size: CGSize(width: collectionView!.bounds.width, height: collectionView!.bounds.height - collectionView!.contentInset.top - collectionView!.contentInset.bottom)), animated: true)
     }
 }
 
-extension _AssetCollectionViewController {
+extension _AssetsViewController {
     fileprivate var _DefaultCollectionSectionInset: CGFloat { return 1.0 }
     fileprivate var _DefaultCollectionItemPadding: CGFloat { return 2.0 }
     fileprivate var _DefaultCollectionItemColumns: CGFloat { return 4.0 }
 }
-extension _AssetCollectionViewController: UICollectionViewDelegateFlowLayout {
+extension _AssetsViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         // Display 4 columns.
         let size_s = (collectionView.bounds.width - _DefaultCollectionSectionInset * 2.0 - _DefaultCollectionItemPadding * (_DefaultCollectionItemColumns - 1.0)) / _DefaultCollectionItemColumns
@@ -234,7 +234,7 @@ extension _AssetCollectionViewController: UICollectionViewDelegateFlowLayout {
 
 // MARK: - CollectionViewController Delegate And DataSource Supporting.
 
-extension _AssetCollectionViewController {
+extension _AssetsViewController {
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 1
     }
@@ -244,7 +244,7 @@ extension _AssetCollectionViewController {
     }
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: _AssetCollectionCell.self), for: indexPath) as! _AssetCollectionCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: _AssetsCollectionCell.self), for: indexPath) as! _AssetsCollectionCell
         
         let asset = _photoAssets.object(at: indexPath.item)
         let option = PHImageRequestOptions()
@@ -296,7 +296,7 @@ extension _AssetCollectionViewController {
 
 // MARK: UIScrollViewDelegate.
 
-extension _AssetCollectionViewController {
+extension _AssetsViewController {
     override func scrollViewDidScroll(_ scrollView: UIScrollView) {
         _backgroundFilterView.frame = CGRect(x: 0.0, y: min(0.0, collectionView!.contentOffset.y), width: tabNavigationController?.tabNavigationBar.bounds.width ?? 0.0, height: tabNavigationController?.tabNavigationBar.bounds.height ?? 0.0)
     }
@@ -304,8 +304,8 @@ extension _AssetCollectionViewController {
 
 // MARK: _AssetCollectionViewController
 
-extension _AssetCollectionViewController {
-    class _AssetCollectionCell: UICollectionViewCell {
+extension _AssetsViewController {
+    class _AssetsCollectionCell: UICollectionViewCell {
         let imageView: UIImageView = UIImageView()
         let _selectionIndicator = UIImageView(image: #imageLiteral(resourceName: "image_selected"))
         
