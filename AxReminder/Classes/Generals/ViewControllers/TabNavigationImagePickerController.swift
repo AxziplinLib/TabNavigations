@@ -175,6 +175,23 @@ fileprivate class _AssetCollectionViewController: UICollectionViewController {
         collectionView!.contentInset = UIEdgeInsets(top: tabNavigationController!.tabNavigationBar.bounds.height, left: 0.0, bottom: 0.0, right: 0.0)
         collectionView!.scrollIndicatorInsets = collectionView!.contentInset
         collectionView!.allowsMultipleSelection = true
+        
+        UIDevice.current.beginGeneratingDeviceOrientationNotifications()
+        NotificationCenter.default.addObserver(self, selector: #selector(_handleOrientationDidChange(_:)), name: .UIDeviceOrientationDidChange, object: nil)
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+        UIDevice.current.endGeneratingDeviceOrientationNotifications()
+    }
+}
+
+// MARK: Actions.
+
+extension _AssetCollectionViewController {
+    @objc
+    fileprivate func _handleOrientationDidChange(_ sender: NSNotification) {
+        collectionView!.collectionViewLayout.invalidateLayout()
     }
 }
 
@@ -338,5 +355,11 @@ extension _AssetCollectionViewController {
                 }
             }
         }
+    }
+}
+
+extension TabNavigationImagePickerController {
+    class _CameraViewController: UIViewController {
+        
     }
 }
