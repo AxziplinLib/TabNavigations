@@ -8,6 +8,9 @@
 
 import UIKit
 import Photos
+import AVFoundation
+
+// MARK: - TabNavigationImagePickerController.
 
 extension TabNavigationImagePickerController {
     public typealias ImagesResultHandler = (([UIImage]) -> Void)
@@ -34,6 +37,10 @@ class TabNavigationImagePickerController: TabNavigationController {
     open var allowedSelectionCounts: Int = 9
     open weak var delegate: TabNavigationImagePickerControllerDelegate?
     
+    fileprivate var _captureSession: AVCaptureSession!
+    fileprivate var _captureDeviceInput: AVCaptureDeviceInput!
+    fileprivate var _captureVideoPreviewLayer: AVCaptureVideoPreviewLayer!
+    
     fileprivate var imagesResult: ImagesResultHandler?
     
     init(delegate: TabNavigationImagePickerControllerDelegate? = nil, imagesResult: ImagesResultHandler? = nil) {
@@ -56,6 +63,16 @@ class TabNavigationImagePickerController: TabNavigationController {
         isTabNavigationItemsUpdatingDisabledInRootViewControllers = true
         // Enumerate the asset collections.
         willBeginFetchingAssetCollection()
+        if let device = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeVideo), let input = (try? AVCaptureDeviceInput(device: device)) {
+            _captureDeviceInput = input
+            _captureSession = AVCaptureSession()
+            if _captureSession.canSetSessionPreset(AVCaptureSessionPresetLow) {
+                _captureSession.sessionPreset = AVCaptureSessionPresetLow
+            }
+            _captureSession.addInput(_captureDeviceInput)
+            _captureVideoPreviewLayer = AVCaptureVideoPreviewLayer(session: _captureSession)
+            _captureVideoPreviewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill
+        }
         if !shouldIncludeHiddenAssets {
             _photoAssetCollections = _photoAssetCollections.filter{ $0.assetCollectionSubtype != .smartAlbumAllHidden }
         }
@@ -77,6 +94,12 @@ class TabNavigationImagePickerController: TabNavigationController {
         tabNavigationBar.isTranslucent = true
         let cancel = TabNavigationItem(title: "取消", target: self, selector: #selector(_handleCancelAction(_:)))
         tabNavigationBar.navigationItems = [cancel]
+        
+        _captureSession.startRunning()
+    }
+    
+    deinit {
+        _captureSession.stopRunning()
     }
 
     override func didReceiveMemoryWarning() {
@@ -94,7 +117,7 @@ extension TabNavigationImagePickerController {
     }
 }
 
-// MARK: - Public.
+// MARK:  Public.
 
 extension TabNavigationImagePickerController {
     open var shouldIncludeHiddenAssets: Bool { return false }
@@ -126,11 +149,17 @@ extension TabNavigationImagePickerController {
     }
 }
 
+// MARK: - _AssetsViewController.
+
 fileprivate class _AssetsViewController: UICollectionViewController {
     fileprivate var _backgroundFilterView: UIView = UIView()
+    fileprivate var _isViewDidAppear: Bool = false
+    fileprivate weak var _captureVideoPreviewCell: _AssetsCaptureVideoPreviewCollectionCell?
     var _photoAssetCollection: PHAssetCollection!
+    
     var _photoAssets: PHFetchResult<PHAsset>!
     var imagePickerController: TabNavigationImagePickerController { return tabNavigationController as! TabNavigationImagePickerController }
+    
     
     convenience init(collectionViewLayout layout: UICollectionViewLayout, photoAlbum assetCollection: PHAssetCollection) {
         self.init(collectionViewLayout: layout)
@@ -171,6 +200,7 @@ fileprivate class _AssetsViewController: UICollectionViewController {
         setTabNavigationTitle(["title": _photoAssetCollection.localizedTitle ?? "", "range": 0..<2])
         // Register asset collection cell.
         collectionView!.register(_AssetsCollectionCell.self, forCellWithReuseIdentifier: String(describing: _AssetsCollectionCell.self))
+        collectionView!.register(_AssetsCaptureVideoPreviewCollectionCell.self, forCellWithReuseIdentifier: String(describing: _AssetsCaptureVideoPreviewCollectionCell.self))
         
         collectionView!.contentInset = UIEdgeInsets(top: tabNavigationController!.tabNavigationBar.bounds.height, left: 0.0, bottom: 0.0, right: 0.0)
         collectionView!.scrollIndicatorInsets = collectionView!.contentInset
@@ -178,6 +208,15 @@ fileprivate class _AssetsViewController: UICollectionViewController {
         
         UIDevice.current.beginGeneratingDeviceOrientationNotifications()
         NotificationCenter.default.addObserver(self, selector: #selector(_handleOrientationDidChange(_:)), name: .UIDeviceOrientationDidChange, object: nil)
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        if let previewLayer = imagePickerController._captureVideoPreviewLayer {
+            _captureVideoPreviewCell?.contentView.layer.addSublayer(previewLayer)
+            previewLayer.frame = _captureVideoPreviewCell?.contentView.bounds ?? .zero
+        }
     }
     
     deinit {
@@ -232,7 +271,7 @@ extension _AssetsViewController: UICollectionViewDelegateFlowLayout {
     }
 }
 
-// MARK: - CollectionViewController Delegate And DataSource Supporting.
+// MARK: CollectionViewController Delegate And DataSource Supporting.
 
 extension _AssetsViewController {
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -240,13 +279,18 @@ extension _AssetsViewController {
     }
     
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return _photoAssets.count
+        return _photoAssets.count + 1
     }
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        if indexPath.item == 0 {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: _AssetsCaptureVideoPreviewCollectionCell.self), for: indexPath) as! _AssetsCaptureVideoPreviewCollectionCell
+            _captureVideoPreviewCell = cell
+            return cell
+        }
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: _AssetsCollectionCell.self), for: indexPath) as! _AssetsCollectionCell
         
-        let asset = _photoAssets.object(at: indexPath.item)
+        let asset = _photoAssets.object(at: indexPath.item - 1)
         let option = PHImageRequestOptions()
         option.isNetworkAccessAllowed = true
         option.deliveryMode = .opportunistic
@@ -266,6 +310,8 @@ extension _AssetsViewController {
     }
     
     override func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
+        guard indexPath.item != 0 else { return false }
+        
         let indexPaths = imagePickerController._selectedIndexPathsOfAssets.flatMap { $0.value }
         if indexPaths.count >= imagePickerController.allowedSelectionCounts {
             return false
@@ -302,7 +348,7 @@ extension _AssetsViewController {
     }
 }
 
-// MARK: _AssetCollectionViewController
+// MARK: _AssetsCollectionCell.
 
 extension _AssetsViewController {
     class _AssetsCollectionCell: UICollectionViewCell {
@@ -358,8 +404,109 @@ extension _AssetsViewController {
     }
 }
 
-extension TabNavigationImagePickerController {
-    class _CameraViewController: UIViewController {
+// MARK: _AssetsCaptureVideoPreviewCollectionCell.
+
+extension _AssetsViewController {
+    class _AssetsCaptureVideoPreviewCollectionCell: UICollectionViewCell {
+        let cameraView: UIImageView = UIImageView(image: #imageLiteral(resourceName: "camera"))
         
+        override init(frame: CGRect) {
+            super.init(frame: frame)
+            _initializer()
+        }
+        required init?(coder aDecoder: NSCoder) {
+            super.init(coder: aDecoder)
+            _initializer()
+        }
+        private func _initializer() {
+            contentView.backgroundColor = .black
+            
+            cameraView.translatesAutoresizingMaskIntoConstraints = false
+            addSubview(cameraView)
+            cameraView.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
+            cameraView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+        }
+    }
+}
+
+// MARK: - _CameraViewController.
+
+fileprivate class _CameraViewController: UIViewController {
+    var _session: AVCaptureSession!
+    var _needConfigurationOfSession: Bool = false
+    var _input: AVCaptureDeviceInput!
+    var _output: AVCaptureOutput!
+    
+    var _previewLayer: AVCaptureVideoPreviewLayer!
+    
+    // MARK: Initializer.
+    init?(session: AVCaptureSession? = nil, input: AVCaptureDeviceInput? = nil, output: AVCaptureOutput? = nil) throws {
+        guard let __input = input ?? (try? AVCaptureDeviceInput(device: AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeVideo))) else {
+            return nil
+        }
+        if let __session = session {
+            _session = __session
+            _needConfigurationOfSession = false
+        } else {
+            _session = AVCaptureSession()
+            _needConfigurationOfSession = true
+        }
+        _input = __input
+        _output = output ?? AVCaptureOutput()
+        
+        super.init(nibName: nil, bundle: nil)
+        _initializer()
+    }
+    
+    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+        _initializer()
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        _initializer()
+    }
+    
+    private func _initializer() {
+        _configureSession()
+        _previewLayer = AVCaptureVideoPreviewLayer(session: _session)
+    }
+    
+    // MARK: LifeCycle.
+    override func loadView() {
+        super.loadView()
+        view.layer.addSublayer(_previewLayer)
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        _previewLayer.frame = view.layer.bounds
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        // Start the session when view will appear.
+        _session.startRunning()
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        // Stop the session when view did disappear.
+        _session.stopRunning()
+    }
+    
+    // MARK: Private.
+    
+    private func _configureSession() {
+        guard _needConfigurationOfSession else { return }
+        
+        _session.addInput(_input)
+        _session.addOutput(_output)
     }
 }
