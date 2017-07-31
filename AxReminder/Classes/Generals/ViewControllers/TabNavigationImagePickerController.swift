@@ -66,8 +66,8 @@ class TabNavigationImagePickerController: TabNavigationController {
         if let device = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeVideo), let input = (try? AVCaptureDeviceInput(device: device)) {
             _captureDeviceInput = input
             _captureSession = AVCaptureSession()
-            if _captureSession.canSetSessionPreset(AVCaptureSessionPresetLow) {
-                _captureSession.sessionPreset = AVCaptureSessionPresetLow
+            if _captureSession.canSetSessionPreset(AVCaptureSessionPresetPhoto) {
+                _captureSession.sessionPreset = AVCaptureSessionPresetPhoto
             }
             _captureSession.addInput(_captureDeviceInput)
             _captureVideoPreviewLayer = AVCaptureVideoPreviewLayer(session: _captureSession)
