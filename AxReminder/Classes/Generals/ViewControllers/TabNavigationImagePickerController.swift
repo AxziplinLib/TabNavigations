@@ -438,6 +438,7 @@ extension _AssetsViewController {
         }
         private func _initializer() {
             contentView.backgroundColor = .black
+            cameraView.tintColor = UIColor.white.withAlphaComponent(0.8)
             
             cameraView.translatesAutoresizingMaskIntoConstraints = false
             addSubview(cameraView)
