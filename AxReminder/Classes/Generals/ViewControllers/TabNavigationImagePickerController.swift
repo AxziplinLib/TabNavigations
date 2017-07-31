@@ -154,7 +154,11 @@ extension TabNavigationImagePickerController {
 fileprivate class _AssetsViewController: UICollectionViewController {
     fileprivate var _backgroundFilterView: UIView = UIView()
     fileprivate var _isViewDidAppear: Bool = false
-    fileprivate weak var _captureVideoPreviewCell: _AssetsCaptureVideoPreviewCollectionCell?
+    fileprivate weak var _captureVideoPreviewCell: _AssetsCaptureVideoPreviewCollectionCell? {
+        didSet {
+            _setupVideoPreviewLayer()
+        }
+    }
     var _photoAssetCollection: PHAssetCollection!
     
     var _photoAssets: PHFetchResult<PHAsset>!
@@ -213,15 +217,29 @@ fileprivate class _AssetsViewController: UICollectionViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        if let previewLayer = imagePickerController._captureVideoPreviewLayer {
-            _captureVideoPreviewCell?.contentView.layer.addSublayer(previewLayer)
-            previewLayer.frame = _captureVideoPreviewCell?.contentView.bounds ?? .zero
-        }
+        _isViewDidAppear = true
+        _setupVideoPreviewLayer()
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        _isViewDidAppear = false
     }
     
     deinit {
         NotificationCenter.default.removeObserver(self)
         UIDevice.current.endGeneratingDeviceOrientationNotifications()
+    }
+    
+    // MARK: Private.
+    private func _setupVideoPreviewLayer() {
+        guard _isViewDidAppear else { return }
+        
+        if let previewLayer = imagePickerController._captureVideoPreviewLayer {
+            _captureVideoPreviewCell?.contentView.layer.addSublayer(previewLayer)
+            previewLayer.frame = _captureVideoPreviewCell?.contentView.bounds ?? .zero
+        }
     }
 }
 
