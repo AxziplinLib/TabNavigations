@@ -36,7 +36,6 @@ class CategoryAddingViewController: TableViewController {
         let complete = TabNavigationItem(title: "完成", target: self, selector: #selector(_handleCompleteAction(_:)))
         setTabNavigationItems([complete, cancel])
         
-        _setupBackToTopButton()
         // Load data of table view.
         tableView.reloadData()
     }
@@ -57,6 +56,14 @@ class CategoryAddingViewController: TableViewController {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+}
+
+// MARK: - Back to top.
+
+extension CategoryAddingViewController {
+    override func makeViewScrollToTopIfNecessary(at location: CGPoint) {
+        tableView.scrollRectToVisible(CGRect(origin: .zero, size: CGSize(width: tableView.bounds.width, height: 1.0)), animated: true)
     }
 }
 
@@ -127,11 +134,6 @@ extension CategoryAddingViewController {
             realm.add(category)
         }
         self.tabNavigationController?.dismiss(animated: true, completion: nil)
-    }
-    
-    @objc
-    fileprivate func _handleBackToTop(_ sender: UIButton) {
-        tableView.scrollRectToVisible(CGRect(origin: .zero, size: CGSize(width: tableView.bounds.width, height: 1.0)), animated: true)
     }
 }
 
@@ -245,22 +247,6 @@ extension CategoryAddingViewController {
         let darkColor = UIColor(CIE_LAB: (darkerL, LAB.a, LAB.b, LAB.alpha))
         
         return (lightColor, darkColor)
-    }
-    
-    fileprivate func _setupBackToTopButton() {
-        guard let tabNavigationBar = tabNavigationController?.tabNavigationBar else {
-            return
-        }
-        _backToTopButton = UIButton(type: .system)
-        _backToTopButton.translatesAutoresizingMaskIntoConstraints = false
-        _backToTopButton.setImage(#imageLiteral(resourceName: "back_to_top"), for: .normal)
-        _backToTopButton.tintColor = UIColor.application.titleColor
-        _backToTopButton.addTarget(self, action: #selector(_handleBackToTop(_:)), for: .touchUpInside)
-        tabNavigationBar.addSubview(_backToTopButton)
-        _backToTopButton.centerXAnchor.constraint(equalTo: tabNavigationBar.centerXAnchor).isActive = true
-        _backToTopButton.widthAnchor.constraint(equalToConstant: 44.0).isActive = true
-        _backToTopButton.heightAnchor.constraint(equalToConstant: 44.0).isActive = true
-        _backToTopButton.lastBaselineAnchor.constraint(equalTo: tabNavigationBar.lastBaselineAnchor).isActive = true
     }
 }
 
