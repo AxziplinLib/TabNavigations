@@ -678,6 +678,7 @@ extension _CameraViewController {
     class _CaptureVideoPreviewView: UIView {
         override class var layerClass: AnyClass { return AVCaptureVideoPreviewLayer.self }
         var previewLayer: AVCaptureVideoPreviewLayer { return layer as! AVCaptureVideoPreviewLayer }
+        var device: AVCaptureDevice! { return (previewLayer.session.inputs.first as! AVCaptureDeviceInput).device }
         
         init(session: AVCaptureSession) {
             super.init(frame: .zero)
