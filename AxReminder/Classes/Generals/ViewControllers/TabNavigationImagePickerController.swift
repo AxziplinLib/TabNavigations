@@ -63,7 +63,7 @@ class TabNavigationImagePickerController: TabNavigationController {
         isTabNavigationItemsUpdatingDisabledInRootViewControllers = true
         // Enumerate the asset collections.
         willBeginFetchingAssetCollection()
-        if let device = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeVideo), let input = (try? AVCaptureDeviceInput(device: device)) {
+        if let device = type(of: self).defaultDeviceOfCaptureSessionInputs(), let input = (try? AVCaptureDeviceInput(device: device)) {
             _captureDeviceInput = input
             _captureSession = AVCaptureSession()
             if _captureSession.canSetSessionPreset(AVCaptureSessionPresetPhoto) {
@@ -139,6 +139,12 @@ extension TabNavigationImagePickerController {
         option.includeHiddenAssets = true
         option.includeAllBurstAssets = false
         return PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .any, options: option)
+    }
+    
+    open class func defaultDeviceOfCaptureSessionInputs() -> AVCaptureDevice? {
+        let device = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeVideo)
+        
+        return device
     }
     
     open func willBeginFetchingAssetCollection() {
