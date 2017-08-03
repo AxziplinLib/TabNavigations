@@ -157,6 +157,10 @@ extension TabNavigationImagePickerController {
                 
                 device.isSubjectAreaChangeMonitoringEnabled = true
                 
+                if device.isFlashModeSupported(.auto) {
+                    device.flashMode = .auto
+                }
+                
                 device.unlockForConfiguration()
             } catch {
                 print(error)
@@ -620,6 +624,8 @@ fileprivate class _CameraViewController: UIViewController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+        
+        _previewView.infoContentInsets = UIEdgeInsets(top: _topBar.bounds.height, left: 0.0, bottom: _bottomBar.bounds.height, right: 0.0)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -701,15 +707,39 @@ extension _CameraViewController {
 // MARK: _CaptureVideoPreviewView.
 
 extension _CameraViewController {
+    @available(iOS 9.0, *)
     class _CaptureVideoPreviewView: UIView {
         override class var layerClass: AnyClass { return AVCaptureVideoPreviewLayer.self }
         var previewLayer: AVCaptureVideoPreviewLayer { return layer as! AVCaptureVideoPreviewLayer }
         var videoDevice: AVCaptureDevice? {
             return (previewLayer.session.inputs as! [AVCaptureDeviceInput]).filter{ $0.device.hasMediaType(AVMediaTypeVideo) }.first?.device
         }
+        var infoContentInsets: UIEdgeInsets = .zero {
+            didSet {
+                _setupInfoStackView()
+            }
+        }
+        // Only support String or UIImage object.
+        var humanReadingInfos: [Any] = [] {
+            didSet {
+                _setupHumanReadingInfos()
+            }
+        }
         let configurationQueue: DispatchQueue = DispatchQueue(label: "com.device_configuration.video_preview.camera_vc")
         
+        fileprivate lazy var _infoStackView: UIStackView = { () -> UIStackView in
+            let stackView = UIStackView()
+            stackView.isUserInteractionEnabled = false
+            stackView.translatesAutoresizingMaskIntoConstraints = false
+            stackView.alignment = .center
+            stackView.axis = .vertical
+            stackView.distribution = .equalSpacing
+            stackView.spacing = 10.0
+            return stackView
+        }()
+        
         weak var _focusTapGesture: UITapGestureRecognizer!
+        weak var _focusLongPressGesture: UILongPressGestureRecognizer!
         
         let _autoFocusIndicator: UIImageView = UIImageView(image: UIImage(named: "TabNavigationImagePickerController.bundle/auto_focus"))
         let _autoExposeIndicator: UIImageView = UIImageView(image: UIImage(named: "TabNavigationImagePickerController.bundle/sun_shape_light"))
@@ -717,11 +747,12 @@ extension _CameraViewController {
         
         var _autoBeginning: Date = Date()
         var _continuousBeginning: Date = Date()
-        let _graceTime: Double = 0.40
+        let _graceTime: Double = 0.35
         let _paddingOfFocusAndExpose: CGFloat = 5.0
         
         var _deviceIsAdjustingFocusObserveContext = 0
-        var _deviceFocusModeObserveContext = 0
+        var _deviceFocusModeObserveContext = 1
+        var _deviceFlashActiveObserveContext = 2
         
         init(session: AVCaptureSession) {
             super.init(frame: .zero)
@@ -739,6 +770,7 @@ extension _CameraViewController {
             if let device = videoDevice {
                 device.removeObserver(self, forKeyPath: "adjustingFocus")
                 device.removeObserver(self, forKeyPath: "focusMode")
+                device.removeObserver(self, forKeyPath: "flashActive")
             }
         }
         
@@ -757,10 +789,22 @@ extension _CameraViewController {
         // MARK: Private.
         private func _initializer() {
             _setupIndicators()
-            _setupFocusTapGesture()
+            _setupInfoStackView()
+            
+            _setupFocusGestures()
             
             _observeProperties()
             _observeNotifications()
+        }
+        
+        private func _setupInfoStackView() {
+            if _infoStackView.superview === self {
+                _infoStackView.removeFromSuperview()
+            }
+            
+            addSubview(_infoStackView)
+            addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-left-[_infoStackView]-right-|", options: [], metrics: ["left": infoContentInsets.left, "right": infoContentInsets.right], views: ["_infoStackView": _infoStackView]))
+            addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-top-[_infoStackView]-(>=bottom)-|", options: [], metrics: ["top" : infoContentInsets.top + _infoStackView.spacing, "bottom" : infoContentInsets.bottom], views: ["_infoStackView": _infoStackView]))
         }
         
         private func _setupIndicators() {
@@ -773,20 +817,75 @@ extension _CameraViewController {
             _continuousIndicator.isHidden = true
         }
         
-        private func _setupFocusTapGesture() {
+        private func _setupFocusGestures() {
             let tap = UITapGestureRecognizer(target: self, action: #selector(_handleTapToConfigureDevice(_:)))
             addGestureRecognizer(tap)
             _focusTapGesture = tap
+            
+            let longPress = UILongPressGestureRecognizer(target: self, action: #selector(_handleLongPressToConfigureDevice(_:)))
+            addGestureRecognizer(longPress)
+            _focusLongPressGesture = longPress
         }
         
         private func _observeProperties() {
             if let device = videoDevice {
                 device.addObserver(self, forKeyPath: "adjustingFocus", options: .new, context: &_deviceIsAdjustingFocusObserveContext)
                 device.addObserver(self, forKeyPath: "focusMode", options: .new, context: &_deviceFocusModeObserveContext)
+                device.addObserver(self, forKeyPath: "flashActive", options: .new, context: &_deviceFlashActiveObserveContext)
             }
         }
         private func _observeNotifications() {
             NotificationCenter.default.addObserver(self, selector: #selector(_handleCaptureDeviceSubjectAreaDidChange(_:)), name: .AVCaptureDeviceSubjectAreaDidChange, object: nil)
+        }
+        
+        private func _setupHumanReadingInfos() {
+            for arrangedView in _infoStackView.arrangedSubviews {
+                _infoStackView.removeArrangedSubview(arrangedView)
+                arrangedView.removeFromSuperview()
+            }
+            
+            guard !humanReadingInfos.isEmpty else { return }
+            
+            for info in humanReadingInfos {
+                let infoView = UIView()
+                infoView.translatesAutoresizingMaskIntoConstraints = false
+                infoView.backgroundColor = UIColor(colorLiteralRed: 1.0, green: 0.8, blue: 0.0, alpha: 1.0)
+                infoView.layer.cornerRadius = 2.0
+                infoView.layer.masksToBounds = true
+                
+                switch info {
+                case let image as UIImage:
+                    let imageView = _ImageView(image: image)
+                    imageView.contentMode = .scaleAspectFit
+                    imageView.translatesAutoresizingMaskIntoConstraints = false
+                    infoView.addSubview(imageView)
+                    imageView.centerXAnchor.constraint(equalTo: infoView.centerXAnchor).isActive = true
+                    imageView.centerYAnchor.constraint(equalTo: infoView.centerYAnchor).isActive = true
+                    imageView.topAnchor.constraint(equalTo: infoView.topAnchor, constant: 2.0).isActive = true
+                    imageView.bottomAnchor.constraint(equalTo: infoView.bottomAnchor, constant: -2.0).isActive = true
+                    imageView.leadingAnchor.constraint(equalTo: infoView.leadingAnchor, constant: 8.0).isActive = true
+                    imageView.trailingAnchor.constraint(equalTo: infoView.trailingAnchor, constant: -8.0).isActive = true
+                case let content as String:
+                    let label = UILabel()
+                    label.translatesAutoresizingMaskIntoConstraints = false
+                    label.font = UIFont.systemFont(ofSize: 14)
+                    label.textColor = UIColor.black.withAlphaComponent(0.88)
+                    label.text = content
+                    infoView.addSubview(label)
+                    label.topAnchor.constraint(equalTo: infoView.topAnchor, constant: 2.0).isActive = true
+                    label.bottomAnchor.constraint(equalTo: infoView.bottomAnchor, constant: -2.0).isActive = true
+                    label.leadingAnchor.constraint(equalTo: infoView.leadingAnchor, constant: 8.0).isActive = true
+                    label.trailingAnchor.constraint(equalTo: infoView.trailingAnchor, constant: -8.0).isActive = true
+                default: return
+                }
+                
+                _infoStackView.addArrangedSubview(infoView)
+            }
+            
+            _infoStackView.alpha = 0.0
+            UIView.animate(withDuration: 0.25) { [unowned self] in
+                self._infoStackView.alpha = 1.0
+            }
         }
     }
 }
@@ -800,41 +899,74 @@ extension _CameraViewController._CaptureVideoPreviewView {
             if device.focusMode != .continuousAutoFocus {
                 let point = CGPoint(x: 0.5, y: 0.5)
                 _focus(using: .continuousAutoFocus, exposure: .continuousAutoExposure, at: point)
-                _animateIndicators(show: false, mode: .autoFocus, at: .zero)
             }
         }
     }
     
     @objc
     fileprivate func _handleTapToConfigureDevice(_ sender: UITapGestureRecognizer) {
-        guard sender.state == .recognized else { return }
+        guard sender.state == .ended else { return }
         
         let location = sender.location(in: self)
         let point = previewLayer.captureDevicePointOfInterest(for: location)
         
+        humanReadingInfos = []
+        
         _focus(using: .autoFocus, exposure: .autoExpose, at: point)
-        _animateIndicators(show: false, mode: .continuousAutoFocus, at: .zero)
         _animateIndicators(show: true, mode: .autoFocus, at: location)
     }
     
     @objc
     fileprivate func _handleLongPressToConfigureDevice(_ sender: UILongPressGestureRecognizer) {
-        
+        switch sender.state {
+        case .possible: fallthrough
+        case .began:
+            let location = sender.location(in: self)
+            let pointOfInterest = previewLayer.captureDevicePointOfInterest(for: location)
+            // _lockFocusAndExpose(at: previewLayer.captureDevicePointOfInterest(for: location))
+            _focus(using: .autoFocus, exposure: .autoExpose, at: pointOfInterest, monitorSubjectAreaChange: false)
+            _animateScalingContinuousIndicator(at: location)
+            humanReadingInfos = ["自动曝光/自动对焦锁定"]
+        case .changed: break
+            // print("Long press gesture is changing.")
+        case .failed: fallthrough
+        case .cancelled: fallthrough
+        default:
+            if let device = videoDevice {
+                _animateAutoIndicators(true, at: _continuousIndicator.center, scale: _continuousIndicator.bounds.width / _autoFocusIndicator.bounds.width) { [unowned self] in
+                    if device.focusMode == .locked {
+                        self._pinAutoIndicators()
+                    }
+                }
+            }
+        }
     }
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         if context == &_deviceIsAdjustingFocusObserveContext && keyPath == "adjustingFocus" {
             if let adjustingFocus = change?[.newKey] as? Bool, let device = videoDevice {
                 print("is adjusting focus: " + adjustingFocus.description)
-                if device.focusMode != .autoFocus {
-                    _animateIndicators(show: adjustingFocus, mode: device.focusMode, at: previewLayer.pointForCaptureDevicePoint(ofInterest: device.focusPointOfInterest))
+                let location = previewLayer.pointForCaptureDevicePoint(ofInterest: device.focusPointOfInterest)
+                if device.focusMode == .autoFocus {
+                    if _focusLongPressGesture.state == .changed {
+                        _animateScalingContinuousIndicator(at: location)
+                    }
+                } else {
+                    _animateIndicators(show: adjustingFocus, mode: device.focusMode, at: location)
                 }
             }
         } else if context == &_deviceFocusModeObserveContext && keyPath == "focusMode" {
             if let focusMode = change?[.newKey] as? Int, let device = videoDevice {
                 print("new focus mode: " + focusMode.description)
-                if AVCaptureFocusMode(rawValue: focusMode) == .locked && !device.isAdjustingFocus {
+                if AVCaptureFocusMode(rawValue: focusMode) == .locked && !device.isAdjustingFocus && _focusLongPressGesture.state != .changed {
                     _animateIndicators(show: true, mode: .locked, at: .zero)
+                }
+            }
+        } else if context == &_deviceFlashActiveObserveContext && keyPath == "flashActive" {
+            if let isFlashActive = change?[.newKey] as? Bool {
+                print("new flash mode: " + isFlashActive.description)
+                if isFlashActive {
+                    humanReadingInfos = [[#imageLiteral(resourceName: "flash_auto")], humanReadingInfos].joined().reversed()
                 }
             }
         } else {
@@ -862,10 +994,30 @@ extension _CameraViewController._CaptureVideoPreviewView {
                     device.exposureMode = exposure
                 }
                 
+                /* if device.isAutoFocusRangeRestrictionSupported {
+                    device.autoFocusRangeRestriction = .far
+                } */
+                
                 device.isSubjectAreaChangeMonitoringEnabled = monitorSubjectAreaChange
                 
                 device.unlockForConfiguration()
             } catch let error {
+                print("Could not lock device for configuration: \(error)")
+            }
+        }
+    }
+    
+    private func _lockFocusAndExpose(at point: CGPoint) {
+        guard let device = videoDevice else { return }
+        
+        configurationQueue.async {
+            do {
+                try device.lockForConfiguration()
+                
+                device.setFocusModeLockedWithLensPosition(AVCaptureLensPositionCurrent, completionHandler: nil)
+                
+                device.unlockForConfiguration()
+            } catch {
                 print("Could not lock device for configuration: \(error)")
             }
         }
@@ -882,56 +1034,74 @@ extension _CameraViewController._CaptureVideoPreviewView {
         }
     }
     
-    private func _animateContinuousIndicator(_ show: Bool, at point: CGPoint) {
+    private func _animateScalingContinuousIndicator(at point: CGPoint) {
+        _autoFocusIndicator.isHidden = true
+        _autoExposeIndicator.isHidden = true
+        _untwinkle(content: _continuousIndicator)
+        _animateContinuousIndicator(true, at: point, checkingIsHidden: false)
+    }
+    
+    private func _animateContinuousIndicator(_ show: Bool, at point: CGPoint, checkingIsHidden: Bool = true, twinkle twinkleContent: Bool = true) {
         if show {
-            guard _continuousIndicator.isHidden else { return }
+            if checkingIsHidden {
+                guard _continuousIndicator.isHidden else { return }
+            }
             
             _continuousBeginning = Date()
+            _autoFocusIndicator.isHidden = true
+            _autoExposeIndicator.isHidden = true
             _continuousIndicator.isHidden = false
             _continuousIndicator.center = point
             _continuousIndicator.alpha = 0.0
             
-            let scale: CGFloat = 1.2
+            let scale: CGFloat = 1.5
             _continuousIndicator.transform = CGAffineTransform(scaleX: scale, y: scale)
+            
+            NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(__animateHideContinuousIndicator), object: nil)
             UIView.animate(withDuration: 0.1, animations: { [unowned self] in
                 self._continuousIndicator.alpha = 1.0
             }, completion: { (finished) in
                 if finished {
-                    UIView.animate(withDuration: 0.25, animations: { [unowned self] in
+                    UIView.animate(withDuration: 0.2, animations: { [unowned self] in
                         self._continuousIndicator.transform = .identity
                     }, completion: { [unowned self] (finished) in
-                        if finished {
+                        if twinkleContent && finished {
                             self._twinkle(content: self._continuousIndicator)
                         }
                     })
                 }
             })
         } else {
-            guard !_continuousIndicator.isHidden else { return }
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1 + max(0.0, _graceTime - Date().timeIntervalSince(_continuousBeginning)), execute: { [unowned self] in
-                self._untwinkle(content: self._continuousIndicator)
-                UIView.animate(withDuration: 0.25, delay: 0.4, options: [], animations: { [unowned self] in
-                    self._continuousIndicator.alpha = 0.0
-                }, completion: { [unowned self] finished in
-                    if finished {
-                        self._continuousIndicator.isHidden = true
-                    }
-                })
-            })
+            let delay = max(0.0, _graceTime - Date().timeIntervalSince(_continuousBeginning))
+            // print("delay: \(delay), grace: \(_graceTime) offset: \(Date().timeIntervalSince(_continuousBeginning))")
+            self.perform(#selector(__animateHideContinuousIndicator), with: nil, afterDelay: delay, inModes: [RunLoopMode.commonModes])
         }
     }
     
-    private func _animateAutoIndicators(_ show: Bool, at point: CGPoint) {
+    @objc
+    private func __animateHideContinuousIndicator() {
+        guard !_continuousIndicator.isHidden else { return }
+        
+        self._untwinkle(content: self._continuousIndicator)
+        UIView.animate(withDuration: 0.25, delay: 0.4, options: [], animations: { [unowned self] in
+            self._continuousIndicator.alpha = 0.0
+        }, completion: { [unowned self] finished in
+            if finished {
+                self._continuousIndicator.isHidden = true
+            }
+        })
+    }
+    
+    private func _animateAutoIndicators(_ show: Bool, at point: CGPoint, scale: CGFloat = 1.5, showsCompletion: (() -> Void)? = nil) {
         if show {
             _autoBeginning = Date()
+            _continuousIndicator.isHidden = true
             _autoFocusIndicator.isHidden = false
             _autoExposeIndicator.isHidden = false
             _autoFocusIndicator.alpha = 0.0
             _autoExposeIndicator.alpha = 0.0
             _autoFocusIndicator.center = point
             
-            let scale: CGFloat = 1.5
             _autoFocusIndicator.transform = CGAffineTransform(scaleX: scale, y: scale)
             switch point.x {
             case 0...(bounds.width - _autoFocusIndicator.bounds.width * 0.5 - (_paddingOfFocusAndExpose + _autoExposeIndicator.bounds.width)):
@@ -942,7 +1112,7 @@ extension _CameraViewController._CaptureVideoPreviewView {
                 _autoExposeIndicator.transform = CGAffineTransform(scaleX: scale, y: scale).translatedBy(x: -_autoFocusIndicator.bounds.width * 0.5 * (scale - 1.0), y: 0.0)
             }
             
-            
+            NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(__animateHideAutoIndicators), object: nil)
             UIView.animate(withDuration: 0.1, animations: { [unowned self] in
                 self._autoFocusIndicator.alpha = 1.0
                 self._autoExposeIndicator.alpha = 1.0
@@ -954,27 +1124,32 @@ extension _CameraViewController._CaptureVideoPreviewView {
                     }, completion: { [unowned self] (finished) in
                         if finished {
                             self._twinkle(content: self._autoFocusIndicator)
+                            showsCompletion?()
                         }
                     })
                 }
             })
         } else {
-            guard !_autoFocusIndicator.isHidden && !_autoExposeIndicator.isHidden else { return }
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1 + max(0.0, _graceTime - Date().timeIntervalSince(_autoBeginning)), execute: { [unowned self] in
-                self._untwinkle(content: self._autoFocusIndicator)
-                self._untwinkle(content: self._autoExposeIndicator)
-                UIView.animate(withDuration: 0.25, delay: 0.5, options: [], animations: { [unowned self] in
-                    self._autoFocusIndicator.alpha = 0.0
-                    self._autoExposeIndicator.alpha = 0.0
-                }, completion: { [unowned self] finished in
-                    if finished {
-                        self._autoFocusIndicator.isHidden = true
-                        self._autoExposeIndicator.isHidden = true
-                    }
-                })
-            })
+            let delay = max(0.0, _graceTime - Date().timeIntervalSince(_autoBeginning))
+            self.perform(#selector(__animateHideAutoIndicators), with: nil, afterDelay: delay, inModes: [RunLoopMode.commonModes])
         }
+    }
+    
+    @objc
+    private func __animateHideAutoIndicators() {
+        guard !_autoFocusIndicator.isHidden && !_autoExposeIndicator.isHidden else { return }
+        
+        self._untwinkle(content: self._autoFocusIndicator)
+        self._untwinkle(content: self._autoExposeIndicator)
+        UIView.animate(withDuration: 0.25, delay: 0.5, options: [], animations: { [unowned self] in
+            self._autoFocusIndicator.alpha = 0.0
+            self._autoExposeIndicator.alpha = 0.0
+        }, completion: { [unowned self] finished in
+            if finished {
+                self._autoFocusIndicator.isHidden = true
+                self._autoExposeIndicator.isHidden = true
+            }
+        })
     }
     
     private func _pinAutoIndicators() {
@@ -1004,6 +1179,15 @@ extension _CameraViewController._CaptureVideoPreviewView {
         view.layer.add(twinkle, forKey: "twinkle")
     }
     private func _untwinkle(content view: UIView) { view.layer.removeAnimation(forKey: "twinkle") }
+}
+
+extension _CameraViewController._CaptureVideoPreviewView {
+    class _ImageView: UIImageView {
+        override var intrinsicContentSize: CGSize { return image?.size ?? .zero }
+        override var image: UIImage? {
+            didSet { invalidateIntrinsicContentSize() }
+        }
+    }
 }
 
 // MARK: _TopBar.
