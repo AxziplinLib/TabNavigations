@@ -63,16 +63,23 @@ class TabNavigationImagePickerController: TabNavigationController {
         isTabNavigationItemsUpdatingDisabledInRootViewControllers = true
         // Enumerate the asset collections.
         willBeginFetchingAssetCollection()
-        if let device = type(of: self).defaultDeviceOfCaptureSessionInputs(), let input = (try? AVCaptureDeviceInput(device: device)) {
-            _captureDeviceInput = input
-            _captureSession = AVCaptureSession()
-            if _captureSession.canSetSessionPreset(AVCaptureSessionPresetPhoto) {
-                _captureSession.sessionPreset = AVCaptureSessionPresetPhoto
+        if let device = type(of: self).defaultDeviceOfCaptureSessionInputs() {
+            do {
+                let input = try AVCaptureDeviceInput(device: device)
+                _captureDeviceInput = input
+                _captureSession = AVCaptureSession()
+                if _captureSession.canSetSessionPreset(AVCaptureSessionPresetPhoto) {
+                    _captureSession.sessionPreset = AVCaptureSessionPresetPhoto
+                }
+                _captureSession.addInput(_captureDeviceInput)
+                _captureVideoPreviewView = _CameraViewController._CaptureVideoPreviewView(session: _captureSession)
+                _captureVideoPreviewView.previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill
+                _captureVideoPreviewView.translatesAutoresizingMaskIntoConstraints = false
+            } catch let error {
+                print(error)
             }
-            _captureSession.addInput(_captureDeviceInput)
-            _captureVideoPreviewView = _CameraViewController._CaptureVideoPreviewView(session: _captureSession)
-            _captureVideoPreviewView.previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill
-            _captureVideoPreviewView.translatesAutoresizingMaskIntoConstraints = false
+        } else {
+            print("The current default device of the specific media type is not available.")
         }
         if !shouldIncludeHiddenAssets {
             _photoAssetCollections = _photoAssetCollections.filter{ $0.assetCollectionSubtype != .smartAlbumAllHidden }
@@ -96,11 +103,11 @@ class TabNavigationImagePickerController: TabNavigationController {
         let cancel = TabNavigationItem(title: "取消", target: self, selector: #selector(_handleCancelAction(_:)))
         tabNavigationBar.navigationItems = [cancel]
         
-        _captureSession.startRunning()
+        _captureSession?.startRunning()
     }
     
     deinit {
-        _captureSession.stopRunning()
+        _captureSession?.stopRunning()
     }
 
     override func didReceiveMemoryWarning() {
@@ -142,8 +149,19 @@ extension TabNavigationImagePickerController {
     }
     
     open class func defaultDeviceOfCaptureSessionInputs() -> AVCaptureDevice? {
-        let device = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeVideo)
-        
+        guard let device = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeVideo) else { return nil }
+        // Configure the default device.
+        DispatchQueue(label: "com.device.initializer.config").async {
+            do {
+                try device.lockForConfiguration()
+                
+                device.isSubjectAreaChangeMonitoringEnabled = true
+                
+                device.unlockForConfiguration()
+            } catch {
+                print(error)
+            }
+        }
         return device
     }
     
@@ -246,6 +264,7 @@ fileprivate class _AssetsViewController: UICollectionViewController {
         guard _isViewDidAppear else { return }
         
         if let previewView = imagePickerController._captureVideoPreviewView {
+            previewView.isUserInteractionEnabled = false
             previewView.translatesAutoresizingMaskIntoConstraints = false
             _captureVideoPreviewCell?.contentView.addSubview(previewView)
             _captureVideoPreviewCell?.contentView.leadingAnchor.constraint(equalTo: previewView.leadingAnchor).isActive = true
@@ -580,6 +599,7 @@ fileprivate class _CameraViewController: UIViewController {
     override func loadView() {
         super.loadView()
         view.addSubview(_previewView)
+        _previewView.isUserInteractionEnabled = true
         _previewView.translatesAutoresizingMaskIntoConstraints = false
         _previewView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         _previewView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
@@ -684,17 +704,306 @@ extension _CameraViewController {
     class _CaptureVideoPreviewView: UIView {
         override class var layerClass: AnyClass { return AVCaptureVideoPreviewLayer.self }
         var previewLayer: AVCaptureVideoPreviewLayer { return layer as! AVCaptureVideoPreviewLayer }
-        var device: AVCaptureDevice! { return (previewLayer.session.inputs.first as! AVCaptureDeviceInput).device }
+        var videoDevice: AVCaptureDevice? {
+            return (previewLayer.session.inputs as! [AVCaptureDeviceInput]).filter{ $0.device.hasMediaType(AVMediaTypeVideo) }.first?.device
+        }
+        let configurationQueue: DispatchQueue = DispatchQueue(label: "com.device_configuration.video_preview.camera_vc")
+        
+        weak var _focusTapGesture: UITapGestureRecognizer!
+        
+        let _autoFocusIndicator: UIImageView = UIImageView(image: UIImage(named: "TabNavigationImagePickerController.bundle/auto_focus"))
+        let _autoExposeIndicator: UIImageView = UIImageView(image: UIImage(named: "TabNavigationImagePickerController.bundle/sun_shape_light"))
+        let _continuousIndicator: UIImageView = UIImageView(image: UIImage(named: "TabNavigationImagePickerController.bundle/co_auto_focus"))
+        
+        var _autoBeginning: Date = Date()
+        var _continuousBeginning: Date = Date()
+        let _graceTime: Double = 0.40
+        let _paddingOfFocusAndExpose: CGFloat = 5.0
+        
+        var _deviceIsAdjustingFocusObserveContext = 0
+        var _deviceFocusModeObserveContext = 0
         
         init(session: AVCaptureSession) {
             super.init(frame: .zero)
             previewLayer.session = session
+            _initializer()
         }
         
         required init?(coder aDecoder: NSCoder) {
             fatalError("init(coder:) has not been implemented")
         }
+        
+        deinit {
+            NotificationCenter.default.removeObserver(self)
+            
+            if let device = videoDevice {
+                device.removeObserver(self, forKeyPath: "adjustingFocus")
+                device.removeObserver(self, forKeyPath: "focusMode")
+            }
+        }
+        
+        // MARK: Override.
+        
+        override func willMove(toSuperview newSuperview: UIView?) {
+            super.willMove(toSuperview: newSuperview)
+            
+            if let _ = newSuperview {
+                _autoFocusIndicator.isHidden = true
+                _autoExposeIndicator.isHidden = true
+                _continuousIndicator.isHidden = true
+            }
+        }
+        
+        // MARK: Private.
+        private func _initializer() {
+            _setupIndicators()
+            _setupFocusTapGesture()
+            
+            _observeProperties()
+            _observeNotifications()
+        }
+        
+        private func _setupIndicators() {
+            addSubview(_autoFocusIndicator)
+            addSubview(_autoExposeIndicator)
+            addSubview(_continuousIndicator)
+            
+            _autoFocusIndicator.isHidden = true
+            _autoExposeIndicator.isHidden = true
+            _continuousIndicator.isHidden = true
+        }
+        
+        private func _setupFocusTapGesture() {
+            let tap = UITapGestureRecognizer(target: self, action: #selector(_handleTapToConfigureDevice(_:)))
+            addGestureRecognizer(tap)
+            _focusTapGesture = tap
+        }
+        
+        private func _observeProperties() {
+            if let device = videoDevice {
+                device.addObserver(self, forKeyPath: "adjustingFocus", options: .new, context: &_deviceIsAdjustingFocusObserveContext)
+                device.addObserver(self, forKeyPath: "focusMode", options: .new, context: &_deviceFocusModeObserveContext)
+            }
+        }
+        private func _observeNotifications() {
+            NotificationCenter.default.addObserver(self, selector: #selector(_handleCaptureDeviceSubjectAreaDidChange(_:)), name: .AVCaptureDeviceSubjectAreaDidChange, object: nil)
+        }
     }
+}
+
+// MARK: Actions.
+
+extension _CameraViewController._CaptureVideoPreviewView {
+    @objc
+    fileprivate func _handleCaptureDeviceSubjectAreaDidChange(_ notification: NSNotification) {
+        if let device = videoDevice {
+            if device.focusMode != .continuousAutoFocus {
+                let point = CGPoint(x: 0.5, y: 0.5)
+                _focus(using: .continuousAutoFocus, exposure: .continuousAutoExposure, at: point)
+                _animateIndicators(show: false, mode: .autoFocus, at: .zero)
+            }
+        }
+    }
+    
+    @objc
+    fileprivate func _handleTapToConfigureDevice(_ sender: UITapGestureRecognizer) {
+        guard sender.state == .recognized else { return }
+        
+        let location = sender.location(in: self)
+        let point = previewLayer.captureDevicePointOfInterest(for: location)
+        
+        _focus(using: .autoFocus, exposure: .autoExpose, at: point)
+        _animateIndicators(show: false, mode: .continuousAutoFocus, at: .zero)
+        _animateIndicators(show: true, mode: .autoFocus, at: location)
+    }
+    
+    @objc
+    fileprivate func _handleLongPressToConfigureDevice(_ sender: UILongPressGestureRecognizer) {
+        
+    }
+    
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+        if context == &_deviceIsAdjustingFocusObserveContext && keyPath == "adjustingFocus" {
+            if let adjustingFocus = change?[.newKey] as? Bool, let device = videoDevice {
+                print("is adjusting focus: " + adjustingFocus.description)
+                if device.focusMode != .autoFocus {
+                    _animateIndicators(show: adjustingFocus, mode: device.focusMode, at: previewLayer.pointForCaptureDevicePoint(ofInterest: device.focusPointOfInterest))
+                }
+            }
+        } else if context == &_deviceFocusModeObserveContext && keyPath == "focusMode" {
+            if let focusMode = change?[.newKey] as? Int, let device = videoDevice {
+                print("new focus mode: " + focusMode.description)
+                if AVCaptureFocusMode(rawValue: focusMode) == .locked && !device.isAdjustingFocus {
+                    _animateIndicators(show: true, mode: .locked, at: .zero)
+                }
+            }
+        } else {
+            super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
+        }
+    }
+    
+    private func _focus(using focusMode: AVCaptureFocusMode, exposure: AVCaptureExposureMode, at point: CGPoint, monitorSubjectAreaChange: Bool = true) {
+        guard let device = self.videoDevice else { return }
+        
+        configurationQueue.async {
+            do {
+                try device.lockForConfiguration()
+                
+                // Setting (focus/exposure)PointOfInterest alone does not initiate a (focus/exposure) operation.
+                // Call set(Focus/Exposure)Mode() to apply the new point of interest.
+                
+                if device.isFocusPointOfInterestSupported && device.isFocusModeSupported(focusMode) {
+                    device.focusPointOfInterest = point
+                    device.focusMode = focusMode
+                }
+                
+                if device.isExposurePointOfInterestSupported && device.isExposureModeSupported(exposure) {
+                    device.exposurePointOfInterest = point
+                    device.exposureMode = exposure
+                }
+                
+                device.isSubjectAreaChangeMonitoringEnabled = monitorSubjectAreaChange
+                
+                device.unlockForConfiguration()
+            } catch let error {
+                print("Could not lock device for configuration: \(error)")
+            }
+        }
+    }
+    
+    private func _animateIndicators(show: Bool = true, mode: AVCaptureFocusMode, at point: CGPoint) {
+        switch mode {
+        case .continuousAutoFocus:
+            _animateContinuousIndicator(show, at: point)
+        case .autoFocus:
+            _animateAutoIndicators(show, at: point)
+        default:
+            _pinAutoIndicators()
+        }
+    }
+    
+    private func _animateContinuousIndicator(_ show: Bool, at point: CGPoint) {
+        if show {
+            guard _continuousIndicator.isHidden else { return }
+            
+            _continuousBeginning = Date()
+            _continuousIndicator.isHidden = false
+            _continuousIndicator.center = point
+            _continuousIndicator.alpha = 0.0
+            
+            let scale: CGFloat = 1.2
+            _continuousIndicator.transform = CGAffineTransform(scaleX: scale, y: scale)
+            UIView.animate(withDuration: 0.1, animations: { [unowned self] in
+                self._continuousIndicator.alpha = 1.0
+            }, completion: { (finished) in
+                if finished {
+                    UIView.animate(withDuration: 0.25, animations: { [unowned self] in
+                        self._continuousIndicator.transform = .identity
+                    }, completion: { [unowned self] (finished) in
+                        if finished {
+                            self._twinkle(content: self._continuousIndicator)
+                        }
+                    })
+                }
+            })
+        } else {
+            guard !_continuousIndicator.isHidden else { return }
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1 + max(0.0, _graceTime - Date().timeIntervalSince(_continuousBeginning)), execute: { [unowned self] in
+                self._untwinkle(content: self._continuousIndicator)
+                UIView.animate(withDuration: 0.25, delay: 0.4, options: [], animations: { [unowned self] in
+                    self._continuousIndicator.alpha = 0.0
+                }, completion: { [unowned self] finished in
+                    if finished {
+                        self._continuousIndicator.isHidden = true
+                    }
+                })
+            })
+        }
+    }
+    
+    private func _animateAutoIndicators(_ show: Bool, at point: CGPoint) {
+        if show {
+            _autoBeginning = Date()
+            _autoFocusIndicator.isHidden = false
+            _autoExposeIndicator.isHidden = false
+            _autoFocusIndicator.alpha = 0.0
+            _autoExposeIndicator.alpha = 0.0
+            _autoFocusIndicator.center = point
+            
+            let scale: CGFloat = 1.5
+            _autoFocusIndicator.transform = CGAffineTransform(scaleX: scale, y: scale)
+            switch point.x {
+            case 0...(bounds.width - _autoFocusIndicator.bounds.width * 0.5 - (_paddingOfFocusAndExpose + _autoExposeIndicator.bounds.width)):
+                _autoExposeIndicator.center = CGPoint(x: point.x + _autoFocusIndicator.bounds.width * 0.5 + _paddingOfFocusAndExpose + _autoExposeIndicator.bounds.width * 0.5, y: point.y)
+                _autoExposeIndicator.transform = CGAffineTransform(scaleX: scale, y: scale).translatedBy(x: _autoFocusIndicator.bounds.width * 0.5 * (scale - 1.0), y: 0.0)
+            default:
+                _autoExposeIndicator.center = CGPoint(x: point.x - _autoFocusIndicator.bounds.width * 0.5 - _paddingOfFocusAndExpose - _autoExposeIndicator.bounds.width * 0.5, y: point.y)
+                _autoExposeIndicator.transform = CGAffineTransform(scaleX: scale, y: scale).translatedBy(x: -_autoFocusIndicator.bounds.width * 0.5 * (scale - 1.0), y: 0.0)
+            }
+            
+            
+            UIView.animate(withDuration: 0.1, animations: { [unowned self] in
+                self._autoFocusIndicator.alpha = 1.0
+                self._autoExposeIndicator.alpha = 1.0
+            }, completion: { [unowned self] (finished) in
+                if finished {
+                    UIView.animate(withDuration: 0.25, animations: { [unowned self] in
+                        self._autoFocusIndicator.transform = .identity
+                        self._autoExposeIndicator.transform = .identity
+                    }, completion: { [unowned self] (finished) in
+                        if finished {
+                            self._twinkle(content: self._autoFocusIndicator)
+                        }
+                    })
+                }
+            })
+        } else {
+            guard !_autoFocusIndicator.isHidden && !_autoExposeIndicator.isHidden else { return }
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1 + max(0.0, _graceTime - Date().timeIntervalSince(_autoBeginning)), execute: { [unowned self] in
+                self._untwinkle(content: self._autoFocusIndicator)
+                self._untwinkle(content: self._autoExposeIndicator)
+                UIView.animate(withDuration: 0.25, delay: 0.5, options: [], animations: { [unowned self] in
+                    self._autoFocusIndicator.alpha = 0.0
+                    self._autoExposeIndicator.alpha = 0.0
+                }, completion: { [unowned self] finished in
+                    if finished {
+                        self._autoFocusIndicator.isHidden = true
+                        self._autoExposeIndicator.isHidden = true
+                    }
+                })
+            })
+        }
+    }
+    
+    private func _pinAutoIndicators() {
+        guard !_autoFocusIndicator.isHidden && !_autoExposeIndicator.isHidden else { return }
+        
+        _untwinkle(content: _autoFocusIndicator)
+        _untwinkle(content: _autoExposeIndicator)
+        
+        UIView.animate(withDuration: 0.25, delay: 0.5, options: [], animations: { [unowned self] in
+            self._autoFocusIndicator.alpha = 0.5
+            self._autoExposeIndicator.alpha = 0.5
+        }, completion: nil)
+    }
+    
+    private func _twinkle(content view: UIView) {
+        _untwinkle(content: view)
+        
+        let twinkle = CABasicAnimation(keyPath: "opacity")
+        twinkle.fromValue = 1.0
+        twinkle.toValue = 0.5
+        twinkle.duration = 0.2
+        twinkle.isRemovedOnCompletion = false
+        twinkle.fillMode = kCAFillModeForwards
+        twinkle.autoreverses = true
+        twinkle.repeatCount = Float.greatestFiniteMagnitude
+        
+        view.layer.add(twinkle, forKey: "twinkle")
+    }
+    private func _untwinkle(content view: UIView) { view.layer.removeAnimation(forKey: "twinkle") }
 }
 
 // MARK: _TopBar.
