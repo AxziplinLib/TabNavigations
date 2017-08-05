@@ -1,0 +1,10 @@
+framework module Fusuma {
+  umbrella header "Fusuma.h"
+
+  export *
+  module * { export * }
+}
+
+module Fusuma.Swift {
+    header "Fusuma-Swift.h"
+}
