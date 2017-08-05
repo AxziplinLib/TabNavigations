@@ -178,6 +178,10 @@ extension TabNavigationImagePickerController {
     }
 }
 
+extension TabNavigationImagePickerController {
+    fileprivate class var resourceBundlePath: String { return String(describing: self) + ".bundle/" }
+}
+
 // MARK: - _AssetsViewController.
 
 fileprivate class _AssetsViewController: UICollectionViewController {
@@ -715,15 +719,11 @@ extension _CameraViewController {
             return (previewLayer.session.inputs as! [AVCaptureDeviceInput]).filter{ $0.device.hasMediaType(AVMediaTypeVideo) }.first?.device
         }
         var infoContentInsets: UIEdgeInsets = .zero {
-            didSet {
-                _setupInfoStackView()
-            }
+            didSet { _setupInfoStackView() }
         }
         // Only support String or UIImage object.
-        var humanReadingInfos: [Any] = [] {
-            didSet {
-                _setupHumanReadingInfos()
-            }
+        var humanReadingInfos: [_HumanReadingInfo] = [] {
+            willSet { _setupHumanReadingInfos(newValue) }
         }
         let configurationQueue: DispatchQueue = DispatchQueue(label: "com.device_configuration.video_preview.camera_vc")
         
@@ -741,9 +741,9 @@ extension _CameraViewController {
         weak var _focusTapGesture: UITapGestureRecognizer!
         weak var _focusLongPressGesture: UILongPressGestureRecognizer!
         
-        let _autoFocusIndicator: UIImageView = UIImageView(image: UIImage(named: "TabNavigationImagePickerController.bundle/auto_focus"))
-        let _autoExposeIndicator: UIImageView = UIImageView(image: UIImage(named: "TabNavigationImagePickerController.bundle/sun_shape_light"))
-        let _continuousIndicator: UIImageView = UIImageView(image: UIImage(named: "TabNavigationImagePickerController.bundle/co_auto_focus"))
+        let _autoFocusIndicator: UIImageView = UIImageView(image: UIImage(named: TabNavigationImagePickerController.resourceBundlePath+"auto_focus"))
+        let _autoExposeIndicator: UIImageView = UIImageView(image: UIImage(named: TabNavigationImagePickerController.resourceBundlePath+"sun_shape_light"))
+        let _continuousIndicator: UIImageView = UIImageView(image: UIImage(named: TabNavigationImagePickerController.resourceBundlePath+"co_auto_focus"))
         
         var _autoBeginning: Date = Date()
         var _continuousBeginning: Date = Date()
@@ -838,56 +838,108 @@ extension _CameraViewController {
             NotificationCenter.default.addObserver(self, selector: #selector(_handleCaptureDeviceSubjectAreaDidChange(_:)), name: .AVCaptureDeviceSubjectAreaDidChange, object: nil)
         }
         
-        private func _setupHumanReadingInfos() {
-            for arrangedView in _infoStackView.arrangedSubviews {
-                _infoStackView.removeArrangedSubview(arrangedView)
-                arrangedView.removeFromSuperview()
-            }
-            
-            guard !humanReadingInfos.isEmpty else { return }
-            
-            for info in humanReadingInfos {
-                let infoView = UIView()
+        private func _setupHumanReadingInfos(_ newInfos: [_HumanReadingInfo] = []) {
+            func _infoView(`for` info: _HumanReadingInfo) -> _HumanReadingInfoView? {
+                let infoView = _HumanReadingInfoView(type: info.type)
                 infoView.translatesAutoresizingMaskIntoConstraints = false
-                infoView.backgroundColor = UIColor(colorLiteralRed: 1.0, green: 0.8, blue: 0.0, alpha: 1.0)
                 infoView.layer.cornerRadius = 2.0
                 infoView.layer.masksToBounds = true
+                infoView.clipsToBounds = true
                 
                 switch info {
-                case let image as UIImage:
+                case let (_, image) as (_HumanReading, UIImage):
                     let imageView = _ImageView(image: image)
                     imageView.contentMode = .scaleAspectFit
                     imageView.translatesAutoresizingMaskIntoConstraints = false
+                    infoView.backgroundColor = .clear
                     infoView.addSubview(imageView)
                     imageView.centerXAnchor.constraint(equalTo: infoView.centerXAnchor).isActive = true
                     imageView.centerYAnchor.constraint(equalTo: infoView.centerYAnchor).isActive = true
-                    imageView.topAnchor.constraint(equalTo: infoView.topAnchor, constant: 2.0).isActive = true
-                    imageView.bottomAnchor.constraint(equalTo: infoView.bottomAnchor, constant: -2.0).isActive = true
-                    imageView.leadingAnchor.constraint(equalTo: infoView.leadingAnchor, constant: 8.0).isActive = true
-                    imageView.trailingAnchor.constraint(equalTo: infoView.trailingAnchor, constant: -8.0).isActive = true
-                case let content as String:
+                    imageView.topAnchor.constraint(equalTo: infoView.topAnchor).isActive = true
+                    imageView.bottomAnchor.constraint(equalTo: infoView.bottomAnchor).isActive = true
+                    imageView.leadingAnchor.constraint(equalTo: infoView.leadingAnchor).isActive = true
+                    imageView.trailingAnchor.constraint(equalTo: infoView.trailingAnchor).isActive = true
+                case let (_, content) as (_HumanReading, String):
                     let label = UILabel()
                     label.translatesAutoresizingMaskIntoConstraints = false
                     label.font = UIFont.systemFont(ofSize: 14)
                     label.textColor = UIColor.black.withAlphaComponent(0.88)
                     label.text = content
+                    infoView.backgroundColor = UIColor(colorLiteralRed: 1.0, green: 0.8, blue: 0.0, alpha: 1.0)
                     infoView.addSubview(label)
                     label.topAnchor.constraint(equalTo: infoView.topAnchor, constant: 2.0).isActive = true
                     label.bottomAnchor.constraint(equalTo: infoView.bottomAnchor, constant: -2.0).isActive = true
                     label.leadingAnchor.constraint(equalTo: infoView.leadingAnchor, constant: 8.0).isActive = true
                     label.trailingAnchor.constraint(equalTo: infoView.trailingAnchor, constant: -8.0).isActive = true
-                default: return
+                default: return nil
                 }
                 
-                _infoStackView.addArrangedSubview(infoView)
+                return infoView
             }
             
-            _infoStackView.alpha = 0.0
-            UIView.animate(withDuration: 0.25) { [unowned self] in
-                self._infoStackView.alpha = 1.0
+            let duration = 0.5
+            let arrangedViews = _infoStackView.arrangedSubviews as! [_HumanReadingInfoView]
+            let newInfoTypes = newInfos.map{ $0.type }
+            let oldInfoTypes = humanReadingInfos.map{ $0.type }
+            let padding = _infoStackView.spacing
+            let stackOffset = infoContentInsets.top + padding
+            let originalFrameInfos   : [(type: _HumanReading, frame: CGRect)] = arrangedViews.map{ ($0.type, $0.frame) }
+            var infoViewsToBeRemoved : [_HumanReadingInfoView] = []
+            var infoViewsToBeRemained: [_HumanReadingInfoView] = []
+            let infoViewsToBeAdded   : [_HumanReadingInfoView] = newInfos.flatMap({ oldInfoTypes.contains($0.type) ? nil: $0 }).flatMap({ _infoView(for: $0) })
+            arrangedViews.forEach { [unowned self] infoView in
+                if newInfoTypes.contains(infoView.type) {
+                    infoViewsToBeRemained.append(infoView)
+                } else {
+                    infoViewsToBeRemoved.append(infoView)
+                    let frame = CGRect(origin: CGPoint(x: infoView.frame.origin.x, y: infoView.frame.origin.y + stackOffset), size: infoView.bounds.size)
+                    self._infoStackView.removeArrangedSubview(infoView)
+                    infoView.removeFromSuperview()
+                    self.insertSubview(infoView, belowSubview: self._infoStackView)
+                    infoView.topAnchor.constraint(equalTo: self.topAnchor, constant: frame.origin.y).isActive = true
+                    infoView.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
+                }
+            }
+            
+            let reversedNewInfoTypes = Array(newInfoTypes.reversed())
+            infoViewsToBeAdded.reversed().forEach { [unowned self] (infoView) in
+                infoView.alpha = 0.0
+                let index = reversedNewInfoTypes.index(where: { $0 == infoView.type })!
+                self._infoStackView.insertArrangedSubview(infoView, at: index)
+                self._infoStackView.sendSubview(toBack: infoView)
+            }
+            _infoStackView.layoutIfNeeded()
+            infoViewsToBeAdded.forEach({ $0.transform = CGAffineTransform(translationX: 0.0, y: -$0.frame.height - padding) })
+            infoViewsToBeRemained.forEach { (infoView) in
+                let originalFrame = originalFrameInfos.filter({ $0.type == infoView.type }).first!.frame
+                infoView.transform = CGAffineTransform(translationX: 0.0, y: originalFrame.minY - infoView.frame.minY)
+            }
+            
+            UIView.animate(withDuration: duration, delay: 0.0, usingSpringWithDamping: 1.0, initialSpringVelocity: 1.0, options: [.curveEaseOut], animations: {
+                infoViewsToBeRemoved.forEach({ (infoView) in
+                    infoView.alpha = 0.0
+                    infoView.transform = CGAffineTransform(translationX: 0.0, y: -infoView.frame.height-padding)
+                })
+                infoViewsToBeAdded.forEach({ (infoView) in
+                    infoView.alpha = 1.0
+                    infoView.transform = .identity
+                })
+                infoViewsToBeRemained.forEach{ $0.transform = .identity }
+            }) { (_) in
+                infoViewsToBeRemoved.forEach{ $0.removeFromSuperview() }
             }
         }
     }
+}
+
+extension _CameraViewController._CaptureVideoPreviewView {
+    enum _HumanReading {
+        case autoModesLocked
+        case flashOn
+        case hdrOn
+    }
+    
+    fileprivate typealias _HumanReadingInfo = (type: _HumanReading, content: Any)
 }
 
 // MARK: Actions.
@@ -910,7 +962,7 @@ extension _CameraViewController._CaptureVideoPreviewView {
         let location = sender.location(in: self)
         let point = previewLayer.captureDevicePointOfInterest(for: location)
         
-        humanReadingInfos = []
+        humanReadingInfos = humanReadingInfos.filter{ $0.type != .autoModesLocked }
         
         _focus(using: .autoFocus, exposure: .autoExpose, at: point)
         _animateIndicators(show: true, mode: .autoFocus, at: location)
@@ -926,7 +978,9 @@ extension _CameraViewController._CaptureVideoPreviewView {
             // _lockFocusAndExpose(at: previewLayer.captureDevicePointOfInterest(for: location))
             _focus(using: .autoFocus, exposure: .autoExpose, at: pointOfInterest, monitorSubjectAreaChange: false)
             _animateScalingContinuousIndicator(at: location)
-            humanReadingInfos = ["自动曝光/自动对焦锁定"]
+            if !humanReadingInfos.contains{ $0.type == .autoModesLocked } {
+                humanReadingInfos = [[(_HumanReading.autoModesLocked, "自动曝光/自动对焦锁定")], humanReadingInfos.filter({ $0.type != .autoModesLocked })].joined().reversed()
+            }
         case .changed: break
             // print("Long press gesture is changing.")
         case .failed: fallthrough
@@ -966,7 +1020,11 @@ extension _CameraViewController._CaptureVideoPreviewView {
             if let isFlashActive = change?[.newKey] as? Bool {
                 print("new flash mode: " + isFlashActive.description)
                 if isFlashActive {
-                    humanReadingInfos = [[#imageLiteral(resourceName: "flash_auto")], humanReadingInfos].joined().reversed()
+                    if !humanReadingInfos.contains{ $0.type == .flashOn } {
+                        humanReadingInfos = [humanReadingInfos.filter({ $0.type != .flashOn }), [(_HumanReading.flashOn, UIImage(named: TabNavigationImagePickerController.resourceBundlePath+"flash_info")!)]].joined().reversed()
+                    }
+                } else {
+                    humanReadingInfos = humanReadingInfos.filter{ $0.type != .flashOn }
                 }
             }
         } else {
@@ -1186,6 +1244,19 @@ extension _CameraViewController._CaptureVideoPreviewView {
         override var intrinsicContentSize: CGSize { return image?.size ?? .zero }
         override var image: UIImage? {
             didSet { invalidateIntrinsicContentSize() }
+        }
+    }
+}
+
+extension _CameraViewController._CaptureVideoPreviewView {
+    class _HumanReadingInfoView: UIView {
+        let type: _HumanReading
+        init(type: _HumanReading) {
+            self.type = type
+            super.init(frame: .zero)
+        }
+        required init?(coder aDecoder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
         }
     }
 }
