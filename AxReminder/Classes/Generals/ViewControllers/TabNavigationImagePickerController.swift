@@ -723,7 +723,7 @@ extension _CameraViewController {
         }
         // Only support String or UIImage object.
         var humanReadingInfos: [_HumanReadingInfo] = [] {
-            willSet { _setupHumanReadingInfos(newValue) }
+            willSet { _updateHumanReadingInfos(newValue) }
         }
         let configurationQueue: DispatchQueue = DispatchQueue(label: "com.device_configuration.video_preview.camera_vc")
         
@@ -740,19 +740,25 @@ extension _CameraViewController {
         
         weak var _focusTapGesture: UITapGestureRecognizer!
         weak var _focusLongPressGesture: UILongPressGestureRecognizer!
+        weak var _exposurePanGesture: UIPanGestureRecognizer!
         
-        let _autoFocusIndicator: UIImageView = UIImageView(image: UIImage(named: TabNavigationImagePickerController.resourceBundlePath+"auto_focus"))
-        let _autoExposeIndicator: UIImageView = UIImageView(image: UIImage(named: TabNavigationImagePickerController.resourceBundlePath+"sun_shape_light"))
-        let _continuousIndicator: UIImageView = UIImageView(image: UIImage(named: TabNavigationImagePickerController.resourceBundlePath+"co_auto_focus"))
+        let _focusIndicator   : UIImageView = UIImageView(image: UIImage(named: TabNavigationImagePickerController.resourceBundlePath+"auto_focus"))
+        let _exposureIndicator: UIImageView = UIImageView(image: UIImage(named: TabNavigationImagePickerController.resourceBundlePath+"sun_shape_light"))
+        let _co_focusIndicator: UIImageView = UIImageView(image: UIImage(named: TabNavigationImagePickerController.resourceBundlePath+"co_auto_focus"))
         
-        var _autoBeginning: Date = Date()
-        var _continuousBeginning: Date = Date()
-        let _graceTime: Double = 0.35
-        let _paddingOfFocusAndExpose: CGFloat = 5.0
+        fileprivate let _exposureSliders : (top: UIImageView, bottom: UIImageView)           = (UIImageView(), UIImageView())
+        fileprivate var _exposureCenters : (isoBinding: CGPoint, translation: CGPoint)       = (.zero, .zero)
+        fileprivate var _exposureSettings: (duration: CMTime, iso: Float, targetBias: Float) = (AVCaptureExposureDurationCurrent, 0.0, 0.0)
+        fileprivate let _exposureSizes   : (top: CGSize, middle: CGSize, bottom: CGSize)     = (CGSize(width: 28.0, height: 28.0), CGSize(width: 25.0, height: 25.0), CGSize(width: 16.0, height: 16.0))
         
-        var _deviceIsAdjustingFocusObserveContext = 0
-        var _deviceFocusModeObserveContext = 1
-        var _deviceFlashActiveObserveContext = 2
+        var _focusBeginning     : Date = Date()
+        var _co_focusBeginning  : Date = Date()
+        let _grace_du           : Double = 0.35
+        let _paddingOfFoexposure    : CGFloat = 5.0
+        let _lengthOfSliderSpace: CGFloat = 150.0
+        
+        // Device observing keypaths.
+        private var _deviceObservingKeyPaths: [String] = []
         
         init(session: AVCaptureSession) {
             super.init(frame: .zero)
@@ -767,11 +773,8 @@ extension _CameraViewController {
         deinit {
             NotificationCenter.default.removeObserver(self)
             
-            if let device = videoDevice {
-                device.removeObserver(self, forKeyPath: "adjustingFocus")
-                device.removeObserver(self, forKeyPath: "focusMode")
-                device.removeObserver(self, forKeyPath: "flashActive")
-            }
+            _exposureIndicator.removeObserver(self, forKeyPath: "center")
+            _deviceObservingKeyPaths.forEach{ videoDevice?.removeObserver(self, forKeyPath: $0, context: nil) }
         }
         
         // MARK: Override.
@@ -780,9 +783,9 @@ extension _CameraViewController {
             super.willMove(toSuperview: newSuperview)
             
             if let _ = newSuperview {
-                _autoFocusIndicator.isHidden = true
-                _autoExposeIndicator.isHidden = true
-                _continuousIndicator.isHidden = true
+                _focusIndicator.isHidden = true
+                _exposureIndicator.isHidden = true
+                _co_focusIndicator.isHidden = true
             }
         }
         
@@ -791,8 +794,9 @@ extension _CameraViewController {
             _setupIndicators()
             _setupInfoStackView()
             
-            _setupFocusGestures()
+            _setupFoexposureGestures()
             
+            _deviceObservingKeyPaths = ["adjustingFocus", "focusMode", "flashActive", "exposureDuration", "ISO", "exposureTargetBias",  "exposureTargetOffset"]
             _observeProperties()
             _observeNotifications()
         }
@@ -808,16 +812,24 @@ extension _CameraViewController {
         }
         
         private func _setupIndicators() {
-            addSubview(_autoFocusIndicator)
-            addSubview(_autoExposeIndicator)
-            addSubview(_continuousIndicator)
+            addSubview(_focusIndicator)
+            addSubview(_exposureIndicator)
+            addSubview(_co_focusIndicator)
+            addSubview(_exposureSliders.top)
+            addSubview(_exposureSliders.bottom)
             
-            _autoFocusIndicator.isHidden = true
-            _autoExposeIndicator.isHidden = true
-            _continuousIndicator.isHidden = true
+            _focusIndicator.isHidden = true
+            _exposureIndicator.isHidden = true
+            _co_focusIndicator.isHidden = true
+            _exposureSliders.top.backgroundColor = UIColor(colorLiteralRed: 1.0, green: 0.8, blue: 0.0, alpha: 1.0)
+            _exposureSliders.bottom.backgroundColor = UIColor(colorLiteralRed: 1.0, green: 0.8, blue: 0.0, alpha: 1.0)
+            _exposureSliders.top.isHidden = true
+            _exposureSliders.bottom.isHidden = true
+            _exposureSliders.top.alpha = 0.0
+            _exposureSliders.bottom.alpha = 0.0
         }
         
-        private func _setupFocusGestures() {
+        private func _setupFoexposureGestures() {
             let tap = UITapGestureRecognizer(target: self, action: #selector(_handleTapToConfigureDevice(_:)))
             addGestureRecognizer(tap)
             _focusTapGesture = tap
@@ -825,32 +837,40 @@ extension _CameraViewController {
             let longPress = UILongPressGestureRecognizer(target: self, action: #selector(_handleLongPressToConfigureDevice(_:)))
             addGestureRecognizer(longPress)
             _focusLongPressGesture = longPress
+            
+            let pan = UIPanGestureRecognizer(target: self, action: #selector(_handlePanToConfigureDevice(_:)))
+            addGestureRecognizer(pan)
+            _exposurePanGesture = pan
         }
         
         private func _observeProperties() {
-            if let device = videoDevice {
-                device.addObserver(self, forKeyPath: "adjustingFocus", options: .new, context: &_deviceIsAdjustingFocusObserveContext)
-                device.addObserver(self, forKeyPath: "focusMode", options: .new, context: &_deviceFocusModeObserveContext)
-                device.addObserver(self, forKeyPath: "flashActive", options: .new, context: &_deviceFlashActiveObserveContext)
-            }
+            _exposureIndicator.addObserver(self, forKeyPath: "center", options: .new, context: nil)
+            _deviceObservingKeyPaths.forEach{ videoDevice?.addObserver(self, forKeyPath: $0, options: .new, context: nil) }
         }
         private func _observeNotifications() {
             NotificationCenter.default.addObserver(self, selector: #selector(_handleCaptureDeviceSubjectAreaDidChange(_:)), name: .AVCaptureDeviceSubjectAreaDidChange, object: nil)
         }
         
-        private func _setupHumanReadingInfos(_ newInfos: [_HumanReadingInfo] = []) {
-            func _infoView(`for` info: _HumanReadingInfo) -> _HumanReadingInfoView? {
-                let infoView = _HumanReadingInfoView(type: info.type)
-                infoView.translatesAutoresizingMaskIntoConstraints = false
-                infoView.layer.cornerRadius = 2.0
-                infoView.layer.masksToBounds = true
-                infoView.clipsToBounds = true
+        private func _updateHumanReadingInfos(_ newInfos: [_HumanReadingInfo] = []) {
+            @discardableResult
+            func _infoView(`for` info: _HumanReadingInfo, updatedInfoView: _HumanReadingInfoView? = nil) -> _HumanReadingInfoView? {
+                let infoView = updatedInfoView ?? _HumanReadingInfoView(type: info.type)
+                if updatedInfoView == nil {
+                    infoView.translatesAutoresizingMaskIntoConstraints = false
+                    infoView.layer.cornerRadius = 2.0
+                    infoView.layer.masksToBounds = true
+                    infoView.clipsToBounds = true
+                }
+                let imageViewTag = 0x2
+                let labelViewTag = 0x3
                 
                 switch info {
                 case let (_, image) as (_HumanReading, UIImage):
-                    let imageView = _ImageView(image: image)
+                    let imageView = infoView.viewWithTag(imageViewTag) as? _ImageView ?? _ImageView(image: image)
+                    imageView.tag = imageViewTag
                     imageView.contentMode = .scaleAspectFit
                     imageView.translatesAutoresizingMaskIntoConstraints = false
+                    imageView.removeFromSuperview()
                     infoView.backgroundColor = .clear
                     infoView.addSubview(imageView)
                     imageView.centerXAnchor.constraint(equalTo: infoView.centerXAnchor).isActive = true
@@ -860,11 +880,13 @@ extension _CameraViewController {
                     imageView.leadingAnchor.constraint(equalTo: infoView.leadingAnchor).isActive = true
                     imageView.trailingAnchor.constraint(equalTo: infoView.trailingAnchor).isActive = true
                 case let (_, content) as (_HumanReading, String):
-                    let label = UILabel()
+                    let label = infoView.viewWithTag(labelViewTag) as? UILabel ?? UILabel()
+                    label.tag = labelViewTag
                     label.translatesAutoresizingMaskIntoConstraints = false
                     label.font = UIFont.systemFont(ofSize: 14)
                     label.textColor = UIColor.black.withAlphaComponent(0.88)
                     label.text = content
+                    label.removeFromSuperview()
                     infoView.backgroundColor = UIColor(colorLiteralRed: 1.0, green: 0.8, blue: 0.0, alpha: 1.0)
                     infoView.addSubview(label)
                     label.topAnchor.constraint(equalTo: infoView.topAnchor, constant: 2.0).isActive = true
@@ -911,6 +933,8 @@ extension _CameraViewController {
             _infoStackView.layoutIfNeeded()
             infoViewsToBeAdded.forEach({ $0.transform = CGAffineTransform(translationX: 0.0, y: -$0.frame.height - padding) })
             infoViewsToBeRemained.forEach { (infoView) in
+                let info = newInfos.filter{ $0.type == infoView.type }.first!
+                _infoView(for: info, updatedInfoView: infoView)
                 let originalFrame = originalFrameInfos.filter({ $0.type == infoView.type }).first!.frame
                 infoView.transform = CGAffineTransform(translationX: 0.0, y: originalFrame.minY - infoView.frame.minY)
             }
@@ -937,6 +961,8 @@ extension _CameraViewController._CaptureVideoPreviewView {
         case autoModesLocked
         case flashOn
         case hdrOn
+        case exposureTargetOffset
+        case customExposure
     }
     
     fileprivate typealias _HumanReadingInfo = (type: _HumanReading, content: Any)
@@ -947,11 +973,8 @@ extension _CameraViewController._CaptureVideoPreviewView {
 extension _CameraViewController._CaptureVideoPreviewView {
     @objc
     fileprivate func _handleCaptureDeviceSubjectAreaDidChange(_ notification: NSNotification) {
-        if let device = videoDevice {
-            if device.focusMode != .continuousAutoFocus {
-                let point = CGPoint(x: 0.5, y: 0.5)
-                _focus(using: .continuousAutoFocus, exposure: .continuousAutoExposure, at: point)
-            }
+        if videoDevice?.focusMode != .continuousAutoFocus {
+            _focus(using: .continuousAutoFocus, exposure: .continuousAutoExposure, at: CGPoint(x: 0.5, y: 0.5))
         }
     }
     
@@ -977,7 +1000,7 @@ extension _CameraViewController._CaptureVideoPreviewView {
             let pointOfInterest = previewLayer.captureDevicePointOfInterest(for: location)
             // _lockFocusAndExpose(at: previewLayer.captureDevicePointOfInterest(for: location))
             _focus(using: .autoFocus, exposure: .autoExpose, at: pointOfInterest, monitorSubjectAreaChange: false)
-            _animateScalingContinuousIndicator(at: location)
+            _animateScalingContinuousFocusIndicator(at: location)
             if !humanReadingInfos.contains{ $0.type == .autoModesLocked } {
                 humanReadingInfos = [[(_HumanReading.autoModesLocked, "自动曝光/自动对焦锁定")], humanReadingInfos.filter({ $0.type != .autoModesLocked })].joined().reversed()
             }
@@ -986,37 +1009,67 @@ extension _CameraViewController._CaptureVideoPreviewView {
         case .failed: fallthrough
         case .cancelled: fallthrough
         default:
-            if let device = videoDevice {
-                _animateAutoIndicators(true, at: _continuousIndicator.center, scale: _continuousIndicator.bounds.width / _autoFocusIndicator.bounds.width) { [unowned self] in
-                    if device.focusMode == .locked {
-                        self._pinAutoIndicators()
-                    }
+            guard let device = videoDevice else { break }
+            
+            _animateFoexposureIndicators(true, at: _co_focusIndicator.center, scale: _co_focusIndicator.bounds.width / _focusIndicator.bounds.width) { [unowned self] in
+                if device.focusMode == .locked {
+                    self._pinFoexposureIndicators()
                 }
             }
         }
     }
     
+    @objc
+    fileprivate func _handlePanToConfigureDevice(_ sender: UIPanGestureRecognizer) {
+        switch sender.state {
+        case .possible: fallthrough
+        case .began:
+            NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(_pinFoexposureIndicators), object: nil)
+            NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(_animateHideExposureSlidersIfNeeded), object: nil)
+            
+            _exposureCenters.translation = _exposureIndicator.center
+            
+            _resetPinnedFoexposureIndicatorsByAnimatedIfVisible()
+            _animateShowExposureSlidersIfNeeded()
+        case .changed:
+            _ensureVisibleOfFoexposureIndicator()
+            _ensureVisibleOfExposureSliders()
+            
+            let center = CGPoint(x: _exposureCenters.translation.x, y: _exposureCenters.translation.y + sender.translation(in: self).y * 0.1)
+            if  center.y >= _focusIndicator.center.y - _lengthOfSliderSpace * 0.5 && center.y <= _focusIndicator.center.y + _lengthOfSliderSpace * 0.5 {
+                _exposureIndicator.center = center
+            }
+        case .failed: fallthrough
+        case .cancelled: fallthrough
+        default:
+            self.perform(#selector(_pinFoexposureIndicators), with: nil, afterDelay: 0.5, inModes: [RunLoopMode.commonModes])
+            self.perform(#selector(_animateHideExposureSlidersIfNeeded), with: nil, afterDelay: 1.0, inModes: [RunLoopMode.commonModes])
+            
+            _exposureCenters.translation = _exposureIndicator.center
+        }
+    }
+    
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-        if context == &_deviceIsAdjustingFocusObserveContext && keyPath == "adjustingFocus" {
+        if keyPath == "adjustingFocus" && (object as? AVCaptureDevice) === videoDevice {
             if let adjustingFocus = change?[.newKey] as? Bool, let device = videoDevice {
                 print("is adjusting focus: " + adjustingFocus.description)
                 let location = previewLayer.pointForCaptureDevicePoint(ofInterest: device.focusPointOfInterest)
                 if device.focusMode == .autoFocus {
                     if _focusLongPressGesture.state == .changed {
-                        _animateScalingContinuousIndicator(at: location)
+                        _animateScalingContinuousFocusIndicator(at: location)
                     }
                 } else {
                     _animateIndicators(show: adjustingFocus, mode: device.focusMode, at: location)
                 }
             }
-        } else if context == &_deviceFocusModeObserveContext && keyPath == "focusMode" {
+        } else if keyPath == "focusMode" && (object as? AVCaptureDevice) === videoDevice {
             if let focusMode = change?[.newKey] as? Int, let device = videoDevice {
                 print("new focus mode: " + focusMode.description)
                 if AVCaptureFocusMode(rawValue: focusMode) == .locked && !device.isAdjustingFocus && _focusLongPressGesture.state != .changed {
                     _animateIndicators(show: true, mode: .locked, at: .zero)
                 }
             }
-        } else if context == &_deviceFlashActiveObserveContext && keyPath == "flashActive" {
+        } else if keyPath == "flashActive" && (object as? AVCaptureDevice) === videoDevice {
             if let isFlashActive = change?[.newKey] as? Bool {
                 print("new flash mode: " + isFlashActive.description)
                 if isFlashActive {
@@ -1027,13 +1080,34 @@ extension _CameraViewController._CaptureVideoPreviewView {
                     humanReadingInfos = humanReadingInfos.filter{ $0.type != .flashOn }
                 }
             }
+        } else if (keyPath == "exposureDuration" || keyPath == "ISO" || keyPath == "exposureTargetBias") && (object as? AVCaptureDevice) === videoDevice {
+            guard let device = videoDevice else { return }
+            if device.exposureMode != .custom {
+                print("Begin updating exposure settings and centers.")
+                humanReadingInfos = humanReadingInfos.filter{ $0.type != .exposureTargetOffset && $0.type != .customExposure }
+                _exposureCenters.isoBinding = _exposureIndicator.center
+                _exposureSettings.duration = device.exposureDuration
+                _exposureSettings.iso = device.iso
+                _exposureSettings.targetBias = device.exposureTargetBias
+            }
+        } else if keyPath == "exposureTargetOffset" && (object as? AVCaptureDevice) === videoDevice {
+            guard let exposureTargetOffset = change?[.newKey] as? Float, let device = videoDevice else { return }
+            if device.exposureMode == .custom {
+                humanReadingInfos = [humanReadingInfos.filter({ $0.type != .exposureTargetOffset }), [(_HumanReading.exposureTargetOffset, "Exposure target offset: \(exposureTargetOffset)")]].joined().reversed()
+            }
+        } else if keyPath == "center" && (object as? UIImageView) === _exposureIndicator {
+            _updateSizeOfExposureIndicator()
+            _updatePositionsOfExposureSliders()
+            if #available(iOS 8.0, *) {
+                _exposeUsingCustoms()
+            }
         } else {
             super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
         }
     }
     
     private func _focus(using focusMode: AVCaptureFocusMode, exposure: AVCaptureExposureMode, at point: CGPoint, monitorSubjectAreaChange: Bool = true) {
-        guard let device = self.videoDevice else { return }
+        guard let device = videoDevice else { return }
         
         configurationQueue.async {
             do {
@@ -1065,14 +1139,58 @@ extension _CameraViewController._CaptureVideoPreviewView {
         }
     }
     
-    private func _lockFocusAndExpose(at point: CGPoint) {
+    @available(iOS 8.0, *)
+    private func _exposeUsingCustoms() {
         guard let device = videoDevice else { return }
+        guard _exposurePanGesture.state == .changed else { return }
         
-        configurationQueue.async {
+        configurationQueue.async { [weak self] in
+            guard let wself = self else { return }
             do {
                 try device.lockForConfiguration()
                 
-                device.setFocusModeLockedWithLensPosition(AVCaptureLensPositionCurrent, completionHandler: nil)
+                if device.isExposureModeSupported(.custom) {
+                    device.exposureMode = .custom
+                    
+                    let preferedTimescale = max(device.activeFormat.minExposureDuration.timescale, device.activeFormat.maxExposureDuration.timescale)
+                    if wself._exposureIndicator.center.y < wself._focusIndicator.center.y /*wself._exposurePanGesture.translation(in: wself).y <= 0*/ {
+                        let beginsPositon = wself._focusIndicator.center.y - wself._lengthOfSliderSpace * 0.5
+                        let flag = max(0.0, (wself._exposureCenters.isoBinding.y - wself._exposureIndicator.center.y)) / (wself._exposureCenters.isoBinding.y - beginsPositon)
+                        // print("Custom exposure \(wself._exposureSettings.iso + (device.activeFormat.maxISO - wself._exposureSettings.iso) * Float(flag)), max: \(device.activeFormat.maxISO)")
+                        // let maxExposureSec = Double(device.activeFormat.maxExposureDuration.value) / Double(device.activeFormat.maxExposureDuration.timescale)
+                        let relativeExposureSec = Double(wself._exposureSettings.duration.value) / Double(wself._exposureSettings.duration.timescale)
+                        // let seconds = min(maxExposureSec, relativeExposureSec + (maxExposureSec - relativeExposureSec) * Double(flag))
+                        // let duration = CMTime(seconds: seconds, preferredTimescale: preferedTimescale)
+                        // print("Duration: \(duration), max: \(device.activeFormat.maxExposureDuration)")
+                        let iso = min(device.activeFormat.maxISO, wself._exposureSettings.iso + (device.activeFormat.maxISO - wself._exposureSettings.iso) * pow(Float(flag), 2.0))
+                        let targetBias = max(device.minExposureTargetBias, wself._exposureSettings.targetBias - (wself._exposureSettings.targetBias - device.minExposureTargetBias) * pow(Float(flag), 2.0))
+                        DispatchQueue.main.async {
+                            wself.humanReadingInfos = [wself.humanReadingInfos.filter({ $0.type != .customExposure }), [(_HumanReading.customExposure, "Duration: \(String(format: "%.9f", relativeExposureSec)), iso: \(iso), targetBias: \(targetBias)")]].joined().reversed()
+                        }
+                        
+                        device.setExposureModeCustomWithDuration(wself._exposureSettings.duration, iso: iso, completionHandler: nil)
+                        device.setExposureTargetBias(targetBias, completionHandler: nil)
+                    } else {
+                        let endsPosition = wself._focusIndicator.center.y + wself._lengthOfSliderSpace * 0.5
+                        let flag = max(0.0, (wself._exposureIndicator.center.y - wself._exposureCenters.isoBinding.y)) / (endsPosition - wself._exposureCenters.isoBinding.y)
+                        // print("Custom exposure \(wself._exposureSettings.iso - (wself._exposureSettings.iso - device.activeFormat.minISO) * Float(flag))， min: \(device.activeFormat.minISO)")
+                        let minExposureSec = Double(device.activeFormat.minExposureDuration.value) / Double(device.activeFormat.minExposureDuration.timescale)
+                        let relativeExposureSec = Double(wself._exposureSettings.duration.value) / Double(wself._exposureSettings.duration.timescale)
+                        let seconds = max(minExposureSec, relativeExposureSec - (relativeExposureSec - minExposureSec) * Double(flag))
+                        let duration = CMTime(seconds: seconds, preferredTimescale: preferedTimescale)
+                        // print("Duration: \(duration), min: \(device.activeFormat.minExposureDuration)")
+                        let iso = max(device.activeFormat.minISO, wself._exposureSettings.iso - (wself._exposureSettings.iso - device.activeFormat.minISO) * Float(flag))
+                        let targetBias = min(device.maxExposureTargetBias, wself._exposureSettings.targetBias + (device.maxExposureTargetBias - wself._exposureSettings.targetBias) * Float(flag))
+                        DispatchQueue.main.async {
+                            wself.humanReadingInfos = [wself.humanReadingInfos.filter({ $0.type != .customExposure }), [(_HumanReading.customExposure, "Duration: \(String(format: "%.9f", seconds)), iso: \(iso), targetBias: \(targetBias)")]].joined().reversed()
+                        }
+                        
+                        device.setExposureModeCustomWithDuration(duration, iso: iso, completionHandler: nil)
+                        device.setExposureTargetBias(targetBias, completionHandler: nil)
+                    }
+                    
+                    device.isSubjectAreaChangeMonitoringEnabled = false
+                }
                 
                 device.unlockForConfiguration()
             } catch {
@@ -1084,142 +1202,228 @@ extension _CameraViewController._CaptureVideoPreviewView {
     private func _animateIndicators(show: Bool = true, mode: AVCaptureFocusMode, at point: CGPoint) {
         switch mode {
         case .continuousAutoFocus:
-            _animateContinuousIndicator(show, at: point)
+            _animateContinuousFocusIndicator(show, at: point)
         case .autoFocus:
-            _animateAutoIndicators(show, at: point)
+            _animateFoexposureIndicators(show, at: point)
         default:
-            _pinAutoIndicators()
+            _pinFoexposureIndicators()
         }
     }
     
-    private func _animateScalingContinuousIndicator(at point: CGPoint) {
-        _autoFocusIndicator.isHidden = true
-        _autoExposeIndicator.isHidden = true
-        _untwinkle(content: _continuousIndicator)
-        _animateContinuousIndicator(true, at: point, checkingIsHidden: false)
+    private func _animateScalingContinuousFocusIndicator(at point: CGPoint) {
+        // Hide Foexposure indicators first.
+        _focusIndicator.isHidden = true
+        _exposureIndicator.isHidden = true
+        _exposureSliders.top.isHidden = true
+        _exposureSliders.bottom.isHidden = true
+        // Un twinkle the content of _co_focus indicator.
+        _untwinkle(content: _co_focusIndicator)
+        // Animate show the cotinuous focus indicator.
+        _animateContinuousFocusIndicator(true, at: point, checkingIsHidden: false)
     }
     
-    private func _animateContinuousIndicator(_ show: Bool, at point: CGPoint, checkingIsHidden: Bool = true, twinkle twinkleContent: Bool = true) {
+    private func _animateContinuousFocusIndicator(_ show: Bool, at point: CGPoint, checkingIsHidden: Bool = true, twinkle twinkleContent: Bool = true) {
         if show {
             if checkingIsHidden {
-                guard _continuousIndicator.isHidden else { return }
+                guard _co_focusIndicator.isHidden else { return }
             }
             
-            _continuousBeginning = Date()
-            _autoFocusIndicator.isHidden = true
-            _autoExposeIndicator.isHidden = true
-            _continuousIndicator.isHidden = false
-            _continuousIndicator.center = point
-            _continuousIndicator.alpha = 0.0
+            _co_focusBeginning = Date()
+            _focusIndicator.isHidden = true
+            _exposureIndicator.isHidden = true
+            _exposureSliders.top.isHidden = true
+            _exposureSliders.bottom.isHidden = true
+            _co_focusIndicator.isHidden = false
+            _co_focusIndicator.center = point
+            _co_focusIndicator.alpha = 0.0
             
             let scale: CGFloat = 1.5
-            _continuousIndicator.transform = CGAffineTransform(scaleX: scale, y: scale)
+            _co_focusIndicator.transform = CGAffineTransform(scaleX: scale, y: scale)
             
-            NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(__animateHideContinuousIndicator), object: nil)
+            NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(__animateHideContinuousFocusIndicator), object: nil)
             UIView.animate(withDuration: 0.1, animations: { [unowned self] in
-                self._continuousIndicator.alpha = 1.0
-            }, completion: { (finished) in
-                if finished {
-                    UIView.animate(withDuration: 0.2, animations: { [unowned self] in
-                        self._continuousIndicator.transform = .identity
-                    }, completion: { [unowned self] (finished) in
-                        if twinkleContent && finished {
-                            self._twinkle(content: self._continuousIndicator)
-                        }
-                    })
+                self._co_focusIndicator.alpha = 1.0
+            }) { [unowned self] _ in
+                UIView.animate(withDuration: 0.2, animations: { [unowned self] in
+                    self._co_focusIndicator.transform = .identity
+                }) { [unowned self] _ in
+                    if twinkleContent {
+                        self._twinkle(content: self._co_focusIndicator)
+                    }
                 }
-            })
+            }
         } else {
-            let delay = max(0.0, _graceTime - Date().timeIntervalSince(_continuousBeginning))
-            // print("delay: \(delay), grace: \(_graceTime) offset: \(Date().timeIntervalSince(_continuousBeginning))")
-            self.perform(#selector(__animateHideContinuousIndicator), with: nil, afterDelay: delay, inModes: [RunLoopMode.commonModes])
+            let delay = max(0.0, _grace_du - Date().timeIntervalSince(_co_focusBeginning))
+            // print("delay: \(delay), grace: \(_grace_du) offset: \(Date().timeIntervalSince(_co_focusBeginning))")
+            self.perform(#selector(__animateHideContinuousFocusIndicator), with: nil, afterDelay: delay, inModes: [RunLoopMode.commonModes])
         }
     }
     
     @objc
-    private func __animateHideContinuousIndicator() {
-        guard !_continuousIndicator.isHidden else { return }
+    private func __animateHideContinuousFocusIndicator() {
+        guard !_co_focusIndicator.isHidden else { return }
         
-        self._untwinkle(content: self._continuousIndicator)
-        UIView.animate(withDuration: 0.25, delay: 0.4, options: [], animations: { [unowned self] in
-            self._continuousIndicator.alpha = 0.0
-        }, completion: { [unowned self] finished in
-            if finished {
-                self._continuousIndicator.isHidden = true
-            }
-        })
+        self._untwinkle(content: self._co_focusIndicator)
+        UIView.animate(withDuration: 0.25, delay: 0.5, options: [], animations: { [unowned self] in
+            self._co_focusIndicator.alpha = 0.0
+        }) { [unowned self] _ in
+            self._co_focusIndicator.isHidden = true
+        }
     }
     
-    private func _animateAutoIndicators(_ show: Bool, at point: CGPoint, scale: CGFloat = 1.5, showsCompletion: (() -> Void)? = nil) {
+    private func _animateFoexposureIndicators(_ show: Bool, at point: CGPoint, scale: CGFloat = 1.5, showsCompletion: (() -> Void)? = nil) {
         if show {
-            _autoBeginning = Date()
-            _continuousIndicator.isHidden = true
-            _autoFocusIndicator.isHidden = false
-            _autoExposeIndicator.isHidden = false
-            _autoFocusIndicator.alpha = 0.0
-            _autoExposeIndicator.alpha = 0.0
-            _autoFocusIndicator.center = point
+            _focusBeginning = Date()
+            _co_focusIndicator.isHidden = true
+            _focusIndicator.isHidden = false
+            _exposureIndicator.isHidden = false
+            _focusIndicator.alpha = 0.0
+            _exposureIndicator.alpha = 0.0
+            _focusIndicator.center = point
             
-            _autoFocusIndicator.transform = CGAffineTransform(scaleX: scale, y: scale)
+            _focusIndicator.transform = CGAffineTransform(scaleX: scale, y: scale)
+            _exposureIndicator.frame = CGRect(origin: .zero, size: _exposureSizes.middle)
             switch point.x {
-            case 0...(bounds.width - _autoFocusIndicator.bounds.width * 0.5 - (_paddingOfFocusAndExpose + _autoExposeIndicator.bounds.width)):
-                _autoExposeIndicator.center = CGPoint(x: point.x + _autoFocusIndicator.bounds.width * 0.5 + _paddingOfFocusAndExpose + _autoExposeIndicator.bounds.width * 0.5, y: point.y)
-                _autoExposeIndicator.transform = CGAffineTransform(scaleX: scale, y: scale).translatedBy(x: _autoFocusIndicator.bounds.width * 0.5 * (scale - 1.0), y: 0.0)
+            case 0...(bounds.width - _focusIndicator.bounds.width * 0.5 - (_paddingOfFoexposure + _exposureIndicator.bounds.width)):
+                _exposureIndicator.center = CGPoint(x: point.x + _focusIndicator.bounds.width * 0.5 + _paddingOfFoexposure + _exposureIndicator.bounds.width * 0.5, y: point.y)
+                _updatePositionsOfExposureSliders()
+                _exposureIndicator.transform = CGAffineTransform(scaleX: scale, y: scale).translatedBy(x: _focusIndicator.bounds.width * 0.5 * (scale - 1.0), y: 0.0)
+                _exposureSliders.top.transform = _exposureIndicator.transform
+                _exposureSliders.bottom.transform = _exposureIndicator.transform
             default:
-                _autoExposeIndicator.center = CGPoint(x: point.x - _autoFocusIndicator.bounds.width * 0.5 - _paddingOfFocusAndExpose - _autoExposeIndicator.bounds.width * 0.5, y: point.y)
-                _autoExposeIndicator.transform = CGAffineTransform(scaleX: scale, y: scale).translatedBy(x: -_autoFocusIndicator.bounds.width * 0.5 * (scale - 1.0), y: 0.0)
+                _exposureIndicator.center = CGPoint(x: point.x - _focusIndicator.bounds.width * 0.5 - _paddingOfFoexposure - _exposureIndicator.bounds.width * 0.5, y: point.y)
+                _updatePositionsOfExposureSliders()
+                _exposureIndicator.transform = CGAffineTransform(scaleX: scale, y: scale).translatedBy(x: -_focusIndicator.bounds.width * 0.5 * (scale - 1.0), y: 0.0)
+                _exposureSliders.top.transform = _exposureIndicator.transform
+                _exposureSliders.bottom.transform = _exposureIndicator.transform
             }
             
-            NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(__animateHideAutoIndicators), object: nil)
+            NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(__animateHideFoexposureIndicators), object: nil)
             UIView.animate(withDuration: 0.1, animations: { [unowned self] in
-                self._autoFocusIndicator.alpha = 1.0
-                self._autoExposeIndicator.alpha = 1.0
-            }, completion: { [unowned self] (finished) in
-                if finished {
-                    UIView.animate(withDuration: 0.25, animations: { [unowned self] in
-                        self._autoFocusIndicator.transform = .identity
-                        self._autoExposeIndicator.transform = .identity
-                    }, completion: { [unowned self] (finished) in
-                        if finished {
-                            self._twinkle(content: self._autoFocusIndicator)
-                            showsCompletion?()
-                        }
-                    })
+                self._focusIndicator.alpha = 1.0
+                self._exposureIndicator.alpha = 1.0
+            }) { [unowned self] (_) in
+                UIView.animate(withDuration: 0.25, animations: { [unowned self] in
+                    self._focusIndicator.transform = .identity
+                    self._exposureIndicator.transform = .identity
+                    self._exposureSliders.top.transform = .identity
+                    self._exposureSliders.bottom.transform = .identity
+                }) { [unowned self] (_) in
+                    self._twinkle(content: self._focusIndicator)
+                    showsCompletion?()
                 }
-            })
+            }
         } else {
-            let delay = max(0.0, _graceTime - Date().timeIntervalSince(_autoBeginning))
-            self.perform(#selector(__animateHideAutoIndicators), with: nil, afterDelay: delay, inModes: [RunLoopMode.commonModes])
+            let delay = max(0.0, _grace_du - Date().timeIntervalSince(_focusBeginning))
+            self.perform(#selector(__animateHideFoexposureIndicators), with: nil, afterDelay: delay, inModes: [RunLoopMode.commonModes])
         }
     }
     
     @objc
-    private func __animateHideAutoIndicators() {
-        guard !_autoFocusIndicator.isHidden && !_autoExposeIndicator.isHidden else { return }
-        
-        self._untwinkle(content: self._autoFocusIndicator)
-        self._untwinkle(content: self._autoExposeIndicator)
+    private func __animateHideFoexposureIndicators() {
+        _animateHideExposureSlidersIfNeeded()
+
+        self._untwinkle(content: self._focusIndicator)
+        self._untwinkle(content: self._exposureIndicator)
         UIView.animate(withDuration: 0.25, delay: 0.5, options: [], animations: { [unowned self] in
-            self._autoFocusIndicator.alpha = 0.0
-            self._autoExposeIndicator.alpha = 0.0
-        }, completion: { [unowned self] finished in
-            if finished {
-                self._autoFocusIndicator.isHidden = true
-                self._autoExposeIndicator.isHidden = true
-            }
+            self._focusIndicator.alpha = 0.0
+            self._exposureIndicator.alpha = 0.0
+        }) { [unowned self] _ in
+            self._focusIndicator.isHidden = true
+            self._exposureIndicator.isHidden = true
+        }
+    }
+    
+    @objc
+    private func _pinFoexposureIndicators() {
+        _untwinkle(content: _focusIndicator)
+        _untwinkle(content: _exposureIndicator)
+        
+        UIView.animate(withDuration: 0.25, delay: 0.5, options: [], animations: { [unowned self] in
+            self._focusIndicator.alpha = 0.5
+            self._exposureIndicator.alpha = 0.5
+        }, completion: nil)
+    }
+    
+    private func _resetPinnedFoexposureIndicatorsByAnimatedIfVisible() {
+        UIView.animate(withDuration: 0.25, delay: 0.0, options: [], animations: { [unowned self] in
+            self._focusIndicator.alpha = 1.0
+            self._exposureIndicator.alpha = 1.0
+        }, completion: nil)
+    }
+    
+    private func _animateShowExposureSlidersIfNeeded() {
+        _exposureSliders.top.isHidden = false
+        _exposureSliders.bottom.isHidden = false
+        
+        UIView.animate(withDuration: 0.25, delay: 0.0, options: [], animations: { [unowned self] in
+            self._exposureSliders.top.alpha = 1.0
+            self._exposureSliders.bottom.alpha = 1.0
         })
     }
     
-    private func _pinAutoIndicators() {
-        guard !_autoFocusIndicator.isHidden && !_autoExposeIndicator.isHidden else { return }
+    private func _ensureVisibleOfFoexposureIndicator() {
+        if _exposureIndicator.alpha != 1.0 || _exposureIndicator.isHidden {
+            _exposureIndicator.isHidden = false
+            _exposureIndicator.alpha = 1.0
+        }; if _focusIndicator.alpha != 1.0 || _focusIndicator.isHidden {
+            _focusIndicator.isHidden = false
+            _focusIndicator.alpha = 1.0
+        }
+    }
+    private func _ensureVisibleOfExposureSliders() {
+        if _exposureSliders.top.alpha != 1.0 || _exposureSliders.top.isHidden {
+            _exposureSliders.top.isHidden = false
+            _exposureSliders.top.alpha = 1.0
+        }; if _exposureSliders.bottom.alpha != 1.0 || _exposureSliders.bottom.isHidden {
+            _exposureSliders.bottom.isHidden = false
+            _exposureSliders.bottom.alpha = 1.0
+        }
+    }
+    
+    @objc
+    private func _animateHideExposureSlidersIfNeeded() {
+        UIView.animate(withDuration: 0.25, delay: 0.0, options: [], animations: { [unowned self] in
+            self._exposureSliders.top.alpha = 0.0
+            self._exposureSliders.bottom.alpha = 0.0
+        }) { [unowned self] (_) in
+            self._exposureSliders.top.isHidden = true
+            self._exposureSliders.bottom.isHidden = true
+        }
+    }
+    
+    private func _updatePositionsOfExposureSliders() {
+        let topBeginsY = _focusIndicator.center.y - _lengthOfSliderSpace * 0.5
+        let topEndsY = _exposureIndicator.frame.minY - 2.0
+        let bottomBeginsY = _exposureIndicator.frame.maxY + 2.0
+        let bottomEndsY = _focusIndicator.center.y + _lengthOfSliderSpace * 0.5
         
-        _untwinkle(content: _autoFocusIndicator)
-        _untwinkle(content: _autoExposeIndicator)
+        _exposureSliders.top.frame = CGRect(origin: CGPoint(x: 0.0, y: topBeginsY), size: CGSize(width: 1.0, height: max(0.0, topEndsY - topBeginsY)))
+        _exposureSliders.bottom.frame = CGRect(origin: CGPoint(x: 0.0, y: bottomBeginsY), size: CGSize(width: 1.0, height: max(0.0, bottomEndsY - bottomBeginsY)))
+        var topCenter = _exposureSliders.top.center
+        var bottomCenter = _exposureSliders.bottom.center
+        topCenter.x = _exposureIndicator.center.x
+        bottomCenter.x = _exposureIndicator.center.x
+        _exposureSliders.top.center = topCenter
+        _exposureSliders.bottom.center = bottomCenter
+    }
+    
+    private func _updateSizeOfExposureIndicator() {
+        let center = _exposureIndicator.center
         
-        UIView.animate(withDuration: 0.25, delay: 0.5, options: [], animations: { [unowned self] in
-            self._autoFocusIndicator.alpha = 0.5
-            self._autoExposeIndicator.alpha = 0.5
-        }, completion: nil)
+        if center.y <= _focusIndicator.center.y {
+            let width = min(_exposureSizes.top.width, _exposureSizes.middle.width + (_exposureSizes.top.width - _exposureSizes.middle.width) * (_focusIndicator.center.y - center.y) / (_lengthOfSliderSpace * 0.5))
+            let height = min(_exposureSizes.top.height, _exposureSizes.middle.height + (_exposureSizes.top.height - _exposureSizes.middle.height) * (_focusIndicator.center.y - center.y) / (_lengthOfSliderSpace * 0.5))
+            let originx = _exposureIndicator.frame.origin.x - (width - _exposureIndicator.bounds.width) * 0.5
+            let originy = _exposureIndicator.frame.origin.y - (height - _exposureIndicator.bounds.height) * 0.5
+            _exposureIndicator.frame = CGRect(x: originx, y: originy, width: width, height: height)
+        } else {
+            let width = max(_exposureSizes.bottom.width, _exposureSizes.middle.width - (_exposureSizes.middle.width - _exposureSizes.bottom.width) * (center.y - _focusIndicator.center.y) / (_lengthOfSliderSpace * 0.5))
+            let height = max(_exposureSizes.bottom.height, _exposureSizes.middle.height - (_exposureSizes.middle.height - _exposureSizes.bottom.height) * (center.y - _focusIndicator.center.y) / (_lengthOfSliderSpace * 0.5))
+            let originx = _exposureIndicator.frame.origin.x + (_exposureIndicator.bounds.width - width) * 0.5
+            let originy = _exposureIndicator.frame.origin.y + (_exposureIndicator.bounds.height - height) * 0.5
+            _exposureIndicator.frame = CGRect(x: originx, y: originy, width: width, height: height)
+        }
     }
     
     private func _twinkle(content view: UIView) {
