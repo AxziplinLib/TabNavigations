@@ -1087,8 +1087,8 @@ extension _CameraViewController._CaptureVideoPreviewView {
                 humanReadingInfos = humanReadingInfos.filter{ $0.type != .exposureTargetOffset && $0.type != .customExposure }
                 _exposureCenters.isoBinding = _exposureIndicator.center
                 _exposureSettings.duration = device.exposureDuration
-                _exposureSettings.iso = device.iso
-                _exposureSettings.targetBias = device.exposureTargetBias
+                _exposureSettings.iso = max(min(device.iso, device.activeFormat.maxISO), device.activeFormat.minISO)
+                _exposureSettings.targetBias = max(min(device.exposureTargetBias, device.maxExposureTargetBias), device.minExposureTargetBias)
             }
         } else if keyPath == "exposureTargetOffset" && (object as? AVCaptureDevice) === videoDevice {
             guard let exposureTargetOffset = change?[.newKey] as? Float, let device = videoDevice else { return }
@@ -1479,6 +1479,7 @@ extension _CameraViewController {
             stackView.alignment = .center
             return stackView
         }()
+        // var maxAllowedCount
         lazy var _flash: UIButton = { () -> UIButton in
             let flash = UIButton(type: .custom)
             flash.translatesAutoresizingMaskIntoConstraints = false
