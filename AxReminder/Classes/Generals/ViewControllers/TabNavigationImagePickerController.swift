@@ -39,7 +39,7 @@ class TabNavigationImagePickerController: TabNavigationController {
     
     fileprivate var _captureSession: AVCaptureSession!
     fileprivate var _captureDeviceInput: AVCaptureDeviceInput!
-    fileprivate var _captureVideoPreviewView: _CameraViewController._CaptureVideoPreviewView!
+    fileprivate var _captureVideoPreviewView: _CameraViewController.CaptureVideoPreviewView!
     
     fileprivate var imagesResult: ImagesResultHandler?
     
@@ -72,7 +72,7 @@ class TabNavigationImagePickerController: TabNavigationController {
                     _captureSession.sessionPreset = AVCaptureSessionPresetPhoto
                 }
                 _captureSession.addInput(_captureDeviceInput)
-                _captureVideoPreviewView = _CameraViewController._CaptureVideoPreviewView(session: _captureSession)
+                _captureVideoPreviewView = _CameraViewController.CaptureVideoPreviewView(session: _captureSession)
                 _captureVideoPreviewView.previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill
                 _captureVideoPreviewView.translatesAutoresizingMaskIntoConstraints = false
             } catch let error {
@@ -542,28 +542,32 @@ fileprivate protocol _CameraViewControllerDelegate {
     @objc optional func cameraViewControllerDidCancel(_ cameraViewController: _CameraViewController)
 }
 
+private let _CameraDefaultHighlightedColor = UIColor(colorLiteralRed: 1.0, green: 0.8, blue: 0.0, alpha: 1.0)
+
 @available(iOS 9.0, *)
 fileprivate class _CameraViewController: UIViewController {
     weak var delegate: _CameraViewControllerDelegate?
     var stopSessionWhenDisposed: Bool = false
     
     var _session: AVCaptureSession!
-    var _input: AVCaptureDeviceInput!
-    var _output: AVCapturePhotoOutput!
+    var _input  : AVCaptureDeviceInput!
+    var _output : AVCapturePhotoOutput!
     
-    var _previewView: _CaptureVideoPreviewView!
+    var _previewView: CaptureVideoPreviewView!
     
     // MARK: Tool Views.
     
-    lazy var _topBar: _CameraViewController._TopBar = { () -> _TopBar in
-        let topBar = _TopBar()
+    private let _flashConfigs: [(title: String, image: UIImage)] = [("自动", #imageLiteral(resourceName: "flash_auto")), ("打开", #imageLiteral(resourceName: "flash_on")), ("关闭", #imageLiteral(resourceName: "flash_off"))]
+    private let _hdrConfigs: [(title: String, image: UIImage)] = [("自动", UIImage(named: TabNavigationImagePickerController.resourceBundlePath+"HDR_auto")!), ("打开", UIImage(named: TabNavigationImagePickerController.resourceBundlePath+"HDR_on")!), ("关闭", UIImage(named: TabNavigationImagePickerController.resourceBundlePath+"HDR_off")!)]
+    lazy var _topBar: TopBar = { () -> TopBar in
+        let topBar = TopBar()
         topBar.tintColor = .white
         topBar.backgroundColor = .black
         topBar.translatesAutoresizingMaskIntoConstraints = false
         return topBar
     }()
-    lazy var _bottomBar: _CameraViewController._BottomBar = { () -> _BottomBar in
-        let bottomBar = _BottomBar()
+    lazy var _bottomBar: BottomBar = { () -> BottomBar in
+        let bottomBar = BottomBar()
         bottomBar.tintColor = .white
         bottomBar.backgroundColor = .black
         bottomBar.translatesAutoresizingMaskIntoConstraints = false
@@ -571,7 +575,7 @@ fileprivate class _CameraViewController: UIViewController {
     }()
     
     // MARK: Initializer.
-    init?(previewView: _CaptureVideoPreviewView? = nil, session: AVCaptureSession? = nil, input: AVCaptureDeviceInput? = nil) {
+    init?(previewView: CaptureVideoPreviewView? = nil, session: AVCaptureSession? = nil, input: AVCaptureDeviceInput? = nil) {
         guard let __input = input ?? (try? AVCaptureDeviceInput(device: AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeVideo))) else {
             return nil
         }
@@ -599,7 +603,7 @@ fileprivate class _CameraViewController: UIViewController {
     private func _initializer() {
         _configureSession()
         if _previewView == nil {
-            _previewView = _CaptureVideoPreviewView(session: _session)
+            _previewView = CaptureVideoPreviewView(session: _session)
         }
     }
     
@@ -665,6 +669,19 @@ fileprivate class _CameraViewController: UIViewController {
         _topBar.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         _topBar.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         _topBar.heightAnchor.constraint(equalToConstant: 44.0).isActive = true
+        // Set up items.
+        let flash = BarItem(image: #imageLiteral(resourceName: "flash_auto"), actions: _flashConfigs.map({ BarItem(title: $0.title) }))
+        let hdr = BarItem(image: _hdrConfigs.first!.image, actions: _hdrConfigs.map({ BarItem(title: $0.title) }))
+        _topBar.items = [flash, hdr, BarItem(title: "item2"), BarItem(title: "item3"), BarItem(title: "item4"), BarItem(title: "item5")]
+        _topBar.didSelectAction = { [unowned self] itemIndex, selectedIndex in
+            switch itemIndex {
+            case 0: // Flash.
+                self._topBar.updateImage(self._flashConfigs[selectedIndex].image, ofItemAtIndex: itemIndex)
+            case 1: // HDR.
+                self._topBar.updateImage(self._hdrConfigs[selectedIndex].image, ofItemAtIndex: itemIndex)
+            default: break
+            }
+        }
     }
     
     private func _setupBottomBar() {
@@ -712,7 +729,7 @@ extension _CameraViewController {
 
 extension _CameraViewController {
     @available(iOS 9.0, *)
-    class _CaptureVideoPreviewView: UIView {
+    class CaptureVideoPreviewView: UIView {// CAReplicatorLayer
         override class var layerClass: AnyClass { return AVCaptureVideoPreviewLayer.self }
         var previewLayer: AVCaptureVideoPreviewLayer { return layer as! AVCaptureVideoPreviewLayer }
         var videoDevice: AVCaptureDevice? {
@@ -821,8 +838,8 @@ extension _CameraViewController {
             _focusIndicator.isHidden = true
             _exposureIndicator.isHidden = true
             _co_focusIndicator.isHidden = true
-            _exposureSliders.top.backgroundColor = UIColor(colorLiteralRed: 1.0, green: 0.8, blue: 0.0, alpha: 1.0)
-            _exposureSliders.bottom.backgroundColor = UIColor(colorLiteralRed: 1.0, green: 0.8, blue: 0.0, alpha: 1.0)
+            _exposureSliders.top.backgroundColor = _CameraDefaultHighlightedColor
+            _exposureSliders.bottom.backgroundColor = _CameraDefaultHighlightedColor
             _exposureSliders.top.isHidden = true
             _exposureSliders.bottom.isHidden = true
             _exposureSliders.top.alpha = 0.0
@@ -887,7 +904,7 @@ extension _CameraViewController {
                     label.textColor = UIColor.black.withAlphaComponent(0.88)
                     label.text = content
                     label.removeFromSuperview()
-                    infoView.backgroundColor = UIColor(colorLiteralRed: 1.0, green: 0.8, blue: 0.0, alpha: 1.0)
+                    infoView.backgroundColor = _CameraDefaultHighlightedColor
                     infoView.addSubview(label)
                     label.topAnchor.constraint(equalTo: infoView.topAnchor, constant: 2.0).isActive = true
                     label.bottomAnchor.constraint(equalTo: infoView.bottomAnchor, constant: -2.0).isActive = true
@@ -956,7 +973,7 @@ extension _CameraViewController {
     }
 }
 
-extension _CameraViewController._CaptureVideoPreviewView {
+extension _CameraViewController.CaptureVideoPreviewView {
     enum _HumanReading {
         case autoModesLocked
         case flashOn
@@ -970,7 +987,7 @@ extension _CameraViewController._CaptureVideoPreviewView {
 
 // MARK: Actions.
 
-extension _CameraViewController._CaptureVideoPreviewView {
+extension _CameraViewController.CaptureVideoPreviewView {
     @objc
     fileprivate func _handleCaptureDeviceSubjectAreaDidChange(_ notification: NSNotification) {
         if videoDevice?.focusMode != .continuousAutoFocus {
@@ -1443,7 +1460,7 @@ extension _CameraViewController._CaptureVideoPreviewView {
     private func _untwinkle(content view: UIView) { view.layer.removeAnimation(forKey: "twinkle") }
 }
 
-extension _CameraViewController._CaptureVideoPreviewView {
+extension _CameraViewController.CaptureVideoPreviewView {
     class _ImageView: UIImageView {
         override var intrinsicContentSize: CGSize { return image?.size ?? .zero }
         override var image: UIImage? {
@@ -1452,7 +1469,7 @@ extension _CameraViewController._CaptureVideoPreviewView {
     }
 }
 
-extension _CameraViewController._CaptureVideoPreviewView {
+extension _CameraViewController.CaptureVideoPreviewView {
     class _HumanReadingInfoView: UIView {
         let type: _HumanReading
         init(type: _HumanReading) {
@@ -1465,38 +1482,44 @@ extension _CameraViewController._CaptureVideoPreviewView {
     }
 }
 
-// MARK: _TopBar.
+// MARK: TopBar.
 
 extension _CameraViewController {
     @available(iOS 9.0, *)
-    class _TopBar: UIView {
+    class TopBar: UIView {
+        var countMeetsFullScreen: Int = 5
+        
+        var didSelectItem  : ItemsSelection?
+        var willShowActions: ActionsPresentation?
+        var willHideActions: ActionsDismissal?
+        var didSelectAction: ActionsSelection?
+        
+        var state: State = .items(selected: .index(0))
+        var items: [BarItem] = [] { didSet { _updateItemViews(items: items) } }
+        fileprivate var _itemsBackup: [BarItem] = []
+        fileprivate let _stackContentInset: UIEdgeInsets = UIEdgeInsets(top: 0.0, left: 15.0, bottom: 0.0, right: 15.0)
+        fileprivate weak var _leadingConstraintOfContentSctollView: NSLayoutConstraint?
+        
+        fileprivate lazy var _contentScollView: UIScrollView = { () -> UIScrollView in
+            let scrollView = UIScrollView()
+            scrollView.translatesAutoresizingMaskIntoConstraints = false
+            scrollView.showsHorizontalScrollIndicator = false
+            scrollView.showsVerticalScrollIndicator = false
+            scrollView.alwaysBounceHorizontal = true
+            scrollView.bounces = true
+            scrollView.scrollsToTop = false
+            scrollView.delaysContentTouches = false
+            scrollView.isPagingEnabled = true
+            return scrollView
+        }()
         lazy var _stackView: UIStackView = { () -> UIStackView in
             let stackView = UIStackView()
             stackView.backgroundColor = .clear
             stackView.translatesAutoresizingMaskIntoConstraints = false
             stackView.axis = .horizontal
             stackView.distribution = .equalSpacing
-            stackView.alignment = .center
+            stackView.alignment = .fill
             return stackView
-        }()
-        // var maxAllowedCount
-        lazy var _flash: UIButton = { () -> UIButton in
-            let flash = UIButton(type: .custom)
-            flash.translatesAutoresizingMaskIntoConstraints = false
-            flash.setContentHuggingPriority(UILayoutPriorityRequired, for: .horizontal)
-            flash.adjustsImageWhenDisabled = false
-            flash.adjustsImageWhenHighlighted = false
-            flash.setImage(#imageLiteral(resourceName: "flash_auto"), for: .normal)
-            return flash
-        }()
-        lazy var _flash2: UIButton = { () -> UIButton in
-            let flash = UIButton(type: .custom)
-            flash.translatesAutoresizingMaskIntoConstraints = false
-            flash.setContentHuggingPriority(UILayoutPriorityRequired, for: .horizontal)
-            flash.adjustsImageWhenDisabled = false
-            flash.adjustsImageWhenHighlighted = false
-            flash.setImage(#imageLiteral(resourceName: "flash_on"), for: .normal)
-            return flash
         }()
         
         override init(frame: CGRect) {
@@ -1508,29 +1531,256 @@ extension _CameraViewController {
             _initializer()
         }
         private func _initializer() {
+            _setupContentScrollView()
             _setupStackView()
-            _setupContentViews()
+        }
+        
+        private func _setupContentScrollView() {
+            addSubview(_contentScollView)
+            let leading = _contentScollView.leadingAnchor.constraint(equalTo: leadingAnchor)
+            leading.isActive = true
+            _leadingConstraintOfContentSctollView = leading
+            _contentScollView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
+            _contentScollView.topAnchor.constraint(equalTo: topAnchor).isActive = true
+            _contentScollView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
+            _contentScollView.heightAnchor.constraint(equalTo: heightAnchor).isActive = true
         }
         
         private func _setupStackView() {
-            addSubview(_stackView)
-            _stackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 15.0).isActive = true
-            _stackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -15.0).isActive = true
-            _stackView.topAnchor.constraint(equalTo: topAnchor).isActive = true
-            _stackView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
-        }
-        
-        private func _setupContentViews() {
-            _stackView.addArrangedSubview(_flash)
-            _stackView.addArrangedSubview(_flash2)
+            _contentScollView.addSubview(_stackView)
+            _stackView.leadingAnchor.constraint(equalTo: _contentScollView.leadingAnchor, constant: _stackContentInset.left).isActive = true
+            _stackView.trailingAnchor.constraint(equalTo: _contentScollView.trailingAnchor, constant: -_stackContentInset.right).isActive = true
+            _stackView.topAnchor.constraint(equalTo: _contentScollView.topAnchor, constant: _stackContentInset.top).isActive = true
+            _stackView.bottomAnchor.constraint(equalTo: _contentScollView.bottomAnchor, constant: -_stackContentInset.bottom).isActive = true
+            _stackView.heightAnchor.constraint(equalTo: heightAnchor, constant: -_stackContentInset.height).isActive = true
         }
     }
+}
+
+extension _CameraViewController.TopBar {
+    enum State {
+        case items(selected: Index)
+        case actions(index: Index, itemIndex: Index, itemView: UIView)
+    }
+    
+    fileprivate typealias ItemsSelection      = (Int) -> Void // Selected item index.
+    fileprivate typealias ActionsPresentation = (Int) -> Void // Selected item index.
+    fileprivate typealias ActionsDismissal    = ActionsPresentation
+    fileprivate typealias ActionsSelection    = (Int, Int) -> Void // Selected item index, selected action index.
+}
+extension _CameraViewController.TopBar.State {
+    enum Index {
+        case invalid
+        case index(Int)
+    }
+}
+
+// MARK: Actions.
+
+extension _CameraViewController.TopBar {
+    fileprivate func _updateItemViews(items barItems: [_CameraViewController.BarItem]) {
+        _stackView.arrangedSubviews.forEach({ self._stackView.removeArrangedSubview($0); $0.removeFromSuperview() })
+        barItems.map({ _itemButton(for: $0) }).forEach({ self._stackView.addArrangedSubview($0) })
+        setNeedsLayout()
+        layoutIfNeeded()
+        
+        let count = barItems.count
+        switch state {
+        case .actions(index: _, itemIndex: _, itemView: let itemView):
+            if count <= countMeetsFullScreen {
+                _stackView.spacing = (bounds.width - _stackContentInset.width - _stackView.arrangedSubviews.map({ $0.bounds.width }).reduce(itemView.bounds.width, { $0 + $1 })) / CGFloat(count)
+            } else {
+                _stackView.spacing = (bounds.width - _stackContentInset.width - _stackView.arrangedSubviews.prefix(upTo: countMeetsFullScreen).map({ $0.bounds.width }).reduce(itemView.bounds.width, { $0 + $1 })) / CGFloat(countMeetsFullScreen)
+            }
+        default:
+            if count <= countMeetsFullScreen {
+                _stackView.spacing = count == 1 ? 0.0 : (bounds.width - _stackContentInset.width - _stackView.arrangedSubviews.map({ $0.bounds.width }).reduce(0.0, { $0 + $1 })) / CGFloat(count - 1)
+            } else {
+                _stackView.spacing = (bounds.width - _stackContentInset.width - _stackView.arrangedSubviews.prefix(upTo: countMeetsFullScreen).map({ $0.bounds.width }).reduce(0.0, { $0 + $1 })) / CGFloat(countMeetsFullScreen - 1)
+            }
+        }
+    }
+    
+    private func _itemButton(for item: _CameraViewController.BarItem) -> UIButton {
+        let button = UIButton(type: .custom)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setContentHuggingPriority(UILayoutPriorityRequired, for: .horizontal)
+        button.setTitleColor(.white, for: .normal)
+        button.setTitleColor(_CameraDefaultHighlightedColor, for: .selected)
+        button.adjustsImageWhenDisabled = false
+        button.adjustsImageWhenHighlighted = false
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 14)
+        if let tintColor = item.tintColor { button.tintColor = tintColor }
+        if let image = item.image { button.setImage(image, for: .normal) } else {
+            button.setTitle(item.title, for: .normal)
+        }
+        button.addTarget(self, action: #selector(_touchUpInside(_:)), for: .touchUpInside)
+        return button
+    }
+    
+    @objc
+    private func _touchUpInside(_ sender: UIButton) {
+        switch state {
+        case .actions(index: .index(let _index), itemIndex: .index(let itemIndex), itemView: _):
+            let index = _stackView.arrangedSubviews.index(of: sender) ?? _index
+            didSelectAction?(itemIndex, index)
+            _toggle(from: state, to: .items(selected: .index(index)), items: _itemsBackup)
+        case .items(selected: let index):
+            let itemIndex = _stackView.arrangedSubviews.index(of: sender)!
+            let item = items[itemIndex]
+            
+            if item.actions.isEmpty {
+                didSelectItem?(itemIndex)
+            } else {
+                _toggle(from: self.state, to: .actions(index: index, itemIndex: .index(itemIndex), itemView: sender), items: item.actions)
+            }
+        default: break
+        }
+    }
+    
+    private func _toggle(from: State, to state: State, items: [_CameraViewController.BarItem], animated: Bool = true) {
+        self.state = state
+        switch self.state {
+        case .actions(index: .index(let index), itemIndex: .index(let itemIndex), itemView: let itemView):
+            var itemViewsToBeRemoved = _stackView.arrangedSubviews
+            itemViewsToBeRemoved.forEach({ self._applyTransition(on: $0, transform: $0 === itemView) })
+            itemViewsToBeRemoved.remove(at: itemIndex)
+            
+            _itemsBackup = self.items
+            self.items = items
+            
+            removeConstraintIfNotNil(_leadingConstraintOfContentSctollView)
+            let _leading = _contentScollView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: itemView.bounds.width + _stackView.spacing)
+            _leading.isActive = true
+            _leadingConstraintOfContentSctollView = _leading
+            setNeedsLayout()
+            layoutIfNeeded()
+            
+            willShowActions?(itemIndex)
+            if animated {
+                let itemViewsToBeAdded = _stackView.arrangedSubviews
+                itemViewsToBeAdded.forEach({ $0.alpha = 0.0 })
+                UIView.animate(withDuration: 0.5, delay: 0.0, usingSpringWithDamping: 1.0, initialSpringVelocity: 1.0, options: [.curveEaseOut], animations: {
+                    itemView.transform = .identity
+                    itemViewsToBeRemoved.forEach({ $0.alpha = 0.0 })
+                    itemViewsToBeAdded.forEach({ $0.alpha = 1.0 })
+                }) { _ in
+                    itemViewsToBeRemoved.forEach({ $0.removeFromSuperview() })
+                }
+            } else {
+                itemView.transform = .identity
+                itemViewsToBeRemoved.forEach({ $0.removeFromSuperview() })
+            }
+            _selectItem(at: index)
+        case .items(selected: _):
+            let itemViewsToBeRemoved = _stackView.arrangedSubviews
+            itemViewsToBeRemoved.forEach({ self._applyTransition(on: $0, transform: false) })
+            
+            switch from {
+            case .actions(index: _, itemIndex: .index(let itemIndex), itemView: let itemView):
+                self.items = items
+                
+                removeConstraintIfNotNil(_leadingConstraintOfContentSctollView)
+                let _leading = _contentScollView.leadingAnchor.constraint(equalTo: self.leadingAnchor)
+                _leading.isActive = true
+                _leadingConstraintOfContentSctollView = _leading
+                setNeedsLayout()
+                layoutIfNeeded()
+                
+                willHideActions?(itemIndex)
+                if animated {
+                    let itemViewsToBeAdded = _stackView.arrangedSubviews
+                    itemViewsToBeAdded.forEach({ $0.alpha = 0.0 })
+                    UIView.animate(withDuration: 0.5, delay: 0.0, usingSpringWithDamping: 1.0, initialSpringVelocity: 1.0, options: [.curveEaseOut], animations: {
+                        itemView.transform = CGAffineTransform(translationX: self._stackView.convert(itemViewsToBeAdded[itemIndex].center, to: self).x - itemView.center.x, y: 0.0)
+                        itemViewsToBeRemoved.forEach({ $0.alpha = 0.0 })
+                        itemViewsToBeAdded.enumerated().forEach({ $1.alpha = $0 != itemIndex ? 1.0 : 0.0 })
+                    }) { _ in
+                        itemViewsToBeRemoved.forEach({ $0.removeFromSuperview() })
+                        itemViewsToBeAdded[itemIndex].alpha = 1.0
+                        itemView.removeFromSuperview()
+                    }
+                } else {
+                    itemView.removeFromSuperview()
+                    itemViewsToBeRemoved.forEach({ $0.removeFromSuperview() })
+                }
+            default: break
+            }
+        default: break
+        }
+    }
+    
+    private func _applyTransition(on itemView: UIView, transform: Bool) {
+        let frame = _stackView.convert(itemView.frame, to: self)
+        _stackView.removeArrangedSubview(itemView)
+        itemView.removeFromSuperview()
+        addSubview(itemView)
+        if transform {
+            itemView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: self._stackContentInset.left).isActive = true
+            itemView.transform = CGAffineTransform(translationX: frame.origin.x - self._stackContentInset.left, y: 0.0)
+        } else {
+            itemView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: frame.origin.x).isActive = true
+        }
+        itemView.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true
+    }
+    
+    private func _selectItem(at index: Int) {
+        let itemViews = _stackView.arrangedSubviews as! [UIButton]
+        itemViews.enumerated().forEach { (idx, itemView) in
+            if index == idx {
+                itemView.isSelected = true
+            } else {
+                itemView.isSelected = false
+            }
+        }
+    }
+}
+
+extension _CameraViewController.TopBar {
+    fileprivate func updateImage(_ image: UIImage?, ofItemAtIndex index: Array<_CameraViewController.BarItem>.Index) {
+        guard index >= _itemsBackup.startIndex && index < _itemsBackup.endIndex else { return }
+        
+        var barItem = _itemsBackup[index]
+        barItem.image = image
+        _updateBarItem(at: index, with: barItem)
+    }
+    private func _updateBarItem(at index: Array<_CameraViewController.BarItem>.Index, with barItem: _CameraViewController.BarItem) {
+        func _updateButton(_ button: UIButton) {
+            if let image = barItem.image {
+                button.setImage(image, for: .normal)
+                button.setTitle(nil, for: .normal)
+            } else {
+                button.setTitle(barItem.title, for: .normal)
+            }
+            button.tintColor = barItem.tintColor
+        }
+        
+        _updateButton(_stackView.arrangedSubviews[index] as! UIButton)
+        switch state {
+        case .actions(index: _, itemIndex: _, itemView: let itemButton as UIButton):
+            _updateButton(itemButton)
+            _itemsBackup[index] = barItem
+        default:
+            items[index] = barItem
+        }
+    }
+}
+
+// MARK: BarItem.
+
+extension _CameraViewController {
+    struct BarItem { let title: String; var image: UIImage?; var tintColor: UIColor?; let actions: [BarItem]
+        init(title: String, image: UIImage? = nil, tintColor: UIColor? = nil, actions: [BarItem] = []) {
+            self.title = title; self.image = image; self.tintColor = tintColor; self.actions = actions } }
+}
+extension _CameraViewController.BarItem {
+    fileprivate init(image: UIImage, actions: [_CameraViewController.BarItem] = []) { self.init(title: "", image: image, actions: actions) }
 }
 
 // MARK: _BottomBar.
 
 extension _CameraViewController {
-    class _BottomBar: UIView {
+    class BottomBar: UIView {
         let _shot: UIButton = UIButton(type: .system)
         let _toggleFace: UIButton = UIButton(type: .system)
         let _cancel: UIButton = UIButton(type: .system)
@@ -1633,4 +1883,17 @@ extension _CameraViewController._PresentationAnimator: UIViewControllerAnimatedT
             }
         }
     }
+}
+
+// MARK: - Public Extensions.
+extension UIEdgeInsets {
+    public var width: CGFloat { return left + right }
+    public var height: CGFloat { return top + bottom }
+    init(left: CGFloat) {
+        self.init(top: 0.0, left: left, bottom: 0.0, right: 0.0)
+    }
+}
+
+extension UIView {
+    public func removeConstraintIfNotNil(_ constraint: NSLayoutConstraint?) { if let const_ = constraint { removeConstraint(const_) } }
 }
