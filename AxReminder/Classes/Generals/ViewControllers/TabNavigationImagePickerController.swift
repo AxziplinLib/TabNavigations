@@ -1609,7 +1609,7 @@ extension _CameraViewController.TopBar {
         button.setTitleColor(_CameraDefaultHighlightedColor, for: .selected)
         button.adjustsImageWhenDisabled = false
         button.adjustsImageWhenHighlighted = false
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 14)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 13)
         if let tintColor = item.tintColor { button.tintColor = tintColor }
         if let image = item.image { button.setImage(image, for: .normal) } else {
             button.setTitle(item.title, for: .normal)
@@ -1623,16 +1623,17 @@ extension _CameraViewController.TopBar {
         switch state {
         case .actions(index: .index(let _index), itemIndex: .index(let itemIndex), itemView: _):
             let index = _stackView.arrangedSubviews.index(of: sender) ?? _index
+            _itemsBackup[itemIndex].index = index
             didSelectAction?(itemIndex, index)
             _toggle(from: state, to: .items(selected: .index(index)), items: _itemsBackup)
-        case .items(selected: let index):
+        case .items(selected: _):
             guard let itemIndex = _stackView.arrangedSubviews.index(of: sender) else { break }
             let item = items[itemIndex]
             
             if item.actions.isEmpty {
                 didSelectItem?(itemIndex)
             } else {
-                _toggle(from: self.state, to: .actions(index: index, itemIndex: .index(itemIndex), itemView: sender), items: item.actions)
+                _toggle(from: self.state, to: .actions(index: .index(item.index), itemIndex: .index(itemIndex), itemView: sender), items: item.actions)
             }
         default: break
         }
@@ -1771,9 +1772,9 @@ extension _CameraViewController.TopBar {
 // MARK: BarItem.
 
 extension _CameraViewController {
-    struct BarItem { let title: String; var image: UIImage?; var tintColor: UIColor?; let actions: [BarItem]
-        init(title: String, image: UIImage? = nil, tintColor: UIColor? = nil, actions: [BarItem] = []) {
-            self.title = title; self.image = image; self.tintColor = tintColor; self.actions = actions } }
+    struct BarItem { let title: String; var image: UIImage?; var tintColor: UIColor?; let actions: [BarItem]; var index: Array<BarItem>.Index
+        init(title: String, image: UIImage? = nil, tintColor: UIColor? = nil, actions: [BarItem] = [], index: Array<BarItem>.Index = 0) {
+            self.title = title; self.image = image; self.tintColor = tintColor; self.actions = actions; self.index = index } }
 }
 extension _CameraViewController.BarItem {
     fileprivate init(image: UIImage, actions: [_CameraViewController.BarItem] = []) { self.init(title: "", image: image, actions: actions) }
