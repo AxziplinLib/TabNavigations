@@ -1640,7 +1640,7 @@ extension _CameraViewController.TopBar {
     
     private func _toggle(from: State, to state: State, items: [_CameraViewController.BarItem], animated: Bool = true) {
         self.state = state
-        let duration = 2.5
+        let duration = 0.5
         switch self.state {
         case .actions(index: .index(let index), itemIndex: .index(let itemIndex), itemView: let itemView):
             var itemViewsToBeRemoved = _stackView.arrangedSubviews
