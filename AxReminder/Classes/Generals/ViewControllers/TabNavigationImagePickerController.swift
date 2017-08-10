@@ -1626,7 +1626,7 @@ extension _CameraViewController.TopBar {
             didSelectAction?(itemIndex, index)
             _toggle(from: state, to: .items(selected: .index(index)), items: _itemsBackup)
         case .items(selected: let index):
-            let itemIndex = _stackView.arrangedSubviews.index(of: sender)!
+            guard let itemIndex = _stackView.arrangedSubviews.index(of: sender) else { break }
             let item = items[itemIndex]
             
             if item.actions.isEmpty {
@@ -1640,6 +1640,7 @@ extension _CameraViewController.TopBar {
     
     private func _toggle(from: State, to state: State, items: [_CameraViewController.BarItem], animated: Bool = true) {
         self.state = state
+        let duration = 2.5
         switch self.state {
         case .actions(index: .index(let index), itemIndex: .index(let itemIndex), itemView: let itemView):
             var itemViewsToBeRemoved = _stackView.arrangedSubviews
@@ -1660,7 +1661,7 @@ extension _CameraViewController.TopBar {
             if animated {
                 let itemViewsToBeAdded = _stackView.arrangedSubviews
                 itemViewsToBeAdded.forEach({ $0.alpha = 0.0 })
-                UIView.animate(withDuration: 0.5, delay: 0.0, usingSpringWithDamping: 1.0, initialSpringVelocity: 1.0, options: [.curveEaseOut], animations: {
+                UIView.animate(withDuration: duration, delay: 0.0, usingSpringWithDamping: 1.0, initialSpringVelocity: 1.0, options: [.curveEaseOut], animations: {
                     itemView.transform = .identity
                     itemViewsToBeRemoved.forEach({ $0.alpha = 0.0 })
                     itemViewsToBeAdded.forEach({ $0.alpha = 1.0 })
@@ -1691,7 +1692,7 @@ extension _CameraViewController.TopBar {
                 if animated {
                     let itemViewsToBeAdded = _stackView.arrangedSubviews
                     itemViewsToBeAdded.forEach({ $0.alpha = 0.0 })
-                    UIView.animate(withDuration: 0.5, delay: 0.0, usingSpringWithDamping: 1.0, initialSpringVelocity: 1.0, options: [.curveEaseOut], animations: {
+                    UIView.animate(withDuration: duration, delay: 0.0, usingSpringWithDamping: 1.0, initialSpringVelocity: 1.0, options: [.curveEaseOut], animations: {
                         itemView.transform = CGAffineTransform(translationX: self._stackView.convert(itemViewsToBeAdded[itemIndex].center, to: self).x - itemView.center.x, y: 0.0)
                         itemViewsToBeRemoved.forEach({ $0.alpha = 0.0 })
                         itemViewsToBeAdded.enumerated().forEach({ $1.alpha = $0 != itemIndex ? 1.0 : 0.0 })
@@ -1755,7 +1756,7 @@ extension _CameraViewController.TopBar {
             button.tintColor = barItem.tintColor
         }
         
-        _updateButton(_stackView.arrangedSubviews[index] as! UIButton)
+        // _updateButton(_stackView.arrangedSubviews[index] as! UIButton)
         switch state {
         case .actions(index: _, itemIndex: _, itemView: let itemButton as UIButton):
             _updateButton(itemButton)
