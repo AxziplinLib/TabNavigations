@@ -1723,6 +1723,7 @@ extension _CameraViewController.TopBar {
             itemView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: frame.origin.x).isActive = true
         }
         itemView.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true
+        itemView.heightAnchor.constraint(equalToConstant: frame.height).isActive = true
     }
     
     private func _selectItem(at index: Int) {
