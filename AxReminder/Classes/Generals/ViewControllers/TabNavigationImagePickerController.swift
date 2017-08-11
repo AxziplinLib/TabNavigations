@@ -2042,6 +2042,7 @@ extension _CameraViewController._PresentationAnimator: UIViewControllerAnimatedT
         let containerView = transitionContext.containerView
         let view = transitionContext.view(forKey: isDismissal ? .from : .to)!
         let viewController = transitionContext.viewController(forKey: isDismissal ? .from : .to)! as! _CameraViewController
+        let imagePicker = transitionContext.viewController(forKey: isDismissal ? .to: .from) as! TabNavigationImagePickerController
         let finalFrame = transitionContext.finalFrame(for: viewController)
         
         containerView.addSubview(view)
@@ -2050,27 +2051,38 @@ extension _CameraViewController._PresentationAnimator: UIViewControllerAnimatedT
         
         if isDismissal {
             containerView.insertSubview(transitionContext.view(forKey: .to)!, at: 0)
+            let displayView = _CameraViewController.CaptureVideoDisplayView()
+            displayView.frame = view.bounds
+            containerView.insertSubview(displayView, belowSubview: view)
+            imagePicker._captureDisplayViews.append(displayView)
+            let backgroundColor = view.backgroundColor
+            view.backgroundColor = .clear
+            
             UIView.animate(withDuration: duration, delay: 0.0, usingSpringWithDamping: 1.0, initialSpringVelocity: 1.0, options: [], animations: {
-                view.transform = CGAffineTransform(scaleX: scale.x, y: scale.y).translatedBy(x: translation.x / scale.x, y: translation.y / scale.y)
+                viewController._previewView.transform = CGAffineTransform(scaleX: scale.x, y: scale.y).translatedBy(x: translation.x / scale.x, y: translation.y / scale.y)
+                displayView.frame = self.previewOriginFrame
                 viewController._topBar.alpha = 0.0
+                viewController._previewView.alpha = 0.0
                 viewController._bottomBar.alpha = 0.0
-            }) { (finished) in
-                if finished {
-                    transitionContext.completeTransition(true)
+            }) { (_) in
+                if let index = imagePicker._captureDisplayViews.index(of: displayView) {
+                    imagePicker._captureDisplayViews.remove(at: index)
                 }
+                view.backgroundColor = backgroundColor
+                viewController._previewView.alpha = 1.0
+                viewController._previewView.transform = .identity
+                transitionContext.completeTransition(true)
             }
         } else {
             view.transform = CGAffineTransform(scaleX: scale.x, y: scale.y).translatedBy(x: translation.x / scale.x, y: translation.y / scale.y)
             viewController._topBar.alpha = 0.0
             viewController._bottomBar.alpha = 0.0
-            UIView.animate(withDuration: duration, delay: 0.0, usingSpringWithDamping: 0.8, initialSpringVelocity: 0.5, options: [], animations: {
+            UIView.animate(withDuration: duration, delay: 0.0, usingSpringWithDamping: 0.7, initialSpringVelocity: 0.5, options: [], animations: {
                 view.transform = .identity
                 viewController._topBar.alpha = 1.0
                 viewController._bottomBar.alpha = 1.0
-            }) { (finished) in
-                if finished {
-                    transitionContext.completeTransition(true)
-                }
+            }) { (_) in
+                transitionContext.completeTransition(true)
             }
         }
     }
