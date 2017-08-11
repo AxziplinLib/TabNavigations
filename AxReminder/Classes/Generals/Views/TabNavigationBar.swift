@@ -416,6 +416,7 @@ public class TabNavigationBar: UIView, UIBarPositioning {
     fileprivate lazy var _navigationItemView: UIView = _createGeneralContainerView()
     fileprivate lazy var _effectView: UIVisualEffectView = _createGenetalEffectView()
     fileprivate var _offsetPositionsUpToEndIndex: [CGFloat] = []
+    fileprivate let _positionQueue = DispatchQueue(label: "com.tabnavigationbar.position")
     
     private var _titleItemsPreviewPanGesture: UIPanGestureRecognizer!
     
@@ -1236,108 +1237,119 @@ extension TabNavigationBar: UIScrollViewDelegate {
         
         let _offsetX = scrollView.contentOffset.x
         
-        for (_index, _titleItem) in _navigationTitleItems.enumerated() {
-            let _offsetPosition = _offsetPositionsUpToEndIndex[_index]
-            
-            let _comingTitleItem = _titleItem
-            let _fontSizeDelta = _comingTitleItem.titleFont(whenSelected: true).pointSize - _comingTitleItem.titleFont(whenSelected: false).pointSize
-            
-            let _unselectedColorComponents = _comingTitleItem.titleColor(whenSelected: false).components
-            let _selectedColorComponents = _comingTitleItem.titleColor(whenSelected: true).components
-            
-            let _selectedDiffToUnselectedColorComponents = UIColor.diff(from: _selectedColorComponents, to: _unselectedColorComponents)
-            
-            if _offsetPosition >= _offsetX { // Will Reach the threshold.
-                if _index > _navigationTitleItems.startIndex {
-                    let _formerOffsetPosition = _offsetPositionsUpToEndIndex[_navigationTitleItems.index(before: _index)]
-                    let _offsetPositionDelta = _offsetPosition - _formerOffsetPosition
-                    
-                    if _offsetPosition - _offsetX <= _offsetPositionDelta {
-                        let _relativeOffsetX = _offsetX - _formerOffsetPosition
+        _positionQueue.async { autoreleasepool { [weak self] in
+            guard let wself = self else { return }
+            for (_index, _titleItem) in wself._navigationTitleItems.enumerated() {
+                let _offsetPosition = wself._offsetPositionsUpToEndIndex[_index]
+                
+                let _comingTitleItem = _titleItem
+                let _fontSizeDelta = _comingTitleItem.titleFont(whenSelected: true).pointSize - _comingTitleItem.titleFont(whenSelected: false).pointSize
+                
+                let _unselectedColorComponents = _comingTitleItem.titleColor(whenSelected: false).components
+                let _selectedColorComponents = _comingTitleItem.titleColor(whenSelected: true).components
+                
+                let _selectedDiffToUnselectedColorComponents = UIColor.diff(from: _selectedColorComponents, to: _unselectedColorComponents)
+                
+                if _offsetPosition >= _offsetX { // Will Reach the threshold.
+                    if _index > wself._navigationTitleItems.startIndex {
+                        let _formerOffsetPosition = wself._offsetPositionsUpToEndIndex[wself._navigationTitleItems.index(before: _index)]
+                        let _offsetPositionDelta = _offsetPosition - _formerOffsetPosition
                         
-                        let _transitionPercent = _relativeOffsetX / _offsetPositionDelta
-                        let _relativeOfFontSize = _fontSizeDelta * _transitionPercent
-                        
-                        let _red = _unselectedColorComponents.red + _selectedDiffToUnselectedColorComponents.red * _transitionPercent
-                        let _green = _unselectedColorComponents.green + _selectedDiffToUnselectedColorComponents.green * _transitionPercent
-                        let _blue = _unselectedColorComponents.blue + _selectedDiffToUnselectedColorComponents.blue * _transitionPercent
-                        let _alpha = _unselectedColorComponents.alpha + _selectedDiffToUnselectedColorComponents.alpha * _transitionPercent
-                        
-                        let _color = UIColor(red: _red, green: _green, blue: _blue, alpha: _alpha)
-                        let _fontName = _comingTitleItem.titleFont(whenSelected: true).fontName
-                        
-                        if let range = _titleItem.selectedRange {
-                            let _ns_range = NSMakeRange(range.lowerBound, range.upperBound - range.lowerBound)
+                        if _offsetPosition - _offsetX <= _offsetPositionDelta {
+                            let _relativeOffsetX = _offsetX - _formerOffsetPosition
                             
-                            let attributedTitle = NSMutableAttributedString(attributedString: _comingTitleItem._button.attributedTitle(for: .normal)!)
-                            attributedTitle.addAttributes([NSFontAttributeName: UIFont(name: _fontName, size: _comingTitleItem.titleFont(whenSelected: false).pointSize + CGFloat(_relativeOfFontSize))!], range: _ns_range)
+                            let _transitionPercent = _relativeOffsetX / _offsetPositionDelta
+                            let _relativeOfFontSize = _fontSizeDelta * _transitionPercent
                             
-                            attributedTitle.addAttributes([NSForegroundColorAttributeName: _color], range: _ns_range)
+                            let _red = _unselectedColorComponents.red + _selectedDiffToUnselectedColorComponents.red * _transitionPercent
+                            let _green = _unselectedColorComponents.green + _selectedDiffToUnselectedColorComponents.green * _transitionPercent
+                            let _blue = _unselectedColorComponents.blue + _selectedDiffToUnselectedColorComponents.blue * _transitionPercent
+                            let _alpha = _unselectedColorComponents.alpha + _selectedDiffToUnselectedColorComponents.alpha * _transitionPercent
                             
-                            _comingTitleItem._button.setAttributedTitle(attributedTitle, for: .normal)
+                            let _color = UIColor(red: _red, green: _green, blue: _blue, alpha: _alpha)
+                            let _fontName = _comingTitleItem.titleFont(whenSelected: true).fontName
+                            
+                            if let range = _titleItem.selectedRange {
+                                let _ns_range = NSMakeRange(range.lowerBound, range.upperBound - range.lowerBound)
+                                
+                                let attributedTitle = NSMutableAttributedString(attributedString: _comingTitleItem._button.attributedTitle(for: .normal)!)
+                                attributedTitle.addAttributes([NSFontAttributeName: UIFont(name: _fontName, size: _comingTitleItem.titleFont(whenSelected: false).pointSize + CGFloat(_relativeOfFontSize))!], range: _ns_range)
+                                attributedTitle.addAttributes([NSForegroundColorAttributeName: _color], range: _ns_range)
+                                
+                                DispatchQueue.main.async {
+                                    _comingTitleItem._button.setAttributedTitle(attributedTitle, for: .normal)
+                                }
+                            } else {
+                                DispatchQueue.main.async {
+                                    _comingTitleItem._button.titleLabel?.font = UIFont(name: _fontName, size: _comingTitleItem.titleFont(whenSelected: false).pointSize + CGFloat(_relativeOfFontSize))
+                                    _comingTitleItem._button.setTitleColor(_color, for: .normal)
+                                    _comingTitleItem._button.tintColor = _color
+                                }
+                            }
+                            
+                            if _transitionPercent > 0.5 {
+                                wself._selectedTitleItemIndex = _index
+                            } else {
+                                wself._selectedTitleItemIndex = wself._navigationTitleItems.index(before: _index)
+                            }
                         } else {
-                            _comingTitleItem._button.titleLabel?.font = UIFont(name: _fontName, size: _comingTitleItem.titleFont(whenSelected: false).pointSize + CGFloat(_relativeOfFontSize))
-                            
-                            _comingTitleItem._button.setTitleColor(_color, for: .normal)
-                            _comingTitleItem._button.tintColor = _color
+                            DispatchQueue.main.async {
+                                _titleItem.setSelected(false, animated: false)
+                            }
                         }
-                        
-                        if _transitionPercent > 0.5 {
-                            _selectedTitleItemIndex = _index
-                        } else {
-                            _selectedTitleItemIndex = _navigationTitleItems.index(before: _index)
-                        }
-                    } else {
-                        _titleItem.setSelected(false, animated: false)
                     }
-                }
-            } else { // Will move from the threshold.
-                if _index < _navigationTitleItems.index(before: _navigationTitleItems.endIndex) {
-                    let _latterOffsetPosition = _offsetPositionsUpToEndIndex[_navigationTitleItems.index(after: _index)]
-                    
-                    let _offsetPositionDelta = _latterOffsetPosition - _offsetPosition
-                    
-                    if _offsetX - _offsetPosition <= _offsetPositionDelta {
-                        let _relativeOffsetX = _offsetX - _offsetPosition
+                } else { // Will move from the threshold.
+                    if _index < wself._navigationTitleItems.index(before: wself._navigationTitleItems.endIndex) {
+                        let _latterOffsetPosition = wself._offsetPositionsUpToEndIndex[wself._navigationTitleItems.index(after: _index)]
                         
-                        let _transitionPercent = _relativeOffsetX / _offsetPositionDelta
-                        let _relativeOfFontSize = _fontSizeDelta * _transitionPercent
+                        let _offsetPositionDelta = _latterOffsetPosition - _offsetPosition
                         
-                        let _red = _selectedColorComponents.red - _selectedDiffToUnselectedColorComponents.red * _transitionPercent
-                        let _green = _selectedColorComponents.green - _selectedDiffToUnselectedColorComponents.green * _transitionPercent
-                        let _blue = _selectedColorComponents.blue - _selectedDiffToUnselectedColorComponents.blue * _transitionPercent
-                        let _alpha = _selectedColorComponents.alpha - _selectedDiffToUnselectedColorComponents.alpha * _transitionPercent
-                        
-                        let _color = UIColor(red: _red, green: _green, blue: _blue, alpha: _alpha)
-                        let _fontName = _comingTitleItem.titleFont(whenSelected: false).fontName
-
-                        if let range = _titleItem.selectedRange {
-                            let _ns_range = NSMakeRange(range.lowerBound, range.upperBound - range.lowerBound)
+                        if _offsetX - _offsetPosition <= _offsetPositionDelta {
+                            let _relativeOffsetX = _offsetX - _offsetPosition
                             
-                            let attributedTitle = NSMutableAttributedString(attributedString: _comingTitleItem._button.attributedTitle(for: .normal)!)
-                            attributedTitle.addAttributes([NSFontAttributeName: UIFont(name: _fontName, size: _comingTitleItem.titleFont(whenSelected: true).pointSize - CGFloat(_relativeOfFontSize))!], range: _ns_range)
+                            let _transitionPercent = _relativeOffsetX / _offsetPositionDelta
+                            let _relativeOfFontSize = _fontSizeDelta * _transitionPercent
                             
-                            attributedTitle.addAttributes([NSForegroundColorAttributeName: _color], range: _ns_range)
+                            let _red = _selectedColorComponents.red - _selectedDiffToUnselectedColorComponents.red * _transitionPercent
+                            let _green = _selectedColorComponents.green - _selectedDiffToUnselectedColorComponents.green * _transitionPercent
+                            let _blue = _selectedColorComponents.blue - _selectedDiffToUnselectedColorComponents.blue * _transitionPercent
+                            let _alpha = _selectedColorComponents.alpha - _selectedDiffToUnselectedColorComponents.alpha * _transitionPercent
                             
-                            _comingTitleItem._button.setAttributedTitle(attributedTitle, for: .normal)
+                            let _color = UIColor(red: _red, green: _green, blue: _blue, alpha: _alpha)
+                            let _fontName = _comingTitleItem.titleFont(whenSelected: false).fontName
+                            
+                            if let range = _titleItem.selectedRange {
+                                let _ns_range = NSMakeRange(range.lowerBound, range.upperBound - range.lowerBound)
+                                
+                                let attributedTitle = NSMutableAttributedString(attributedString: _comingTitleItem._button.attributedTitle(for: .normal)!)
+                                attributedTitle.addAttributes([NSFontAttributeName: UIFont(name: _fontName, size: _comingTitleItem.titleFont(whenSelected: true).pointSize - CGFloat(_relativeOfFontSize))!], range: _ns_range)
+                                attributedTitle.addAttributes([NSForegroundColorAttributeName: _color], range: _ns_range)
+                                
+                                DispatchQueue.main.async {
+                                    _comingTitleItem._button.setAttributedTitle(attributedTitle, for: .normal)
+                                }
+                            } else {
+                                DispatchQueue.main.async {
+                                    _comingTitleItem._button.titleLabel?.font = UIFont(name: _fontName, size: _comingTitleItem.titleFont(whenSelected: true).pointSize - CGFloat(_relativeOfFontSize))
+                                    _comingTitleItem._button.setTitleColor(_color, for: .normal)
+                                    _comingTitleItem._button.tintColor = _color
+                                }
+                            }
+                            
+                            if _transitionPercent > 0.5 {
+                                wself._selectedTitleItemIndex = wself._navigationTitleItems.index(after: _index)
+                            } else {
+                                wself._selectedTitleItemIndex = _index
+                            }
                         } else {
-                            _comingTitleItem._button.titleLabel?.font = UIFont(name: _fontName, size: _comingTitleItem.titleFont(whenSelected: true).pointSize - CGFloat(_relativeOfFontSize))
-                            
-                            _comingTitleItem._button.setTitleColor(_color, for: .normal)
-                            _comingTitleItem._button.tintColor = _color
+                            DispatchQueue.main.async {
+                                _titleItem.setSelected(false, animated: false)
+                            }
                         }
-                        
-                        if _transitionPercent > 0.5 {
-                            _selectedTitleItemIndex = _navigationTitleItems.index(after: _index)
-                        } else {
-                            _selectedTitleItemIndex = _index
-                        }
-                    } else {
-                        _titleItem.setSelected(false, animated: false)
                     }
                 }
             }
-        }
+        }}
     }
     
     public func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
