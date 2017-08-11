@@ -415,12 +415,13 @@ public class TabNavigationBar: UIView, UIBarPositioning {
     fileprivate lazy var _navigationTitleItemView: UIView = _createGeneralContainerView()
     fileprivate lazy var _navigationItemView: UIView = _createGeneralContainerView()
     fileprivate lazy var _effectView: UIVisualEffectView = _createGenetalEffectView()
+    fileprivate var _offsetPositionsUpToEndIndex: [CGFloat] = []
     
     private var _titleItemsPreviewPanGesture: UIPanGestureRecognizer!
     
     fileprivate var _navigationBackItem: _TabNavigationBackItem = _TabNavigationBackItem(image:#imageLiteral(resourceName: "back_indicator"))
     fileprivate var _navigationItems: [TabNavigationItem] = []
-    fileprivate var _navigationTitleItems: [TabNavigationTitleItem] = []
+    fileprivate var _navigationTitleItems: [TabNavigationTitleItem] = [] { didSet { _offsetPositionsUpToEndIndex = _calculatedPositionsUptoTitleItemAtEndIndex() } }
     fileprivate var _navigationTitleActionItems: [TabNavigationTitleActionItem] = []
     
     fileprivate var _selectedTitleItemIndex: Int = 0 {
@@ -1024,6 +1025,7 @@ public class TabNavigationBar: UIView, UIBarPositioning {
         }
         
         _calculateWidthConstantOfContentAlignmentView()
+        _offsetPositionsUpToEndIndex = _calculatedPositionsUptoTitleItemAtEndIndex()
         
         return (true, item)
     }
@@ -1222,14 +1224,17 @@ extension UIColor {
 }
 
 extension TabNavigationBar: UIScrollViewDelegate {
+    public func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        _offsetPositionsUpToEndIndex = _calculatedPositionsUptoTitleItemAtEndIndex()
+        NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(_scrollToSelectedTitleItemWithAnimation), object: nil)
+    }
+    
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {
         guard !scrollView.isDragging, !scrollView.isTracking, !scrollView.isDecelerating else {
             return
         }
         
         let _offsetX = scrollView.contentOffset.x
-        
-        let _offsetPositionsUpToEndIndex = _calculatedPositionsUptoTitleItemAtEndIndex()
         
         for (_index, _titleItem) in _navigationTitleItems.enumerated() {
             let _offsetPosition = _offsetPositionsUpToEndIndex[_index]
@@ -1333,10 +1338,6 @@ extension TabNavigationBar: UIScrollViewDelegate {
                 }
             }
         }
-    }
-    
-    public func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(_scrollToSelectedTitleItemWithAnimation), object: nil)
     }
     
     public func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
@@ -1480,6 +1481,7 @@ extension TabNavigationBar {
         }
         
         _calculateWidthConstantOfContentAlignmentView()
+        _offsetPositionsUpToEndIndex = _calculatedPositionsUptoTitleItemAtEndIndex()
     }
     
     public func setNavigationTitleItems(_ items: [TabNavigationTitleItem], animated: Bool = false, selectedIndex index: Array<TabNavigationTitleItem>.Index = 0, actionsConfig: (() -> (ignore: Bool, actions: [TabNavigationTitleActionItem]?))? = nil, animation: ((TabNavigationTitleItemAnimationContext) -> Void)? = nil) {
