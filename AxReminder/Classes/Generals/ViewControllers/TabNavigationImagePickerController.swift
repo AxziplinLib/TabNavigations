@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import GLKit
 import Photos
 import AVFoundation
 
@@ -38,7 +39,11 @@ class TabNavigationImagePickerController: TabNavigationController {
     open weak var delegate: TabNavigationImagePickerControllerDelegate?
     
     fileprivate var _captureSession: AVCaptureSession!
+    fileprivate let _captureSessionQueue = DispatchQueue(label: "com.imagepicker.session")
     fileprivate var _captureDeviceInput: AVCaptureDeviceInput!
+    fileprivate let _captureDisplayOutput = AVCaptureVideoDataOutput()
+    fileprivate var _captureDisplayViews: [_CameraViewController.CaptureVideoDisplayView] = []
+    fileprivate let _captureDisplayQueue = DispatchQueue(label: "com.imagepicker.display.render")
     fileprivate var _captureVideoPreviewView: _CameraViewController.CaptureVideoPreviewView!
     
     fileprivate var imagesResult: ImagesResultHandler?
@@ -63,24 +68,7 @@ class TabNavigationImagePickerController: TabNavigationController {
         isTabNavigationItemsUpdatingDisabledInRootViewControllers = true
         // Enumerate the asset collections.
         willBeginFetchingAssetCollection()
-        if let device = type(of: self).defaultDeviceOfCaptureSessionInputs() {
-            do {
-                let input = try AVCaptureDeviceInput(device: device)
-                _captureDeviceInput = input
-                _captureSession = AVCaptureSession()
-                if _captureSession.canSetSessionPreset(AVCaptureSessionPresetPhoto) {
-                    _captureSession.sessionPreset = AVCaptureSessionPresetPhoto
-                }
-                _captureSession.addInput(_captureDeviceInput)
-                _captureVideoPreviewView = _CameraViewController.CaptureVideoPreviewView(session: _captureSession)
-                _captureVideoPreviewView.previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill
-                _captureVideoPreviewView.translatesAutoresizingMaskIntoConstraints = false
-            } catch let error {
-                print(error)
-            }
-        } else {
-            print("The current default device of the specific media type is not available.")
-        }
+        _initSession()
         if !shouldIncludeHiddenAssets {
             _photoAssetCollections = _photoAssetCollections.filter{ $0.assetCollectionSubtype != .smartAlbumAllHidden }
         }
@@ -90,6 +78,7 @@ class TabNavigationImagePickerController: TabNavigationController {
             flowLayout.scrollDirection = .vertical
             let assetViewController = _AssetsViewController(collectionViewLayout: flowLayout, photoAlbum: assetCollection)
             self.addViewController(assetViewController)
+            // _captureDisplayViews.append(assetViewController._captureDisplayView)
         }
         didFinishFetchingAssetCollection()
     }
@@ -113,6 +102,45 @@ class TabNavigationImagePickerController: TabNavigationController {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+}
+
+// MARK: Private.
+
+extension TabNavigationImagePickerController {
+    fileprivate func _initSession() {
+        _captureSessionQueue.async { [weak self] in
+            guard let wself = self else { return }
+            if let device = type(of: wself).defaultDeviceOfCaptureSessionInputs() {
+                do {
+                    wself._captureDeviceInput = try AVCaptureDeviceInput(device: device)
+                    
+                    wself._captureDisplayOutput.videoSettings = [kCVPixelBufferPixelFormatTypeKey as AnyHashable: kCVPixelFormatType_32BGRA]
+                    wself._captureDisplayOutput.setSampleBufferDelegate(wself, queue: wself._captureDisplayQueue)
+                    
+                    wself._captureSession = AVCaptureSession()
+                    if wself._captureSession.canSetSessionPreset(AVCaptureSessionPresetPhoto) {
+                        wself._captureSession.sessionPreset = AVCaptureSessionPresetPhoto
+                    }
+                    if wself._captureSession.canAddInput(wself._captureDeviceInput) {
+                        wself._captureSession.addInput(wself._captureDeviceInput)
+                    }
+                    if wself._captureSession.canAddOutput(wself._captureDisplayOutput) {
+                        wself._captureSession.addOutput(wself._captureDisplayOutput)
+                    }
+                    
+                    DispatchQueue.main.async {
+                        wself._captureVideoPreviewView = _CameraViewController.CaptureVideoPreviewView(session: wself._captureSession)
+                        wself._captureVideoPreviewView.previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill
+                        wself._captureVideoPreviewView.translatesAutoresizingMaskIntoConstraints = false
+                    }
+                } catch let error {
+                    print("The input for the specific device is not avaiable: \(error)")
+                }
+            } else {
+                print("The current default device of the specific media type is not available.")
+            }
+        }
     }
 }
 
@@ -182,10 +210,20 @@ extension TabNavigationImagePickerController {
     fileprivate class var resourceBundlePath: String { return String(describing: self) + ".bundle/" }
 }
 
+// MARK: AVCaptureVideoDataOutputSampleBufferDelegate.
+
+extension TabNavigationImagePickerController: AVCaptureVideoDataOutputSampleBufferDelegate {
+    func captureOutput(_ captureOutput: AVCaptureOutput!, didOutputSampleBuffer sampleBuffer: CMSampleBuffer!, from connection: AVCaptureConnection!) {
+        // print("Count of display views: \(_captureDisplayViews.count)")
+        _captureDisplayQueue.async { autoreleasepool{ [weak self] in self?._captureDisplayViews.forEach({ $0.draw(buffer: sampleBuffer) }) } }
+    }
+}
+
 // MARK: - _AssetsViewController.
 
 fileprivate class _AssetsViewController: UICollectionViewController {
     fileprivate var _backgroundFilterView: UIView = UIView()
+    fileprivate var _captureDisplayView: _CameraViewController.CaptureVideoDisplayView = _CameraViewController.CaptureVideoDisplayView()
     fileprivate var _isViewDidAppear: Bool = false
     fileprivate weak var _captureVideoPreviewCell: _AssetsCaptureVideoPreviewCollectionCell? {
         didSet {
@@ -249,6 +287,16 @@ fileprivate class _AssetsViewController: UICollectionViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(_handleOrientationDidChange(_:)), name: .UIDeviceOrientationDidChange, object: nil)
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        imagePickerController._captureDisplayQueue.async { [weak self] in
+            guard let wself = self else { return }
+            if !wself.imagePickerController._captureDisplayViews.contains(wself._captureDisplayView) {
+                wself.imagePickerController._captureDisplayViews.append(wself._captureDisplayView)
+            }
+        }
+    }
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
@@ -260,6 +308,12 @@ fileprivate class _AssetsViewController: UICollectionViewController {
         super.viewDidDisappear(animated)
         
         _isViewDidAppear = false
+        imagePickerController._captureDisplayQueue.async { [weak self] in
+            guard let wself = self else { return }
+            if let index = wself.imagePickerController._captureDisplayViews.index(of: wself._captureDisplayView) {
+                wself.imagePickerController._captureDisplayViews.remove(at: index)
+            }
+        }
     }
     
     deinit {
@@ -271,17 +325,25 @@ fileprivate class _AssetsViewController: UICollectionViewController {
     fileprivate func _setupVideoPreviewView() {
         guard _isViewDidAppear else { return }
         
-        if let previewView = imagePickerController._captureVideoPreviewView {
-            previewView.isUserInteractionEnabled = false
-            previewView.translatesAutoresizingMaskIntoConstraints = false
-            _captureVideoPreviewCell?.contentView.addSubview(previewView)
-            _captureVideoPreviewCell?.contentView.leadingAnchor.constraint(equalTo: previewView.leadingAnchor).isActive = true
-            _captureVideoPreviewCell?.contentView.trailingAnchor.constraint(equalTo: previewView.trailingAnchor).isActive = true
-            _captureVideoPreviewCell?.contentView.topAnchor.constraint(equalTo: previewView.topAnchor).isActive = true
-            _captureVideoPreviewCell?.contentView.bottomAnchor.constraint(equalTo: previewView.bottomAnchor).isActive = true
-            _captureVideoPreviewCell?.contentView.setNeedsLayout()
-            _captureVideoPreviewCell?.contentView.layoutIfNeeded()
-        }
+        _captureDisplayView.translatesAutoresizingMaskIntoConstraints = false
+        _captureVideoPreviewCell?.contentView.addSubview(_captureDisplayView)
+        _captureVideoPreviewCell?.contentView.leadingAnchor.constraint(equalTo: _captureDisplayView.leadingAnchor).isActive = true
+        _captureVideoPreviewCell?.contentView.trailingAnchor.constraint(equalTo: _captureDisplayView.trailingAnchor).isActive = true
+        _captureVideoPreviewCell?.contentView.topAnchor.constraint(equalTo: _captureDisplayView.topAnchor).isActive = true
+        _captureVideoPreviewCell?.contentView.bottomAnchor.constraint(equalTo: _captureDisplayView.bottomAnchor).isActive = true
+        _captureVideoPreviewCell?.contentView.setNeedsLayout()
+        _captureVideoPreviewCell?.contentView.layoutIfNeeded()
+//        if let previewView = imagePickerController._captureVideoPreviewView {
+//            previewView.isUserInteractionEnabled = false
+//            previewView.translatesAutoresizingMaskIntoConstraints = false
+//            _captureVideoPreviewCell?.contentView.addSubview(previewView)
+//            _captureVideoPreviewCell?.contentView.leadingAnchor.constraint(equalTo: previewView.leadingAnchor).isActive = true
+//            _captureVideoPreviewCell?.contentView.trailingAnchor.constraint(equalTo: previewView.trailingAnchor).isActive = true
+//            _captureVideoPreviewCell?.contentView.topAnchor.constraint(equalTo: previewView.topAnchor).isActive = true
+//            _captureVideoPreviewCell?.contentView.bottomAnchor.constraint(equalTo: previewView.bottomAnchor).isActive = true
+//            _captureVideoPreviewCell?.contentView.setNeedsLayout()
+//            _captureVideoPreviewCell?.contentView.layoutIfNeeded()
+//        }
     }
 }
 
@@ -415,13 +477,45 @@ extension _AssetsViewController {
             imagePickerController._selectedIndexPathsOfAssets[_photoAssetCollection.localIdentifier] = _indexPaths
         }
     }
+    
+    override func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        if cell is _AssetsCaptureVideoPreviewCollectionCell && _isViewDidAppear {
+            imagePickerController._captureDisplayQueue.async { [weak self] in
+                guard let wself = self else { return }
+                if !wself.imagePickerController._captureDisplayViews.contains(wself._captureDisplayView) {
+                    wself.imagePickerController._captureDisplayViews.append(wself._captureDisplayView)
+                }
+            }
+            imagePickerController._captureSessionQueue.async {
+                if !self.imagePickerController._captureDisplayViews.isEmpty && !self.imagePickerController._captureSession.isRunning {
+                    self.imagePickerController._captureSession.startRunning()
+                }
+            }
+        }
+    }
+    
+    override func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        if cell is _AssetsCaptureVideoPreviewCollectionCell {
+            imagePickerController._captureDisplayQueue.async { [weak self] in
+                guard let wself = self else { return }
+                if let index = wself.imagePickerController._captureDisplayViews.index(of: wself._captureDisplayView) {
+                    wself.imagePickerController._captureDisplayViews.remove(at: index)
+                }
+            }
+            imagePickerController._captureSessionQueue.async {
+                if self.imagePickerController._captureDisplayViews.isEmpty && self.imagePickerController._captureSession.isRunning {
+                    self.imagePickerController._captureSession.stopRunning()
+                }
+            }
+        }
+    }
 }
 
 // MARK: _CameraViewControllerDelegate Supporting.
 
 extension _AssetsViewController: _CameraViewControllerDelegate {
     func cameraViewControllerDidCancel(_ cameraViewController: _CameraViewController) {
-        _setupVideoPreviewView()
+        // _setupVideoPreviewView()
     }
 }
 
@@ -1069,7 +1163,7 @@ extension _CameraViewController.CaptureVideoPreviewView {
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         if keyPath == "adjustingFocus" && (object as? AVCaptureDevice) === videoDevice {
             if let adjustingFocus = change?[.newKey] as? Bool, let device = videoDevice {
-                print("is adjusting focus: " + adjustingFocus.description)
+                // print("is adjusting focus: " + adjustingFocus.description)
                 let location = previewLayer.pointForCaptureDevicePoint(ofInterest: device.focusPointOfInterest)
                 if device.focusMode == .autoFocus {
                     if _focusLongPressGesture.state == .changed {
@@ -1081,14 +1175,14 @@ extension _CameraViewController.CaptureVideoPreviewView {
             }
         } else if keyPath == "focusMode" && (object as? AVCaptureDevice) === videoDevice {
             if let focusMode = change?[.newKey] as? Int, let device = videoDevice {
-                print("new focus mode: " + focusMode.description)
+                // print("new focus mode: " + focusMode.description)
                 if AVCaptureFocusMode(rawValue: focusMode) == .locked && !device.isAdjustingFocus && _focusLongPressGesture.state != .changed {
                     _animateIndicators(show: true, mode: .locked, at: .zero)
                 }
             }
         } else if keyPath == "flashActive" && (object as? AVCaptureDevice) === videoDevice {
             if let isFlashActive = change?[.newKey] as? Bool {
-                print("new flash mode: " + isFlashActive.description)
+                // print("new flash mode: " + isFlashActive.description)
                 if isFlashActive {
                     if !humanReadingInfos.contains{ $0.type == .flashOn } {
                         humanReadingInfos = [humanReadingInfos.filter({ $0.type != .flashOn }), [(_HumanReading.flashOn, UIImage(named: TabNavigationImagePickerController.resourceBundlePath+"flash_info")!)]].joined().reversed()
@@ -1100,7 +1194,7 @@ extension _CameraViewController.CaptureVideoPreviewView {
         } else if (keyPath == "exposureDuration" || keyPath == "ISO" || keyPath == "exposureTargetBias") && (object as? AVCaptureDevice) === videoDevice {
             guard let device = videoDevice else { return }
             if device.exposureMode != .custom {
-                print("Begin updating exposure settings and centers.")
+                // print("Begin updating exposure settings and centers.")
                 humanReadingInfos = humanReadingInfos.filter{ $0.type != .exposureTargetOffset && $0.type != .customExposure }
                 _exposureCenters.isoBinding = _exposureIndicator.center
                 _exposureSettings.duration = device.exposureDuration
@@ -1826,6 +1920,100 @@ extension _CameraViewController {
             _toggleFace.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -15.0).isActive = true
             _toggleFace.centerYAnchor.constraint(equalTo: _shot.centerYAnchor).isActive = true
             // _toggleFace.leadingAnchor.constraint(greaterThanOrEqualTo: _shot.trailingAnchor).isActive = true
+        }
+    }
+}
+
+// MARK: CaptureVideoDisplayView.
+
+extension _CameraViewController {
+    // @available(*, unavailable)
+    class CaptureVideoDisplayView: GLKView {
+        // fileprivate class var `default`: Self { return CaptureVideoDisplayView() }
+        let eaglContext = EAGLContext(api: .openGLES3)!
+        var ciContext: CIContext!
+        private var _extent  : CGRect = .zero
+        private var _drawRect: CGRect = .zero
+        private var _drawRectNeedsUpdate: Bool = false
+        private let _queue = DispatchQueue(label: "com.capture.display.render")
+        
+        convenience init() {
+            self.init(frame: .zero)
+        }
+        override init(frame: CGRect) {
+            super.init(frame: frame, context: eaglContext)
+            _initializer()
+        }
+        required init?(coder aDecoder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
+        }
+        override func layoutSubviews() {
+            super.layoutSubviews()
+            _drawRectNeedsUpdate = true
+        }
+        private func _initializer() {
+            ciContext = CIContext(eaglContext: eaglContext, options: [kCIContextWorkingColorSpace: NSNull()])
+            enableSetNeedsDisplay = false
+            // because the native video image from the back camera is in UIDeviceOrientationLandscapeLeft (i.e. the home button is on the right),
+            // we need to apply a clockwise 90 degree transform so that we can draw the video preview as if we were in a landscape-oriented view;
+            // if you're using the front camera and you want to have a mirrored preview (so that the user is seeing themselves in the mirror),
+            // you need to apply an additional horizontal flip (by concatenating CGAffineTransformMakeScale(-1.0, 1.0) to the rotation transform)
+            transform = CGAffineTransform(rotationAngle: CGFloat.pi * 0.5)
+            // bind the frame buffer to get the frame buffer width and height;
+            // the bounds used by CIContext when drawing to a GLKView are in pixels (not points),
+            // hence the need to read from the frame buffer's width and height;
+            // in addition, since we will be accessing the bounds in another queue (_captureSessionQueue),
+            // we want to obtain this piece of information so that we won't be
+            // accessing _videoPreviewView's properties from another thread/queue
+            // bindDrawable()
+        }
+        
+        fileprivate func draw(buffer: CMSampleBuffer) {
+            _queue.async { [weak self] in
+                let _imgbuffer = CMSampleBufferGetImageBuffer(buffer)
+                guard _imgbuffer != nil && self != nil && self?.bounds.width != 0.0 && self?.bounds.height != 0.0 else {
+                    self?.deleteDrawable()
+                    return
+                }
+                let imageBuffer = _imgbuffer!
+                let wself = self!
+                let sourceImage = CIImage(cvPixelBuffer: imageBuffer)
+                let drawRect = wself._drawRect(for: sourceImage.extent)
+                wself.bindDrawable()
+                EAGLContext.setCurrent(wself.eaglContext)
+                // Clear eagl view to black
+                glClearColor(0.0, 0.0, 0.0, 1.0)
+                glClear(GLbitfield(GL_COLOR_BUFFER_BIT))
+                // Set the blend mode to "source over" so that CI will use that
+                glEnable(GLenum(GL_BLEND))
+                glBlendFunc(GLenum(GL_ONE), GLenum(GL_ONE_MINUS_SRC_ALPHA))
+                let _bounds = CGRect(origin: wself.bounds.origin, size: CGSize(width: wself.bounds.width * UIScreen.main.scale, height: wself.bounds.height * UIScreen.main.scale))
+                wself.ciContext.draw(sourceImage, in: _bounds, from: drawRect)
+                wself.display()
+            }
+        }
+        
+        private func _drawRect(`for` sourceExtent: CGRect) -> CGRect {
+            if _extent == sourceExtent && !_drawRectNeedsUpdate {
+                return _drawRect
+            }
+            _extent = sourceExtent
+            
+            let sourceAspect = _extent.width / _extent.height
+            let previewAspect = bounds.width / bounds.height
+            // we want to maintain the aspect radio of the screen size, so we clip the video image
+            _drawRect = sourceExtent
+            if sourceAspect > previewAspect {
+                // use full height of the video image, and center crop the width
+                _drawRect.origin.x += (_drawRect.width - _drawRect.height * previewAspect) * 0.5
+                _drawRect.size.width = _drawRect.height * previewAspect
+            } else {
+                // use full width of the video image, and center crop the height
+                _drawRect.origin.y += (_drawRect.height - _drawRect.width / previewAspect) * 0.5
+                _drawRect.size.height = _drawRect.width / previewAspect
+            }
+            _drawRectNeedsUpdate = false
+            return _drawRect
         }
     }
 }
