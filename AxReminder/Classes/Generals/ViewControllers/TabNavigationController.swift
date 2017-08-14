@@ -1135,7 +1135,7 @@ extension TabNavigationController: UIScrollViewDelegate {
             let startIndex = _rootViewControllersContext.viewControllers.index(before: selectedIndex)
             let endIndex = _rootViewControllersContext.viewControllers.index(after: selectedIndex)
             let range = startIndex...endIndex
-            let availableRange = range.clamped(to: _rootViewControllersContext.viewControllers.startIndex..._rootViewControllersContext.viewControllers.index(after: _rootViewControllersContext.viewControllers.endIndex))
+            let availableRange = range.clamped(to: _rootViewControllersContext.viewControllers.startIndex..._rootViewControllersContext.viewControllers.index(before: _rootViewControllersContext.viewControllers.endIndex))
             _viewControllersWaitingForTransition = Array(_rootViewControllersContext.viewControllers[availableRange])
             _viewControllersWaitingForTransition.forEach({ $0.viewWillBeginInteractiveTransition() })
         }
