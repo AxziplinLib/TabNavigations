@@ -959,9 +959,7 @@ public class TabNavigationBar: UIView, UIBarPositioning {
     }
     
     fileprivate func _removeNavitationItemView(at index: Array<TabNavigationItem>.Index) -> (Bool, TabNavigationItem?) {
-        guard index < _navigationItems.endIndex, index >= _navigationItems.startIndex else {
-            return (false, nil)
-        }
+        guard _earlyCheckingBounds(index, in: _navigationItems) else { return (false, nil) }
         
         let item = _navigationItems[index]
         item._view.removeFromSuperview()
@@ -990,9 +988,7 @@ public class TabNavigationBar: UIView, UIBarPositioning {
     }
     
     fileprivate func _removeNavigationTitleItemButton(at index: Array<TabNavigationTitleItem>.Index) -> (Bool, TabNavigationTitleItem?) {
-        guard index < _navigationTitleItems.endIndex, index >= _navigationTitleItems.startIndex else {
-            return (false, nil)
-        }
+        guard _earlyCheckingBounds(index, in: _navigationTitleItems) else { return (false, nil) }
         
         let item = _navigationTitleItems[index]
         item._button.removeFromSuperview()
@@ -1032,9 +1028,7 @@ public class TabNavigationBar: UIView, UIBarPositioning {
     }
     
     fileprivate func _removeNavigationTitleActionItemButton(at index: Array<TabNavigationTitleActionItem>.Index) -> (Bool, TabNavigationTitleActionItem?) {
-        guard index < _navigationTitleActionItems.endIndex, index >= _navigationTitleActionItems.startIndex else {
-            return (false, nil)
-        }
+        guard _earlyCheckingBounds(index, in: _navigationTitleActionItems) else { return (false, nil) }
         
         let item = _navigationTitleActionItems[index]
         item._button.removeFromSuperview()
@@ -1050,9 +1044,7 @@ public class TabNavigationBar: UIView, UIBarPositioning {
     }
     
     fileprivate func _setSelectedTitle(at index: Array<TabNavigationTitleItem>.Index, `in` items: [TabNavigationTitleItem], possibleActions: [TabNavigationTitleActionItem]? = nil, animated: Bool) {
-        guard index >= items.startIndex && index < items.endIndex else {
-            return
-        }
+        guard _earlyCheckingBounds(index, in: items) else { return }
         
         _selectedTitleItemIndex = index
         let navigationTitleActionItems = possibleActions ?? _navigationTitleActionItems
