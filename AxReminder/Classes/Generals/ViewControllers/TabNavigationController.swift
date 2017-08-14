@@ -182,6 +182,13 @@ extension UIViewController {
     }
 }
 
+// MARK: Transitions.
+
+extension UIViewController {
+    open func viewWillBeginInteractiveTransition() { /* No imp for now. */ }
+    open func viewDidEndInteractiveTransition()    { /* No imp for now. */ }
+}
+
 // MARK: Layout guide.
 
 extension UIViewController {
@@ -290,9 +297,7 @@ public class TabNavigationController: UIViewController {
     
     public var topViewController: UIViewController? {
         return _viewControllersStack.last ?? { () -> UIViewController? in
-            guard !_rootViewControllersContext.viewControllers.isEmpty && _rootViewControllersContext.selectedIndex >= _rootViewControllersContext.viewControllers.startIndex && _rootViewControllersContext.selectedIndex < _rootViewControllersContext.viewControllers.endIndex else {
-                return nil
-            }
+            guard !_rootViewControllersContext.viewControllers.isEmpty && _earlyCheckingBounds(_rootViewControllersContext.selectedIndex, in: _rootViewControllersContext.viewControllers) else { return nil }
             return _rootViewControllersContext.viewControllers[_rootViewControllersContext.selectedIndex]
         }()
     }
@@ -304,6 +309,7 @@ public class TabNavigationController: UIViewController {
     fileprivate var _contentScrollView: UIScrollView = _createGeneralPagingScrollView()
     
     fileprivate var _rootViewControllersContext: TabNavigationRootViewControllersContext = (0, [])
+    fileprivate var _viewControllersWaitingForTransition: [UIViewController] = []
     fileprivate var _viewControllersStack: [UIViewController] = []
     fileprivate var _endingAppearanceViewControllers: Set<UIViewController> = []
     
@@ -735,9 +741,7 @@ public class TabNavigationController: UIViewController {
     }
     
     fileprivate func _popViewController(_ viewController: UIViewController? = nil, toRoot: Bool = false, ignoreBar: Bool, animated: Bool) {
-        guard !_viewControllersStack.isEmpty else {
-            return
-        }
+        guard !_viewControllersStack.isEmpty else { return }
         guard let formerViewController = _formerViewControllerForPop(viewController, toRoot: toRoot) else { return }
         
         var navigationTitleItems: [TabNavigationTitleItem] = []
@@ -942,39 +946,29 @@ public class TabNavigationController: UIViewController {
     }
     
     fileprivate func _setSelectedViewController(at index: Array<UIViewController>.Index, updateNavigationBar: Bool = false, updateNavigationItems: Bool, animated: Bool) {
-        guard index >= _rootViewControllersContext.viewControllers.startIndex && index < _rootViewControllersContext.viewControllers.endIndex else {
-            return
-        }
+        guard _earlyCheckingBounds(index, in: _rootViewControllersContext.viewControllers) else { return }
         guard isViewLoaded else {
             _rootViewControllersContext.selectedIndex = index;
             return
         }
         
         let viewController = _rootViewControllersContext.viewControllers[index]
-        guard viewController !== _selectedViewController else {
-            return
-        }
+        guard viewController !== _selectedViewController else { return }
         
         _contentScrollView.scrollRectToVisible(viewController.view.frame, animated: animated)
-        if updateNavigationBar {
-            _tabNavigationBar.setSelectedTitle(at: index, animated: animated)
-        }
+        if updateNavigationBar { _tabNavigationBar.setSelectedTitle(at: index, animated: animated) }
         
         _beginsRootViewControllersAppearanceTransition(at: index, updateNavigationItems: updateNavigationItems, animated: animated)
-        if !animated {
-            _endsRootViewControllersAppearanceTransitionIfNeccessary()
-        }
+        if !animated { _endsRootViewControllersAppearanceTransitionIfNeccessary() }
     }
     
     fileprivate func _beginsRootViewControllersAppearanceTransition(at index: Array<UIViewController>.Index, updateNavigationItems: Bool, animated: Bool) {
-        guard index >= _rootViewControllersContext.viewControllers.startIndex && index < _rootViewControllersContext.viewControllers.endIndex else {
-            return
-        }
+        _viewControllersWaitingForTransition.forEach({ $0.viewDidEndInteractiveTransition() })
+        _viewControllersWaitingForTransition.removeAll()
+        guard _earlyCheckingBounds(index, in: _rootViewControllersContext.viewControllers) else { return }
         
         let viewController = _rootViewControllersContext.viewControllers[index]
-        guard viewController !== _selectedViewController else {
-            return
-        }
+        guard viewController !== _selectedViewController else { return }
         
         if let selectedViewController = _selectedViewController {
             selectedViewController.beginAppearanceTransition(false, animated: animated)
@@ -990,13 +984,9 @@ public class TabNavigationController: UIViewController {
     }
     
     fileprivate func _endsRootViewControllersAppearanceTransitionIfNeccessary() {
-        guard !_endingAppearanceViewControllers.isEmpty else {
-            return
-        }
+        guard !_endingAppearanceViewControllers.isEmpty else { return }
         
-        _endingAppearanceViewControllers.forEach { viewController in
-            viewController.endAppearanceTransition()
-        }
+        _endingAppearanceViewControllers.forEach { $0.endAppearanceTransition() }
         _endingAppearanceViewControllers.removeAll()
     }
 }
@@ -1077,13 +1067,8 @@ extension TabNavigationController {
     }
     @discardableResult
     public func removeViewController(at index: Array<UIViewController>.Index) -> (Bool, UIViewController?) {
-        guard !_rootViewControllersContext.viewControllers.isEmpty else {
-            return (false, nil)
-        }
-        
-        guard index >= _rootViewControllersContext.viewControllers.startIndex && index < _rootViewControllersContext.viewControllers.endIndex else {
-            return (false, nil)
-        }
+        guard !_rootViewControllersContext.viewControllers.isEmpty else { return (false, nil) }
+        guard _earlyCheckingBounds(index, in: _rootViewControllersContext.viewControllers) else { return (false, nil) }
         
         let viewController = _rootViewControllersContext.viewControllers[index]
         guard viewController.isViewLoaded else {
@@ -1145,6 +1130,14 @@ extension TabNavigationController: UIScrollViewDelegate {
     public func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         if scrollView.isDecelerating {
             _endsRootViewControllersAppearanceTransitionIfNeccessary()
+        } else {
+            let selectedIndex = _rootViewControllersContext.selectedIndex
+            let startIndex = _rootViewControllersContext.viewControllers.index(before: selectedIndex)
+            let endIndex = _rootViewControllersContext.viewControllers.index(after: selectedIndex)
+            let range = startIndex...endIndex
+            let availableRange = range.clamped(to: _rootViewControllersContext.viewControllers.startIndex..._rootViewControllersContext.viewControllers.index(after: _rootViewControllersContext.viewControllers.endIndex))
+            _viewControllersWaitingForTransition = Array(_rootViewControllersContext.viewControllers[availableRange])
+            _viewControllersWaitingForTransition.forEach({ $0.viewWillBeginInteractiveTransition() })
         }
     }
     
