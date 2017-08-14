@@ -23,6 +23,14 @@ class ViewController: UIViewController {
     public func viewDidLoadSetup() {
     }
     
+    override func viewWillBeginInteractiveTransition() {
+        print(String(describing: type(of: self)) + "     " + #function)
+    }
+    
+    override func viewDidEndInteractiveTransition() {
+        print(String(describing: type(of: self)) + "     " + #function)
+    }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         print(String(describing: type(of: self)) + "     " + #function + "     " + String(describing: animated))
