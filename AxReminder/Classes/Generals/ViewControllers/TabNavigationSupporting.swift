@@ -13,4 +13,4 @@
 ///
 /// - Returns: Indicate the index is in the bounds or not.
 ///
-internal func _earlyCheckingBounds<T>(_ index: Array<T>.Index, `in` bounds: Array<T>) -> Swift.Bool { return index >= bounds.startIndex && index < bounds.index(before: bounds.endIndex) }
+internal func _earlyCheckingBounds<T>(_ index: Array<T>.Index, `in` bounds: Array<T>) -> Swift.Bool { return index >= bounds.startIndex && index < bounds.endIndex }
