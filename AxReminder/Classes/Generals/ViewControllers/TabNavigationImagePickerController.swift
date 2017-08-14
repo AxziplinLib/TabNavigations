@@ -295,16 +295,17 @@ fileprivate class _AssetsViewController: UICollectionViewController {
         
         UIDevice.current.beginGeneratingDeviceOrientationNotifications()
         NotificationCenter.default.addObserver(self, selector: #selector(_handleOrientationDidChange(_:)), name: .UIDeviceOrientationDidChange, object: nil)
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
+        
         imagePickerController._captureDisplayQueue.async { [weak self] in
             guard let wself = self else { return }
             if !wself.imagePickerController._captureDisplayViews.contains(wself._captureDisplayView) {
                 wself.imagePickerController._captureDisplayViews.append(wself._captureDisplayView)
             }
         }
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -318,12 +319,6 @@ fileprivate class _AssetsViewController: UICollectionViewController {
         super.viewDidDisappear(animated)
         
         _isViewDidAppear = false
-        imagePickerController._captureDisplayQueue.async { [weak self] in
-            guard let wself = self else { return }
-            if let index = wself.imagePickerController._captureDisplayViews.index(of: wself._captureDisplayView) {
-                wself.imagePickerController._captureDisplayViews.remove(at: index)
-            }
-        }
     }
     
     deinit {
@@ -362,7 +357,7 @@ fileprivate class _AssetsViewController: UICollectionViewController {
     
     // MARK: Private.
     fileprivate func _setupVideoPreviewView() {
-        guard _isViewDidAppear else { return }
+        // guard _isViewDidAppear else { return }
         
         _captureDisplayView.translatesAutoresizingMaskIntoConstraints = false
         _captureVideoPreviewCell?.contentView.addSubview(_captureDisplayView)
@@ -372,17 +367,6 @@ fileprivate class _AssetsViewController: UICollectionViewController {
         _captureVideoPreviewCell?.contentView.bottomAnchor.constraint(equalTo: _captureDisplayView.bottomAnchor).isActive = true
         _captureVideoPreviewCell?.contentView.setNeedsLayout()
         _captureVideoPreviewCell?.contentView.layoutIfNeeded()
-//        if let previewView = imagePickerController._captureVideoPreviewView {
-//            previewView.isUserInteractionEnabled = false
-//            previewView.translatesAutoresizingMaskIntoConstraints = false
-//            _captureVideoPreviewCell?.contentView.addSubview(previewView)
-//            _captureVideoPreviewCell?.contentView.leadingAnchor.constraint(equalTo: previewView.leadingAnchor).isActive = true
-//            _captureVideoPreviewCell?.contentView.trailingAnchor.constraint(equalTo: previewView.trailingAnchor).isActive = true
-//            _captureVideoPreviewCell?.contentView.topAnchor.constraint(equalTo: previewView.topAnchor).isActive = true
-//            _captureVideoPreviewCell?.contentView.bottomAnchor.constraint(equalTo: previewView.bottomAnchor).isActive = true
-//            _captureVideoPreviewCell?.contentView.setNeedsLayout()
-//            _captureVideoPreviewCell?.contentView.layoutIfNeeded()
-//        }
     }
 }
 
@@ -522,14 +506,7 @@ extension _AssetsViewController {
         if cell is _AssetsCaptureVideoPreviewCollectionCell && _isViewDidAppear {
             imagePickerController._captureDisplayQueue.async { [weak self] in
                 guard let wself = self else { return }
-                if !wself.imagePickerController._captureDisplayViews.contains(wself._captureDisplayView) {
-                    wself.imagePickerController._captureDisplayViews.append(wself._captureDisplayView)
-                }
-            }
-            imagePickerController._captureSessionQueue.async {
-                if !self.imagePickerController._captureDisplayViews.isEmpty && !self.imagePickerController._captureSession.isRunning {
-                    self.imagePickerController._captureSession.startRunning()
-                }
+                wself._captureDisplayView.isDrawingEnabled = true
             }
         }
     }
@@ -538,14 +515,7 @@ extension _AssetsViewController {
         if cell is _AssetsCaptureVideoPreviewCollectionCell {
             imagePickerController._captureDisplayQueue.async { [weak self] in
                 guard let wself = self else { return }
-                if let index = wself.imagePickerController._captureDisplayViews.index(of: wself._captureDisplayView) {
-                    wself.imagePickerController._captureDisplayViews.remove(at: index)
-                }
-            }
-            imagePickerController._captureSessionQueue.async {
-                if self.imagePickerController._captureDisplayViews.isEmpty && self.imagePickerController._captureSession.isRunning {
-                    self.imagePickerController._captureSession.stopRunning()
-                }
+                wself._captureDisplayView.isDrawingEnabled = false
             }
         }
     }
@@ -1974,6 +1944,7 @@ extension _CameraViewController {
         let eaglContext = EAGLContext(api: .openGLES3)!
         var ciContext: CIContext!
         var blured: Bool { return _blured }
+        fileprivate var isDrawingEnabled: Bool = true
         private var _blured: Bool = false
         private let _blur: UIImageView = UIImageView()
         private var _extent  : CGRect = .zero
@@ -2022,6 +1993,7 @@ extension _CameraViewController {
         }
         
         fileprivate func draw(buffer: CMSampleBuffer) {
+            guard isDrawingEnabled else { return }
             autoreleasepool{ _queue.async { [weak self] in
                 let _imgbuffer = CMSampleBufferGetImageBuffer(buffer)
                 guard _imgbuffer != nil && self != nil && self?.bounds.width != 0.0 && self?.bounds.height != 0.0 else {
@@ -2365,7 +2337,7 @@ extension UIImage {
 }
 
 extension UIImage {
-    public class func image(from sampleBuffer: CMSampleBuffer) -> UIImage? {
+    public class func image(from sampleBuffer: CMSampleBuffer, applying: ((CGSize) -> CGAffineTransform)? = nil) -> UIImage? {
         // Get a CMSampleBuffer's Core Video image buffer for the media data
         guard let imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return nil }
         // Lock the base address of the pixel buffer
@@ -2392,8 +2364,12 @@ extension UIImage {
         CVPixelBufferUnlockBaseAddress(imageBuffer, CVPixelBufferLockFlags(rawValue: 0))
         
         guard let rotateCtx = CGContext(data: nil, width: height, height: width, bitsPerComponent: 8, bytesPerRow: bytesPerRow, space: colorSpace, bitmapInfo: bitmapInfo) else {return nil }
-        rotateCtx.translateBy(x: 0.0, y: CGFloat(width))
-        rotateCtx.rotate(by: -CGFloat.pi * 0.5)
+        if let transform = applying?(CGSize(width: width, height: height)) {
+            rotateCtx.concatenate(transform)
+        } else {
+            rotateCtx.translateBy(x: 0.0, y: CGFloat(width))
+            rotateCtx.rotate(by: -CGFloat.pi * 0.5)
+        }
         rotateCtx.draw(_originalImage, in: CGRect(origin: .zero, size: CGSize(width: width, height: height)))
         guard let _image = rotateCtx.makeImage() else { return nil }
 
