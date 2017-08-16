@@ -185,8 +185,16 @@ extension UIViewController {
 // MARK: Transitions.
 
 extension UIViewController {
+    /// Indicate the view controller managed by TabNavigationController will
+    /// begin transition by gesture.(The content scroll view will begin dragging.)
+    ///
     open func viewWillBeginInteractiveTransition() { /* No imp for now. */ }
-    open func viewDidEndInteractiveTransition()    { /* No imp for now. */ }
+    /// Indicate the view controller managed by TabNavigationController will end 
+    /// dragging trasition.
+    ///
+    /// - Parameter appearing: Indicate the view controller is about to call `viewWillAppear(:)` or not.
+    ///
+    open func viewDidEndInteractiveTransition(appearing: Bool) { /* No imp for now. */ }
 }
 
 // MARK: Layout guide.
@@ -959,12 +967,10 @@ public class TabNavigationController: UIViewController {
         if updateNavigationBar { _tabNavigationBar.setSelectedTitle(at: index, animated: animated) }
         
         _beginsRootViewControllersAppearanceTransition(at: index, updateNavigationItems: updateNavigationItems, animated: animated)
-        if !animated { _endsRootViewControllersAppearanceTransitionIfNeccessary() }
+        if !animated { _endsRootViewControllersAppearanceTransitionIfNecessary() }
     }
     
     fileprivate func _beginsRootViewControllersAppearanceTransition(at index: Array<UIViewController>.Index, updateNavigationItems: Bool, animated: Bool) {
-        _viewControllersWaitingForTransition.forEach({ $0.viewDidEndInteractiveTransition() })
-        _viewControllersWaitingForTransition.removeAll()
         guard _earlyCheckingBounds(index, in: _rootViewControllersContext.viewControllers) else { return }
         
         let viewController = _rootViewControllersContext.viewControllers[index]
@@ -983,11 +989,36 @@ public class TabNavigationController: UIViewController {
         _rootViewControllersContext.selectedIndex = index
     }
     
-    fileprivate func _endsRootViewControllersAppearanceTransitionIfNeccessary() {
+    fileprivate func _endsRootViewControllersAppearanceTransitionIfNecessary() {
         guard !_endingAppearanceViewControllers.isEmpty else { return }
         
         _endingAppearanceViewControllers.forEach { $0.endAppearanceTransition() }
         _endingAppearanceViewControllers.removeAll()
+    }
+    
+    fileprivate func _beginsRootViewControllersInteractiveTransition() {
+        let selectedIndex = _rootViewControllersContext.selectedIndex
+        let startIndex = _rootViewControllersContext.viewControllers.index(before: selectedIndex)
+        let endIndex = _rootViewControllersContext.viewControllers.index(after: selectedIndex)
+        let range = startIndex...endIndex
+        let availableRange = range.clamped(to: _rootViewControllersContext.viewControllers.startIndex..._rootViewControllersContext.viewControllers.index(before: _rootViewControllersContext.viewControllers.endIndex))
+        _viewControllersWaitingForTransition = Array(_rootViewControllersContext.viewControllers[availableRange])
+        _viewControllersWaitingForTransition.forEach({ $0.viewWillBeginInteractiveTransition() })
+    }
+    
+    fileprivate func _endsRootViewControllersInteractiveTransitionIfNecessary(at index: Array<UIViewController>.Index) {
+        _viewControllersWaitingForTransition.forEach { [unowned self] (viewController) in
+            let indexOfViewController =  self._rootViewControllersContext.viewControllers.index(of: viewController)
+            let selectedIndex = self._rootViewControllersContext.selectedIndex
+            
+            if (index == selectedIndex &&  indexOfViewController == selectedIndex)
+                || (index != selectedIndex && (indexOfViewController == selectedIndex || indexOfViewController == index)) {
+                viewController.viewDidEndInteractiveTransition(appearing: true)
+            } else {
+                viewController.viewDidEndInteractiveTransition(appearing: false)
+            }
+        }
+        _viewControllersWaitingForTransition.removeAll()
     }
 }
 
@@ -1116,7 +1147,7 @@ extension TabNavigationController: TabNavigationBarDelegate {
     }
     
     public func tabNavigationBar(_ tabNavigationBar: TabNavigationBar, didSelectTitleItemAt index: Int) {
-        _endsRootViewControllersAppearanceTransitionIfNeccessary()
+        _endsRootViewControllersAppearanceTransitionIfNecessary()
     }
     
     public func tabNavigationBarDidTouchNavigatiomBackItem(_ tabNavigationBar: TabNavigationBar) {
@@ -1129,16 +1160,9 @@ extension TabNavigationController: TabNavigationBarDelegate {
 extension TabNavigationController: UIScrollViewDelegate {
     public func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         if scrollView.isDecelerating {
-            _endsRootViewControllersAppearanceTransitionIfNeccessary()
-        } else {
-            let selectedIndex = _rootViewControllersContext.selectedIndex
-            let startIndex = _rootViewControllersContext.viewControllers.index(before: selectedIndex)
-            let endIndex = _rootViewControllersContext.viewControllers.index(after: selectedIndex)
-            let range = startIndex...endIndex
-            let availableRange = range.clamped(to: _rootViewControllersContext.viewControllers.startIndex..._rootViewControllersContext.viewControllers.index(before: _rootViewControllersContext.viewControllers.endIndex))
-            _viewControllersWaitingForTransition = Array(_rootViewControllersContext.viewControllers[availableRange])
-            _viewControllersWaitingForTransition.forEach({ $0.viewWillBeginInteractiveTransition() })
+            _endsRootViewControllersAppearanceTransitionIfNecessary()
         }
+        _beginsRootViewControllersInteractiveTransition()
     }
     
     public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
@@ -1146,11 +1170,12 @@ extension TabNavigationController: UIScrollViewDelegate {
             return
         }
         _commitTransitionNavigationItemViews(at: Int(scrollView.contentOffset.x / scrollView.bounds.width))
-        _endsRootViewControllersAppearanceTransitionIfNeccessary()
+        _endsRootViewControllersAppearanceTransitionIfNecessary()
     }
     
     public func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
         let selectedIndex = Int(targetContentOffset[0].x / scrollView.bounds.width)
+        _endsRootViewControllersInteractiveTransitionIfNecessary(at: selectedIndex)
         _beginsRootViewControllersAppearanceTransition(at: selectedIndex, updateNavigationItems: false, animated: true)
     }
     
@@ -1180,7 +1205,7 @@ extension TabNavigationController: UIScrollViewDelegate {
     }
     
     public func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
-        _endsRootViewControllersAppearanceTransitionIfNeccessary()
+        _endsRootViewControllersAppearanceTransitionIfNecessary()
     }
     
     private func _commitTransitionNavigationItemViews(at index: Int) {
