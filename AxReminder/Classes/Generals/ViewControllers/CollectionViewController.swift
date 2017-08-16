@@ -38,8 +38,8 @@ class CollectionViewController: UICollectionViewController {
         print(String(describing: type(of: self)) + "     " + #function)
     }
     
-    override func viewDidEndInteractiveTransition() {
-        print(String(describing: type(of: self)) + "     " + #function)
+    override func viewDidEndInteractiveTransition(appearing: Bool) {
+        print(String(describing: type(of: self)) + "     " + #function + "     " + String(describing: appearing))
     }
     
     override func viewWillAppear(_ animated: Bool) {
