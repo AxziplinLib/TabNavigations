@@ -970,7 +970,13 @@ public class TabNavigationController: UIViewController {
         guard viewController !== _selectedViewController else { return }
         
         _contentScrollView.scrollRectToVisible(viewController.view.frame, animated: animated)
-        if updateNavigationBar { _tabNavigationBar.setSelectedTitle(at: index, animated: animated) }
+        if updateNavigationBar {
+            // Lock the delegate of tab navigation bar.
+            let delegate = _tabNavigationBar.delegate
+            _tabNavigationBar.delegate = nil
+            _tabNavigationBar.setSelectedTitle(at: index, animated: animated)
+            _tabNavigationBar.delegate = delegate
+        }
         
         _beginsRootViewControllersAppearanceTransition(at: index, updateNavigationItems: updateNavigationItems, animated: animated)
         if !animated { _endsRootViewControllersAppearanceTransitionIfNecessary() }
