@@ -185,6 +185,10 @@ extension UIViewController {
 // MARK: Transitions.
 
 extension UIViewController {
+    /// Overrides to prepare for next transition when selected view did appear.
+    /// The view controllers former and nexter will be triggered.
+    ///
+    open func prepareForTransition() { /* No imp for now. */ }
     /// Indicate the view controller managed by TabNavigationController will
     /// begin transition by gesture.(The content scroll view will begin dragging.)
     ///
@@ -345,6 +349,7 @@ public class TabNavigationController: UIViewController {
         tabNavigationBar.delegate = self
         _panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(_handlePanGestureRecognizer(_:)))
         _panGestureRecognizer.isEnabled = false
+        _panGestureRecognizer.maximumNumberOfTouches = 1
         _keyboardAlignmentViewHeightConstraint = _keyboardAlignmentView.heightAnchor.constraint(equalToConstant: 0.0)
         _keyboardAlignmentViewHeightConstraint.isActive = true
         // NotificationCenter.default.addObserver(self, selector: #selector(_handleKeyboardWillChangeFrameNotification(_:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
@@ -535,7 +540,8 @@ public class TabNavigationController: UIViewController {
         if _viewControllersStack.startIndex == _viewControllersStack.index(before: _viewControllersStack.endIndex) {// Count == 1
             let backItem = transitionViews.backItem
             let translation = -perecent*backItem.underlyingView.bounds.width
-            backItem.underlyingView.transform = CGAffineTransform(translationX: translation, y: 0.0)
+            let scale = CGPoint(x: 1.0 + perecent * 0.1, y: 1.0 - perecent * 0.3) // Scale effects.
+            backItem.underlyingView.transform = CGAffineTransform(translationX: translation, y: 0.0).scaledBy(x: scale.x, y: scale.y)
             transitionViews.titleViews.containerView.transform = CGAffineTransform(translationX: translation, y: 0.0)
         }
     }
@@ -994,14 +1000,21 @@ public class TabNavigationController: UIViewController {
         
         _endingAppearanceViewControllers.forEach { $0.endAppearanceTransition() }
         _endingAppearanceViewControllers.removeAll()
+        
+        _makeNeededViewControllersPreparing()
     }
     
-    fileprivate func _beginsRootViewControllersInteractiveTransition() {
+    fileprivate func _availableTransitionRange() -> CountableClosedRange<Array<UIViewController>.Index> {
         let selectedIndex = _rootViewControllersContext.selectedIndex
         let startIndex = _rootViewControllersContext.viewControllers.index(before: selectedIndex)
         let endIndex = _rootViewControllersContext.viewControllers.index(after: selectedIndex)
         let range = startIndex...endIndex
         let availableRange = range.clamped(to: _rootViewControllersContext.viewControllers.startIndex..._rootViewControllersContext.viewControllers.index(before: _rootViewControllersContext.viewControllers.endIndex))
+        return availableRange
+    }
+    
+    fileprivate func _beginsRootViewControllersInteractiveTransition() {
+        let availableRange = _availableTransitionRange()
         _viewControllersWaitingForTransition = Array(_rootViewControllersContext.viewControllers[availableRange])
         _viewControllersWaitingForTransition.forEach({ $0.viewWillBeginInteractiveTransition() })
     }
@@ -1012,13 +1025,22 @@ public class TabNavigationController: UIViewController {
             let selectedIndex = self._rootViewControllersContext.selectedIndex
             
             if (index == selectedIndex &&  indexOfViewController == selectedIndex)
-                || (index != selectedIndex && (indexOfViewController == selectedIndex || indexOfViewController == index)) {
+            || (index != selectedIndex && (indexOfViewController == selectedIndex || indexOfViewController == index)) {
                 viewController.viewDidEndInteractiveTransition(appearing: true)
             } else {
                 viewController.viewDidEndInteractiveTransition(appearing: false)
             }
         }
         _viewControllersWaitingForTransition.removeAll()
+    }
+    
+    fileprivate func _makeNeededViewControllersPreparing() {
+        let availableRange = _availableTransitionRange()
+        let rootViewControllers = _rootViewControllersContext.viewControllers
+        let selectedIndex = _rootViewControllersContext.selectedIndex
+        let viewControllersPreparing = Array(_rootViewControllersContext.viewControllers[availableRange])
+        
+        viewControllersPreparing.flatMap({ rootViewControllers.index(of: $0) == selectedIndex ? nil : $0 }).forEach({ $0.prepareForTransition() })
     }
 }
 
