@@ -43,9 +43,11 @@ class TabNavigationImagePickerController: TabNavigationController {
     fileprivate let _captureSessionQueue = DispatchQueue(label: "com.imagepicker.session")
     fileprivate var _captureDeviceInput: AVCaptureDeviceInput!
     fileprivate let _captureDisplayOutput = AVCaptureVideoDataOutput()
-    fileprivate var _captureDisplayViews: [_CameraViewController.CaptureVideoDisplayView] = []
+    fileprivate var _captureDisplayViews: Set<_CameraViewController.CaptureVideoDisplayView> = []
     fileprivate let _captureDisplayQueue = DispatchQueue(label: "com.imagepicker.display.render")
     fileprivate var _captureVideoPreviewView: _CameraViewController.CaptureVideoPreviewView!
+    
+    fileprivate var _lastSampleBuffer: CMSampleBuffer!
     
     fileprivate var imagesResult: ImagesResultHandler?
     
@@ -118,6 +120,7 @@ extension TabNavigationImagePickerController {
                     
                     wself._captureDisplayOutput.videoSettings = [kCVPixelBufferPixelFormatTypeKey as AnyHashable: kCVPixelFormatType_32BGRA]
                     wself._captureDisplayOutput.setSampleBufferDelegate(wself, queue: wself._captureDisplayQueue)
+                    wself._captureDisplayOutput.alwaysDiscardsLateVideoFrames = true
                     
                     wself._captureSession = AVCaptureSession()
                     if wself._captureSession.canSetSessionPreset(AVCaptureSessionPresetPhoto) {
@@ -215,12 +218,13 @@ extension TabNavigationImagePickerController {
 
 extension TabNavigationImagePickerController: AVCaptureVideoDataOutputSampleBufferDelegate {
     func captureOutput(_ captureOutput: AVCaptureOutput!, didOutputSampleBuffer sampleBuffer: CMSampleBuffer!, from connection: AVCaptureConnection!) {
-        // print("Count of display views: \(_captureDisplayViews.count)")
+        print("Count of display views: \(_captureDisplayViews.count)")
+        // _lastSampleBuffer = sampleBuffer
         guard RunLoop.main.currentMode != .UITrackingRunLoopMode else {
             self._captureDisplayViews.forEach({ (displayView) in
                 if !displayView.blured {
                     let image = UIImage.image(from: sampleBuffer)?.lightBlur
-                    displayView.blur(image)
+                    displayView.blur(image, duration: 0.05)
                 }
             })
             return
@@ -295,17 +299,34 @@ fileprivate class _AssetsViewController: UICollectionViewController {
         
         UIDevice.current.beginGeneratingDeviceOrientationNotifications()
         NotificationCenter.default.addObserver(self, selector: #selector(_handleOrientationDidChange(_:)), name: .UIDeviceOrientationDidChange, object: nil)
+    }
+    
+    override func prepareForTransition() {
+        super.prepareForTransition()
         
-        imagePickerController._captureDisplayQueue.async { [weak self] in
-            guard let wself = self else { return }
-            if !wself.imagePickerController._captureDisplayViews.contains(wself._captureDisplayView) {
-                wself.imagePickerController._captureDisplayViews.append(wself._captureDisplayView)
-            }
+        /* if let buffer = imagePickerController._lastSampleBuffer {
+            _captureDisplayView.blur(UIImage.image(from: buffer)?.lightBlur)
+        } */
+    }
+    
+    override func viewWillBeginInteractiveTransition() {
+        super.viewWillBeginInteractiveTransition()
+        
+        _updateDisplayViews()
+    }
+    
+    override func viewDidEndInteractiveTransition(appearing: Bool) {
+        super.viewDidEndInteractiveTransition(appearing: appearing)
+        
+        if !appearing {
+            _updateDisplayViews(addition: false)
         }
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
+        _updateDisplayViews()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -318,6 +339,7 @@ fileprivate class _AssetsViewController: UICollectionViewController {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         
+        _updateDisplayViews(addition: false)
         _isViewDidAppear = false
     }
     
@@ -356,9 +378,18 @@ fileprivate class _AssetsViewController: UICollectionViewController {
     }
     
     // MARK: Private.
+    fileprivate func _updateDisplayViews(addition: Bool = true) {
+        if addition {
+            imagePickerController._captureDisplayViews.update(with: _captureDisplayView)
+        } else {
+            imagePickerController._captureDisplayViews.remove(_captureDisplayView)
+        }
+    }
+    
     fileprivate func _setupVideoPreviewView() {
         // guard _isViewDidAppear else { return }
         
+        guard _captureDisplayView.superview !== _captureVideoPreviewCell?.contentView else { return }
         _captureDisplayView.translatesAutoresizingMaskIntoConstraints = false
         _captureVideoPreviewCell?.contentView.addSubview(_captureDisplayView)
         _captureVideoPreviewCell?.contentView.leadingAnchor.constraint(equalTo: _captureDisplayView.leadingAnchor).isActive = true
@@ -506,7 +537,8 @@ extension _AssetsViewController {
         if cell is _AssetsCaptureVideoPreviewCollectionCell && _isViewDidAppear {
             imagePickerController._captureDisplayQueue.async { [weak self] in
                 guard let wself = self else { return }
-                wself._captureDisplayView.isDrawingEnabled = true
+                // wself._captureDisplayView.isDrawingEnabled = true
+                wself.imagePickerController._captureDisplayViews.update(with: wself._captureDisplayView)
             }
         }
     }
@@ -515,7 +547,8 @@ extension _AssetsViewController {
         if cell is _AssetsCaptureVideoPreviewCollectionCell {
             imagePickerController._captureDisplayQueue.async { [weak self] in
                 guard let wself = self else { return }
-                wself._captureDisplayView.isDrawingEnabled = false
+                // wself._captureDisplayView.isDrawingEnabled = false
+                wself.imagePickerController._captureDisplayViews.remove(wself._captureDisplayView)
             }
         }
     }
@@ -2018,33 +2051,33 @@ extension _CameraViewController {
             } }
         }
         
-        fileprivate func blur(_ image: UIImage?, animated: Bool = true) {
+        fileprivate func blur(_ image: UIImage?, animated: Bool = true, duration: TimeInterval = 0.15) {
             guard !blured else { return }
             _blured = true
             if Thread.current.isMainThread {
-                __blur(image, animated: animated)
+                __blur(image, animated: animated, duration: duration)
             } else { DispatchQueue.main.async { [weak self] in
-                self?.__blur(image, animated: animated)
+                self?.__blur(image, animated: animated, duration: duration)
             } }
         }
         
-        fileprivate func unBlur(_ animated: Bool = true) {
+        fileprivate func unBlur(_ animated: Bool = true, duration: TimeInterval = 0.15) {
             guard blured else { return }
             _blured = false
             if Thread.current.isMainThread {
-                __blur(nil, animated: animated)
+                __blur(nil, animated: animated, duration: duration)
             } else { DispatchQueue.main.async { [weak self] in
-                self?.__blur(nil, animated: animated)
+                self?.__blur(nil, animated: animated, duration: duration)
             } }
         }
         
-        private func __blur(_ image: UIImage?, animated: Bool) {
+        private func __blur(_ image: UIImage?, animated: Bool, duration: TimeInterval = 0.15) {
             if image != nil || !animated {
                 _blur.image = image
             }
             if animated {
                 _blur.alpha = image == nil ? 1.0 : 0.0
-                UIView.animate(withDuration: 0.15, animations: { [unowned self] in
+                UIView.animate(withDuration: duration, animations: { [unowned self] in
                     self._blur.alpha = image == nil ? 0.0 : 1.0
                 }, completion: { [unowned self] (_) in
                     self._blur.alpha = 1.0
@@ -2116,7 +2149,7 @@ extension _CameraViewController._PresentationAnimator: UIViewControllerAnimatedT
             let displayView = _CameraViewController.CaptureVideoDisplayView()
             displayView.frame = view.bounds
             containerView.insertSubview(displayView, belowSubview: view)
-            imagePicker._captureDisplayViews.append(displayView)
+            imagePicker._captureDisplayViews.update(with: displayView)
             let backgroundColor = view.backgroundColor
             view.backgroundColor = .clear
             
