@@ -197,9 +197,9 @@ extension AssetsViewController {
 }
 
 extension AssetsViewController {
-    fileprivate var _DefaultCollectionSectionInset: CGFloat { return 1.0 }
-    fileprivate var _DefaultCollectionItemPadding : CGFloat { return 2.0 }
-    fileprivate var _DefaultCollectionItemColumns : CGFloat { return 4.0 }
+    fileprivate var _DefaultCollectionSectionInset: CGFloat { return _Resource.Config.Assets.Layouts.sectionInsetValue }
+    fileprivate var _DefaultCollectionItemPadding : CGFloat { return _Resource.Config.Assets.Layouts.itemPadding }
+    fileprivate var _DefaultCollectionItemColumns : CGFloat { return _Resource.Config.Assets.Layouts.itemColumns }
 }
 extension AssetsViewController: UICollectionViewDelegateFlowLayout {
     open func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
