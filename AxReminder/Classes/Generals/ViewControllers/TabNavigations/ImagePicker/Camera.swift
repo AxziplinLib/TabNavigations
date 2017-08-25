@@ -173,13 +173,58 @@ open class CameraViewController: UIViewController {
 // MARK: Camera configs.
 
 extension CameraViewController {
-    var position: AVCaptureDevicePosition { return _previewView.videoDevice?.position ?? .unspecified }
-    func toogle(to pos: AVCaptureDevicePosition) {
-        guard pos != position && pos != .unspecified else { return }
-        guard let session = _previewView.previewLayer.session else { return }
+    public var position: AVCaptureDevicePosition { return _previewView.videoDevice?.position ?? .unspecified }
+    
+    @discardableResult
+    public func toggle() -> Bool {
+        switch position {
+        case .back:
+            return toggle(to: .front)
+        default:
+            return toggle(to: .back)
+        }
+    }
+    @discardableResult
+    public func toggle(to pos: AVCaptureDevicePosition) -> Bool {
+        guard pos != position && pos != .unspecified else { return false }
+        guard let session = _previewView.previewLayer.session else { return false }
         
-        // get new device.
-        // let devices = AVCaptureDevice
+        // Get new device.
+        var devices: [AVCaptureDevice] = []
+        if #available(iOS 10.0, *) {
+            var deviceTypes: [AVCaptureDeviceType] = [.builtInWideAngleCamera, .builtInTelephotoCamera]
+            if #available(iOS 10.2, *) {
+                deviceTypes.append(.builtInDualCamera)
+            } else {
+                deviceTypes.append(.builtInDuoCamera)
+            }
+            if let _devices = AVCaptureDeviceDiscoverySession(deviceTypes: deviceTypes, mediaType: AVMediaTypeVideo, position: pos).devices { devices = _devices }
+        } else {
+            if let _devices = AVCaptureDevice.devices() as? [AVCaptureDevice] { devices = _devices }
+        }
+        guard !devices.isEmpty else { return false }
+        
+        let targetDevices = devices.flatMap({ $0.position == pos && $0.hasMediaType(AVMediaTypeVideo) ? $0 : nil })
+        guard targetDevices.count == 1 else { return false }// Only one device for the specified position.
+        
+        let newDevice = targetDevices[0]
+        guard let newDeviceInput = try? AVCaptureDeviceInput(device: newDevice) else {  return false }
+        
+        session.beginConfiguration()
+        defer { session.commitConfiguration() }
+        // Remove all the device inputs if any.
+        session.inputs.flatMap({ ($0 is AVCaptureDeviceInput && ($0 as! AVCaptureDeviceInput).device.hasMediaType(AVMediaTypeVideo)) ? $0 : nil }).forEach({ session.removeInput($0 as! AVCaptureInput) })
+        // Add the new device input.
+        if session.canAddInput(newDeviceInput) { session.addInput(newDeviceInput) }
+        
+        let _transition = CATransition()
+        // cube, suckEffect, oglFlip, rippleEffect, pageCurl, pageUnCurl, cameraIrisHollowOpen, cameraIrisHollowClose
+        _transition.type = "oglFlip"
+        _transition.subtype = kCATransitionFromLeft
+        _transition.duration = 0.25 * 2.0
+        _previewView.previewLayer.add(_transition, forKey: "transition")
+        
+        return true
     }
 }
 
@@ -191,10 +236,7 @@ extension CameraViewController {
         
     }
     
-    @objc
-    fileprivate func _handleToggleFace(_ sender: UIButton) {
-        
-    }
+    @objc fileprivate func _handleToggleFace(_ sender: UIButton) { toggle() }
     
     @objc
     fileprivate func _handleCancel(_ sender: UIButton) {
@@ -566,7 +608,8 @@ extension CameraViewController.CaptureVideoPreviewView {
     }
     
     override public func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-        if keyPath == "adjustingFocus" && (object as? AVCaptureDevice) === videoDevice {
+        if keyPath == "adjustingFocus" {
+            guard (object as? AVCaptureDevice) === videoDevice else { return }
             if let adjustingFocus = change?[.newKey] as? Bool, let device = videoDevice {
                 // print("is adjusting focus: " + adjustingFocus.description)
                 let location = previewLayer.pointForCaptureDevicePoint(ofInterest: device.focusPointOfInterest)
@@ -578,14 +621,16 @@ extension CameraViewController.CaptureVideoPreviewView {
                     _animateIndicators(show: adjustingFocus, mode: device.focusMode, at: location)
                 }
             }
-        } else if keyPath == "focusMode" && (object as? AVCaptureDevice) === videoDevice {
+        } else if keyPath == "focusMode" {
+            guard (object as? AVCaptureDevice) === videoDevice else { return }
             if let focusMode = change?[.newKey] as? Int, let device = videoDevice {
                 // print("new focus mode: " + focusMode.description)
                 if AVCaptureFocusMode(rawValue: focusMode) == .locked && !device.isAdjustingFocus && _focusLongPressGesture.state != .changed {
                     _animateIndicators(show: true, mode: .locked, at: .zero)
                 }
             }
-        } else if keyPath == "flashActive" && (object as? AVCaptureDevice) === videoDevice {
+        } else if keyPath == "flashActive" {
+            guard (object as? AVCaptureDevice) === videoDevice else { return }
             if let isFlashActive = change?[.newKey] as? Bool {
                 // print("new flash mode: " + isFlashActive.description)
                 if isFlashActive {
@@ -596,7 +641,8 @@ extension CameraViewController.CaptureVideoPreviewView {
                     humanReadingInfos = humanReadingInfos.filter{ $0.type != .flashOn }
                 }
             }
-        } else if (keyPath == "exposureDuration" || keyPath == "ISO" || keyPath == "exposureTargetBias") && (object as? AVCaptureDevice) === videoDevice {
+        } else if keyPath == "exposureDuration" || keyPath == "ISO" || keyPath == "exposureTargetBias" {
+            guard (object as? AVCaptureDevice) === videoDevice else { return }
             guard let device = videoDevice else { return }
             if device.exposureMode != .custom {
                 // print("Begin updating exposure settings and centers.")
@@ -606,12 +652,14 @@ extension CameraViewController.CaptureVideoPreviewView {
                 _exposureSettings.iso = max(min(device.iso, device.activeFormat.maxISO), device.activeFormat.minISO)
                 _exposureSettings.targetBias = max(min(device.exposureTargetBias, device.maxExposureTargetBias), device.minExposureTargetBias)
             }
-        } else if keyPath == "exposureTargetOffset" && (object as? AVCaptureDevice) === videoDevice {
+        } else if keyPath == "exposureTargetOffset" {
+            guard (object as? AVCaptureDevice) === videoDevice else { return }
             guard let exposureTargetOffset = change?[.newKey] as? Float, let device = videoDevice else { return }
             if device.exposureMode == .custom {
                 humanReadingInfos = [humanReadingInfos.filter({ $0.type != .exposureTargetOffset }), [(HumanReading.exposureTargetOffset, "Exposure target offset: \(exposureTargetOffset)")]].joined().reversed()
             }
-        } else if keyPath == "center" && (object as? UIImageView) === _exposureIndicator {
+        } else if keyPath == "center" {
+            guard (object as? AVCaptureDevice) === videoDevice else { return }
             _updateSizeOfExposureIndicator()
             _updatePositionsOfExposureSliders()
             if #available(iOS 8.0, *) {
