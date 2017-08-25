@@ -11,12 +11,12 @@ import Foundation
 
 // MARK: - _Resource.
 
-internal struct _Resource {}
+internal final class _Resource {}
 
 extension _Resource {
     /// Path for the resource bundle.
     ///
-    static var bundle: String { return Bundle(for: TabNavigationImagePickerController.self).path(forResource: String(describing: TabNavigationImagePickerController.self), ofType: "bundle") ?? "unspecified" + "/" }
+    static var bundle: String { return (Bundle(for: self).path(forResource: "Resource", ofType: "bundle") ?? "unspecified") + "/" }
 }
 
 // MARK: - Config.
