@@ -38,3 +38,19 @@ extension _Resource.Config.Camera {
 extension _Resource.Config.Camera.Color {
     static var highlighted: UIColor { return UIColor(colorLiteralRed: 1.0, green: 0.8, blue: 0.0, alpha: 1.0) }
 }
+
+// MARK: - Assets.
+
+extension _Resource.Config {
+    internal struct Assets {}
+}
+
+extension _Resource.Config.Assets {
+    internal struct Layouts {}
+}
+
+extension _Resource.Config.Assets.Layouts {
+    static var sectionInsetValue: CGFloat { return 1.0 }
+    static var itemPadding      : CGFloat { return 2.0 }
+    static var itemColumns      : CGFloat { return 4.0 }
+}
