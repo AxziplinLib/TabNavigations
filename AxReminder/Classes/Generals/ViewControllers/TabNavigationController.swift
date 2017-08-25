@@ -279,7 +279,7 @@ extension TabNavigationController._TabNavigationKeyboardAlignmentLayoutView: UIL
     var length: CGFloat { return bounds.height }
 }
 
-public class TabNavigationController: UIViewController {
+open class TabNavigationController: UIViewController {
     /// Tab navigation bar of the tab-navigation controller.
     public var tabNavigationBar: TabNavigationBar { return _tabNavigationBar }
     public var tabNavigationTitleActionItems: [TabNavigationTitleActionItem] = [] {
@@ -325,7 +325,7 @@ public class TabNavigationController: UIViewController {
     fileprivate var _viewControllersStack: [UIViewController] = []
     fileprivate var _endingAppearanceViewControllers: Set<UIViewController> = []
     
-    override public var shouldAutomaticallyForwardAppearanceMethods: Bool { return false }
+    override open var shouldAutomaticallyForwardAppearanceMethods: Bool { return false }
     public var isViewAppeared: Bool { return _isViewAppeared }
     private var _isViewAppeared: Bool = false
     
@@ -363,7 +363,7 @@ public class TabNavigationController: UIViewController {
         NotificationCenter.default.removeObserver(self)
     }
     
-    override public func loadView() {
+    override open func loadView() {
         super.loadView()
         
         view.addGestureRecognizer(_panGestureRecognizer)
@@ -372,7 +372,7 @@ public class TabNavigationController: UIViewController {
         _setupKeyboardAlignmentView()
     }
     
-    override public func viewDidLoad() {
+    override open func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
@@ -386,28 +386,28 @@ public class TabNavigationController: UIViewController {
         setSelectedViewController(at: _rootViewControllersContext.selectedIndex, animated: false)
     }
     
-    public override func viewWillAppear(_ animated: Bool) {
+    open override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         topViewController?.beginAppearanceTransition(true, animated: animated)
     }
     
-    public override func viewDidAppear(_ animated: Bool) {
+    open override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         _isViewAppeared = true
         topViewController?.endAppearanceTransition()
     }
     
-    public override func viewWillDisappear(_ animated: Bool) {
+    open override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         topViewController?.beginAppearanceTransition(false, animated: animated)
     }
     
-    public override func viewDidDisappear(_ animated: Bool) {
+    open override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         topViewController?.endAppearanceTransition()
     }
 
-    override public func didReceiveMemoryWarning() {
+    override open func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
@@ -1251,6 +1251,6 @@ extension TabNavigationController: UIScrollViewDelegate {
 
 // MARK: - Status Bar Supporting.
 extension TabNavigationController {
-    override public var prefersStatusBarHidden: Bool { return true }
-    override public var preferredStatusBarUpdateAnimation: UIStatusBarAnimation { return .fade }
+    override open var prefersStatusBarHidden: Bool { return true }
+    override open var preferredStatusBarUpdateAnimation: UIStatusBarAnimation { return .fade }
 }
