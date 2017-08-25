@@ -9,6 +9,8 @@
 import UIKit
 import Foundation
 
+// MARK: - _Resource.
+
 internal struct _Resource {}
 
 extension _Resource {
@@ -17,9 +19,13 @@ extension _Resource {
     static var bundle: String { return Bundle(for: TabNavigationImagePickerController.self).path(forResource: String(describing: TabNavigationImagePickerController.self), ofType: "bundle") ?? "unspecified" + "/" }
 }
 
+// MARK: - Config.
+
 extension _Resource {
     internal struct Config {}
 }
+
+// MARK: - Camera.
 
 extension _Resource.Config {
     internal struct Camera {}
