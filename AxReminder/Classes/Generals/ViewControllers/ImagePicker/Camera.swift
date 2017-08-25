@@ -29,7 +29,7 @@ open class CameraViewController: UIViewController {
     // MARK: Tool Views.
     
     private let _flashConfigs: [(title: String, image: UIImage)] = [("自动", #imageLiteral(resourceName: "flash_auto")), ("打开", #imageLiteral(resourceName: "flash_on")), ("关闭", #imageLiteral(resourceName: "flash_off"))]
-    private let _hdrConfigs: [(title: String, image: UIImage)] = [("自动", UIImage(named: Resource.bundle+"HDR_auto")!), ("打开", UIImage(named: Resource.bundle+"HDR_on")!), ("关闭", UIImage(named: Resource.bundle+"HDR_off")!)]
+    private let _hdrConfigs: [(title: String, image: UIImage)] = [("自动", UIImage(named: _Resource.bundle+"HDR_auto")!), ("打开", UIImage(named: _Resource.bundle+"HDR_on")!), ("关闭", UIImage(named: _Resource.bundle+"HDR_off")!)]
     public var topBar: TopBar { return _topBar }
     fileprivate lazy var _topBar: TopBar = { () -> TopBar in
         let topBar = TopBar()
@@ -245,9 +245,9 @@ extension CameraViewController {
         fileprivate weak var _focusLongPressGesture: UILongPressGestureRecognizer!
         fileprivate weak var _exposurePanGesture: UIPanGestureRecognizer!
         
-        fileprivate let _focusIndicator   : UIImageView = UIImageView(image: UIImage(named: Resource.bundle+"auto_focus"))
-        fileprivate let _exposureIndicator: UIImageView = UIImageView(image: UIImage(named: Resource.bundle+"sun_shape_light"))
-        fileprivate let _co_focusIndicator: UIImageView = UIImageView(image: UIImage(named: Resource.bundle+"co_auto_focus"))
+        fileprivate let _focusIndicator   : UIImageView = UIImageView(image: UIImage(named: _Resource.bundle+"auto_focus"))
+        fileprivate let _exposureIndicator: UIImageView = UIImageView(image: UIImage(named: _Resource.bundle+"sun_shape_light"))
+        fileprivate let _co_focusIndicator: UIImageView = UIImageView(image: UIImage(named: _Resource.bundle+"co_auto_focus"))
         
         fileprivate let _exposureSliders : (top: UIImageView, bottom: UIImageView)           = (UIImageView(), UIImageView())
         fileprivate var _exposureCenters : (isoBinding: CGPoint, translation: CGPoint)       = (.zero, .zero)
@@ -324,8 +324,8 @@ extension CameraViewController {
             _focusIndicator.isHidden = true
             _exposureIndicator.isHidden = true
             _co_focusIndicator.isHidden = true
-            _exposureSliders.top.backgroundColor = Resource.Config.Camera.Color.highlighted
-            _exposureSliders.bottom.backgroundColor = Resource.Config.Camera.Color.highlighted
+            _exposureSliders.top.backgroundColor = _Resource.Config.Camera.Color.highlighted
+            _exposureSliders.bottom.backgroundColor = _Resource.Config.Camera.Color.highlighted
             _exposureSliders.top.isHidden = true
             _exposureSliders.bottom.isHidden = true
             _exposureSliders.top.alpha = 0.0
@@ -390,7 +390,7 @@ extension CameraViewController {
                     label.textColor = UIColor.black.withAlphaComponent(0.88)
                     label.text = content
                     label.removeFromSuperview()
-                    infoView.backgroundColor = Resource.Config.Camera.Color.highlighted
+                    infoView.backgroundColor = _Resource.Config.Camera.Color.highlighted
                     infoView.addSubview(label)
                     label.topAnchor.constraint(equalTo: infoView.topAnchor, constant: 2.0).isActive = true
                     label.bottomAnchor.constraint(equalTo: infoView.bottomAnchor, constant: -2.0).isActive = true
@@ -582,7 +582,7 @@ extension CameraViewController.CaptureVideoPreviewView {
                 // print("new flash mode: " + isFlashActive.description)
                 if isFlashActive {
                     if !humanReadingInfos.contains{ $0.type == .flashOn } {
-                        humanReadingInfos = [humanReadingInfos.filter({ $0.type != .flashOn }), [(HumanReading.flashOn, UIImage(named: Resource.bundle+"flash_info")!)]].joined().reversed()
+                        humanReadingInfos = [humanReadingInfos.filter({ $0.type != .flashOn }), [(HumanReading.flashOn, UIImage(named: _Resource.bundle+"flash_info")!)]].joined().reversed()
                     }
                 } else {
                     humanReadingInfos = humanReadingInfos.filter{ $0.type != .flashOn }
@@ -1097,7 +1097,7 @@ extension CameraViewController.TopBar {
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setContentHuggingPriority(UILayoutPriorityRequired, for: .horizontal)
         button.setTitleColor(.white, for: .normal)
-        button.setTitleColor(Resource.Config.Camera.Color.highlighted, for: .selected)
+        button.setTitleColor(_Resource.Config.Camera.Color.highlighted, for: .selected)
         button.adjustsImageWhenDisabled = false
         button.adjustsImageWhenHighlighted = false
         button.titleLabel?.font = UIFont.systemFont(ofSize: 13)

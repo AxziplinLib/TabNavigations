@@ -9,26 +9,26 @@
 import UIKit
 import Foundation
 
-internal struct Resource {}
+internal struct _Resource {}
 
-extension Resource {
+extension _Resource {
     /// Path for the resource bundle.
     ///
     static var bundle: String { return Bundle(for: TabNavigationImagePickerController.self).path(forResource: String(describing: TabNavigationImagePickerController.self), ofType: "bundle") ?? "unspecified" + "/" }
 }
 
-extension Resource {
+extension _Resource {
     internal struct Config {}
 }
 
-extension Resource.Config {
+extension _Resource.Config {
     internal struct Camera {}
 }
 
-extension Resource.Config.Camera {
+extension _Resource.Config.Camera {
     internal struct Color {}
 }
 
-extension Resource.Config.Camera.Color {
+extension _Resource.Config.Camera.Color {
     static var highlighted: UIColor { return UIColor(colorLiteralRed: 1.0, green: 0.8, blue: 0.0, alpha: 1.0) }
 }
