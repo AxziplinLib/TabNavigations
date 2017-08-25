@@ -216,7 +216,7 @@ extension TabNavigationImagePickerController {
 
 extension TabNavigationImagePickerController: AVCaptureVideoDataOutputSampleBufferDelegate {
     public func captureOutput(_ captureOutput: AVCaptureOutput!, didOutputSampleBuffer sampleBuffer: CMSampleBuffer!, from connection: AVCaptureConnection!) {
-        print("Count of display views: \(_captureDisplayViews.count)")
+        // print("Count of display views: \(_captureDisplayViews.count)")
         // _lastSampleBuffer = sampleBuffer
         guard RunLoop.main.currentMode != .UITrackingRunLoopMode else {
             self._captureDisplayViews.forEach({ (displayView) in
