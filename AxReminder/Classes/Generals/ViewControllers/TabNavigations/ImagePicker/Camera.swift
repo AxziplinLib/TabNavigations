@@ -458,11 +458,19 @@ extension CameraViewController {
         }
     }
 }
-/*
-public protocol HumanReadable {
-    var contents: String? { get }
-    var image: UIImage? { get }
-} */
+
+public protocol HumanReadable {}
+extension HumanReadable {
+    public var contents: String? { return nil }
+    public var image: UIImage? { return nil }
+}
+
+extension String: HumanReadable {
+    public var contents: String { return self }
+}
+extension UIImage: HumanReadable {
+    public var image: UIImage { return self }
+}
 
 public extension CameraViewController.CaptureVideoPreviewView {
     enum HumanReading {
@@ -473,7 +481,7 @@ public extension CameraViewController.CaptureVideoPreviewView {
         case customExposure
     }
     
-    public typealias HumanReadingInfo = (type: HumanReading, content: Any)
+    public typealias HumanReadingInfo = (type: HumanReading, content: HumanReadable)
 }
 
 // MARK: Actions.
