@@ -12,248 +12,246 @@ import AVFoundation
 
 // MARK: - CaptureVideoPreviewView.
 
-public extension CameraViewController {
-    @available(iOS 9.0, *)
-    public final class CaptureVideoPreviewView: UIView {// CAReplicatorLayer
-        override public class var layerClass: AnyClass { return AVCaptureVideoPreviewLayer.self }
-        public var previewLayer: AVCaptureVideoPreviewLayer { return layer as! AVCaptureVideoPreviewLayer }
-        public var videoDevice: AVCaptureDevice? {
-            return (previewLayer.session.inputs as! [AVCaptureDeviceInput]).filter{ $0.device.hasMediaType(AVMediaTypeVideo) }.first?.device
-        }
-        public var infoContentInsets: UIEdgeInsets = .zero {
-            didSet { _setupInfoStackView() }
-        }
-        // Only support String or UIImage object.
-        public var humanReadingInfos: [HumanReadingInfo] = [] {
-            willSet { _updateHumanReadingInfos(newValue) }
-        }
-        public let configurationQueue: DispatchQueue = DispatchQueue(label: "com.device_configuration.video_preview.camera_vc")
+@available(iOS 9.0, *)
+open class CaptureVideoPreviewView: UIView {
+    override open class var layerClass: AnyClass { return AVCaptureVideoPreviewLayer.self }
+    public var previewLayer: AVCaptureVideoPreviewLayer { return layer as! AVCaptureVideoPreviewLayer }
+    public var videoDevice: AVCaptureDevice? {
+        return (previewLayer.session.inputs as! [AVCaptureDeviceInput]).filter{ $0.device.hasMediaType(AVMediaTypeVideo) }.first?.device
+    }
+    public var infoContentInsets: UIEdgeInsets = .zero {
+        didSet { _setupInfoStackView() }
+    }
+    // Only support String or UIImage object.
+    public var humanReadingInfos: [HumanReadingInfo] = [] {
+        willSet { _updateHumanReadingInfos(newValue) }
+    }
+    public let configurationQueue: DispatchQueue = DispatchQueue(label: "com.device_configuration.video_preview.camera_vc")
+    
+    fileprivate lazy var _infoStackView: UIStackView = { () -> UIStackView in
+        let stackView = UIStackView()
+        stackView.isUserInteractionEnabled = false
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.alignment = .center
+        stackView.axis = .vertical
+        stackView.distribution = .equalSpacing
+        stackView.spacing = 10.0
+        return stackView
+    }()
+    
+    fileprivate weak var _focusTapGesture: UITapGestureRecognizer!
+    fileprivate weak var _focusLongPressGesture: UILongPressGestureRecognizer!
+    fileprivate weak var _exposurePanGesture: UIPanGestureRecognizer!
+    
+    fileprivate let _focusIndicator     : UIImageView = UIImageView(image: UIImage(named: _Resource.bundle+"auto_focus"))
+    fileprivate let _exposureIndicator  : UIImageView = UIImageView(image: UIImage(named: _Resource.bundle+"sun_shape_light"))
+    fileprivate let _co_focusIndicator  : UIImageView = UIImageView(image: UIImage(named: _Resource.bundle+"co_auto_focus"))
+    
+    fileprivate let _exposureSliders    : (top: UIImageView, bottom: UIImageView)           = (UIImageView(), UIImageView())
+    fileprivate var _exposureCenters    : (isoBinding: CGPoint, translation: CGPoint)       = (.zero, .zero)
+    fileprivate var _exposureSettings   : (duration: CMTime, iso: Float, targetBias: Float) = (AVCaptureExposureDurationCurrent, 0.0, 0.0)
+    fileprivate let _exposureSizes      : (top: CGSize, middle: CGSize, bottom: CGSize)     = (CGSize(width: 28.0, height: 28.0), CGSize(width: 25.0, height: 25.0), CGSize(width: 16.0, height: 16.0))
+    
+    fileprivate var _focusBeginning     : Date = Date()
+    fileprivate var _co_focusBeginning  : Date = Date()
+    fileprivate let _grace_du           : Double = 0.35
+    fileprivate let _paddingOfFoexposure: CGFloat = 5.0
+    fileprivate let _lengthOfSliderSpace: CGFloat = 150.0
+    
+    // Device observing keypaths.
+    private var _deviceObservingKeyPaths: [String] = []
+    
+    public init(session: AVCaptureSession) {
+        super.init(frame: .zero)
+        previewLayer.session = session
+        _initializer()
+    }
+    
+    required public init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
         
-        fileprivate lazy var _infoStackView: UIStackView = { () -> UIStackView in
-            let stackView = UIStackView()
-            stackView.isUserInteractionEnabled = false
-            stackView.translatesAutoresizingMaskIntoConstraints = false
-            stackView.alignment = .center
-            stackView.axis = .vertical
-            stackView.distribution = .equalSpacing
-            stackView.spacing = 10.0
-            return stackView
-        }()
+        _exposureIndicator.removeObserver(self, forKeyPath: "center")
+        _deviceObservingKeyPaths.forEach{ videoDevice?.removeObserver(self, forKeyPath: $0, context: nil) }
+    }
+    
+    // MARK: Override.
+    
+    override open func willMove(toSuperview newSuperview: UIView?) {
+        super.willMove(toSuperview: newSuperview)
         
-        fileprivate weak var _focusTapGesture: UITapGestureRecognizer!
-        fileprivate weak var _focusLongPressGesture: UILongPressGestureRecognizer!
-        fileprivate weak var _exposurePanGesture: UIPanGestureRecognizer!
-        
-        fileprivate let _focusIndicator   : UIImageView = UIImageView(image: UIImage(named: _Resource.bundle+"auto_focus"))
-        fileprivate let _exposureIndicator: UIImageView = UIImageView(image: UIImage(named: _Resource.bundle+"sun_shape_light"))
-        fileprivate let _co_focusIndicator: UIImageView = UIImageView(image: UIImage(named: _Resource.bundle+"co_auto_focus"))
-        
-        fileprivate let _exposureSliders : (top: UIImageView, bottom: UIImageView)           = (UIImageView(), UIImageView())
-        fileprivate var _exposureCenters : (isoBinding: CGPoint, translation: CGPoint)       = (.zero, .zero)
-        fileprivate var _exposureSettings: (duration: CMTime, iso: Float, targetBias: Float) = (AVCaptureExposureDurationCurrent, 0.0, 0.0)
-        fileprivate let _exposureSizes   : (top: CGSize, middle: CGSize, bottom: CGSize)     = (CGSize(width: 28.0, height: 28.0), CGSize(width: 25.0, height: 25.0), CGSize(width: 16.0, height: 16.0))
-        
-        fileprivate var _focusBeginning     : Date = Date()
-        fileprivate var _co_focusBeginning  : Date = Date()
-        fileprivate let _grace_du           : Double = 0.35
-        fileprivate let _paddingOfFoexposure    : CGFloat = 5.0
-        fileprivate let _lengthOfSliderSpace: CGFloat = 150.0
-        
-        // Device observing keypaths.
-        private var _deviceObservingKeyPaths: [String] = []
-        
-        public init(session: AVCaptureSession) {
-            super.init(frame: .zero)
-            previewLayer.session = session
-            _initializer()
-        }
-        
-        required public init?(coder aDecoder: NSCoder) {
-            fatalError("init(coder:) has not been implemented")
-        }
-        
-        deinit {
-            NotificationCenter.default.removeObserver(self)
-            
-            _exposureIndicator.removeObserver(self, forKeyPath: "center")
-            _deviceObservingKeyPaths.forEach{ videoDevice?.removeObserver(self, forKeyPath: $0, context: nil) }
-        }
-        
-        // MARK: Override.
-        
-        override public func willMove(toSuperview newSuperview: UIView?) {
-            super.willMove(toSuperview: newSuperview)
-            
-            if let _ = newSuperview {
-                _focusIndicator.isHidden = true
-                _exposureIndicator.isHidden = true
-                _co_focusIndicator.isHidden = true
-            }
-        }
-        
-        // MARK: Private.
-        private func _initializer() {
-            _setupIndicators()
-            _setupInfoStackView()
-            
-            _setupFoexposureGestures()
-            
-            _deviceObservingKeyPaths = ["adjustingFocus", "focusMode", "flashActive", "exposureDuration", "ISO", "exposureTargetBias",  "exposureTargetOffset"]
-            _observeProperties()
-            _observeNotifications()
-        }
-        
-        private func _setupInfoStackView() {
-            if _infoStackView.superview === self {
-                _infoStackView.removeFromSuperview()
-            }
-            
-            addSubview(_infoStackView)
-            addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-left-[_infoStackView]-right-|", options: [], metrics: ["left": infoContentInsets.left, "right": infoContentInsets.right], views: ["_infoStackView": _infoStackView]))
-            addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-top-[_infoStackView]-(>=bottom)-|", options: [], metrics: ["top" : infoContentInsets.top + _infoStackView.spacing, "bottom" : infoContentInsets.bottom], views: ["_infoStackView": _infoStackView]))
-        }
-        
-        private func _setupIndicators() {
-            addSubview(_focusIndicator)
-            addSubview(_exposureIndicator)
-            addSubview(_co_focusIndicator)
-            addSubview(_exposureSliders.top)
-            addSubview(_exposureSliders.bottom)
-            
+        if let _ = newSuperview {
             _focusIndicator.isHidden = true
             _exposureIndicator.isHidden = true
             _co_focusIndicator.isHidden = true
-            _exposureSliders.top.backgroundColor = _Resource.Config.Camera.Color.highlighted
-            _exposureSliders.bottom.backgroundColor = _Resource.Config.Camera.Color.highlighted
-            _exposureSliders.top.isHidden = true
-            _exposureSliders.bottom.isHidden = true
-            _exposureSliders.top.alpha = 0.0
-            _exposureSliders.bottom.alpha = 0.0
+        }
+    }
+    
+    // MARK: Private.
+    private func _initializer() {
+        _setupIndicators()
+        _setupInfoStackView()
+        
+        _setupFoexposureGestures()
+        
+        _deviceObservingKeyPaths = ["adjustingFocus", "focusMode", "flashActive", "exposureDuration", "ISO", "exposureTargetBias",  "exposureTargetOffset"]
+        _observeProperties()
+        _observeNotifications()
+    }
+    
+    private func _setupInfoStackView() {
+        if _infoStackView.superview === self {
+            _infoStackView.removeFromSuperview()
         }
         
-        private func _setupFoexposureGestures() {
-            let tap = UITapGestureRecognizer(target: self, action: #selector(_handleTapToConfigureDevice(_:)))
-            addGestureRecognizer(tap)
-            _focusTapGesture = tap
+        addSubview(_infoStackView)
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-left-[_infoStackView]-right-|", options: [], metrics: ["left": infoContentInsets.left, "right": infoContentInsets.right], views: ["_infoStackView": _infoStackView]))
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-top-[_infoStackView]-(>=bottom)-|", options: [], metrics: ["top" : infoContentInsets.top + _infoStackView.spacing, "bottom" : infoContentInsets.bottom], views: ["_infoStackView": _infoStackView]))
+    }
+    
+    private func _setupIndicators() {
+        addSubview(_focusIndicator)
+        addSubview(_exposureIndicator)
+        addSubview(_co_focusIndicator)
+        addSubview(_exposureSliders.top)
+        addSubview(_exposureSliders.bottom)
+        
+        _focusIndicator.isHidden = true
+        _exposureIndicator.isHidden = true
+        _co_focusIndicator.isHidden = true
+        _exposureSliders.top.backgroundColor = _Resource.Config.Camera.Color.highlighted
+        _exposureSliders.bottom.backgroundColor = _Resource.Config.Camera.Color.highlighted
+        _exposureSliders.top.isHidden = true
+        _exposureSliders.bottom.isHidden = true
+        _exposureSliders.top.alpha = 0.0
+        _exposureSliders.bottom.alpha = 0.0
+    }
+    
+    private func _setupFoexposureGestures() {
+        let tap = UITapGestureRecognizer(target: self, action: #selector(_handleTapToConfigureDevice(_:)))
+        addGestureRecognizer(tap)
+        _focusTapGesture = tap
+        
+        let longPress = UILongPressGestureRecognizer(target: self, action: #selector(_handleLongPressToConfigureDevice(_:)))
+        addGestureRecognizer(longPress)
+        _focusLongPressGesture = longPress
+        
+        let pan = UIPanGestureRecognizer(target: self, action: #selector(_handlePanToConfigureDevice(_:)))
+        addGestureRecognizer(pan)
+        _exposurePanGesture = pan
+    }
+    
+    private func _observeProperties() {
+        _exposureIndicator.addObserver(self, forKeyPath: "center", options: .new, context: nil)
+        _deviceObservingKeyPaths.forEach{ videoDevice?.addObserver(self, forKeyPath: $0, options: .new, context: nil) }
+    }
+    private func _observeNotifications() {
+        NotificationCenter.default.addObserver(self, selector: #selector(_handleCaptureDeviceSubjectAreaDidChange(_:)), name: .AVCaptureDeviceSubjectAreaDidChange, object: nil)
+    }
+    
+    private func _updateHumanReadingInfos(_ newInfos: [HumanReadingInfo] = []) {
+        @discardableResult
+        func _infoView(`for` info: HumanReadingInfo, updatedInfoView: _HumanReadingInfoView? = nil) -> _HumanReadingInfoView? {
+            let infoView = updatedInfoView ?? _HumanReadingInfoView(type: info.type)
+            if updatedInfoView == nil {
+                infoView.translatesAutoresizingMaskIntoConstraints = false
+                infoView.layer.cornerRadius = 2.0
+                infoView.layer.masksToBounds = true
+                infoView.clipsToBounds = true
+            }
+            let imageViewTag = 0x2
+            let labelViewTag = 0x3
             
-            let longPress = UILongPressGestureRecognizer(target: self, action: #selector(_handleLongPressToConfigureDevice(_:)))
-            addGestureRecognizer(longPress)
-            _focusLongPressGesture = longPress
-            
-            let pan = UIPanGestureRecognizer(target: self, action: #selector(_handlePanToConfigureDevice(_:)))
-            addGestureRecognizer(pan)
-            _exposurePanGesture = pan
-        }
-        
-        private func _observeProperties() {
-            _exposureIndicator.addObserver(self, forKeyPath: "center", options: .new, context: nil)
-            _deviceObservingKeyPaths.forEach{ videoDevice?.addObserver(self, forKeyPath: $0, options: .new, context: nil) }
-        }
-        private func _observeNotifications() {
-            NotificationCenter.default.addObserver(self, selector: #selector(_handleCaptureDeviceSubjectAreaDidChange(_:)), name: .AVCaptureDeviceSubjectAreaDidChange, object: nil)
-        }
-        
-        private func _updateHumanReadingInfos(_ newInfos: [HumanReadingInfo] = []) {
-            @discardableResult
-            func _infoView(`for` info: HumanReadingInfo, updatedInfoView: _HumanReadingInfoView? = nil) -> _HumanReadingInfoView? {
-                let infoView = updatedInfoView ?? _HumanReadingInfoView(type: info.type)
-                if updatedInfoView == nil {
-                    infoView.translatesAutoresizingMaskIntoConstraints = false
-                    infoView.layer.cornerRadius = 2.0
-                    infoView.layer.masksToBounds = true
-                    infoView.clipsToBounds = true
-                }
-                let imageViewTag = 0x2
-                let labelViewTag = 0x3
-                
-                switch info {
-                case let (_, image) as (HumanReading, UIImage):
-                    let imageView = infoView.viewWithTag(imageViewTag) as? _ImageView ?? _ImageView(image: image)
-                    imageView.tag = imageViewTag
-                    imageView.contentMode = .scaleAspectFit
-                    imageView.translatesAutoresizingMaskIntoConstraints = false
-                    imageView.removeFromSuperview()
-                    infoView.backgroundColor = .clear
-                    infoView.addSubview(imageView)
-                    imageView.centerXAnchor.constraint(equalTo: infoView.centerXAnchor).isActive = true
-                    imageView.centerYAnchor.constraint(equalTo: infoView.centerYAnchor).isActive = true
-                    imageView.topAnchor.constraint(equalTo: infoView.topAnchor).isActive = true
-                    imageView.bottomAnchor.constraint(equalTo: infoView.bottomAnchor).isActive = true
-                    imageView.leadingAnchor.constraint(equalTo: infoView.leadingAnchor).isActive = true
-                    imageView.trailingAnchor.constraint(equalTo: infoView.trailingAnchor).isActive = true
-                case let (_, content) as (HumanReading, String):
-                    let label = infoView.viewWithTag(labelViewTag) as? UILabel ?? UILabel()
-                    label.tag = labelViewTag
-                    label.translatesAutoresizingMaskIntoConstraints = false
-                    label.font = UIFont.systemFont(ofSize: 14)
-                    label.textColor = UIColor.black.withAlphaComponent(0.88)
-                    label.text = content
-                    label.removeFromSuperview()
-                    infoView.backgroundColor = _Resource.Config.Camera.Color.highlighted
-                    infoView.addSubview(label)
-                    label.topAnchor.constraint(equalTo: infoView.topAnchor, constant: 2.0).isActive = true
-                    label.bottomAnchor.constraint(equalTo: infoView.bottomAnchor, constant: -2.0).isActive = true
-                    label.leadingAnchor.constraint(equalTo: infoView.leadingAnchor, constant: 8.0).isActive = true
-                    label.trailingAnchor.constraint(equalTo: infoView.trailingAnchor, constant: -8.0).isActive = true
-                default: return nil
-                }
-                
-                return infoView
+            switch info {
+            case let (_, image) as (HumanReading, UIImage):
+                let imageView = infoView.viewWithTag(imageViewTag) as? _ImageView ?? _ImageView(image: image)
+                imageView.tag = imageViewTag
+                imageView.contentMode = .scaleAspectFit
+                imageView.translatesAutoresizingMaskIntoConstraints = false
+                imageView.removeFromSuperview()
+                infoView.backgroundColor = .clear
+                infoView.addSubview(imageView)
+                imageView.centerXAnchor.constraint(equalTo: infoView.centerXAnchor).isActive = true
+                imageView.centerYAnchor.constraint(equalTo: infoView.centerYAnchor).isActive = true
+                imageView.topAnchor.constraint(equalTo: infoView.topAnchor).isActive = true
+                imageView.bottomAnchor.constraint(equalTo: infoView.bottomAnchor).isActive = true
+                imageView.leadingAnchor.constraint(equalTo: infoView.leadingAnchor).isActive = true
+                imageView.trailingAnchor.constraint(equalTo: infoView.trailingAnchor).isActive = true
+            case let (_, content) as (HumanReading, String):
+                let label = infoView.viewWithTag(labelViewTag) as? UILabel ?? UILabel()
+                label.tag = labelViewTag
+                label.translatesAutoresizingMaskIntoConstraints = false
+                label.font = UIFont.systemFont(ofSize: 14)
+                label.textColor = UIColor.black.withAlphaComponent(0.88)
+                label.text = content
+                label.removeFromSuperview()
+                infoView.backgroundColor = _Resource.Config.Camera.Color.highlighted
+                infoView.addSubview(label)
+                label.topAnchor.constraint(equalTo: infoView.topAnchor, constant: 2.0).isActive = true
+                label.bottomAnchor.constraint(equalTo: infoView.bottomAnchor, constant: -2.0).isActive = true
+                label.leadingAnchor.constraint(equalTo: infoView.leadingAnchor, constant: 8.0).isActive = true
+                label.trailingAnchor.constraint(equalTo: infoView.trailingAnchor, constant: -8.0).isActive = true
+            default: return nil
             }
             
-            let duration = 0.5
-            let arrangedViews = _infoStackView.arrangedSubviews as! [_HumanReadingInfoView]
-            let newInfoTypes = newInfos.map{ $0.type }
-            let oldInfoTypes = humanReadingInfos.map{ $0.type }
-            let padding = _infoStackView.spacing
-            let stackOffset = infoContentInsets.top + padding
-            let originalFrameInfos   : [(type: HumanReading, frame: CGRect)] = arrangedViews.map{ ($0.type, $0.frame) }
-            var infoViewsToBeRemoved : [_HumanReadingInfoView] = []
-            var infoViewsToBeRemained: [_HumanReadingInfoView] = []
-            let infoViewsToBeAdded   : [_HumanReadingInfoView] = newInfos.flatMap({ oldInfoTypes.contains($0.type) ? nil: $0 }).flatMap({ _infoView(for: $0) })
-            arrangedViews.forEach { [unowned self] infoView in
-                if newInfoTypes.contains(infoView.type) {
-                    infoViewsToBeRemained.append(infoView)
-                } else {
-                    infoViewsToBeRemoved.append(infoView)
-                    let frame = CGRect(origin: CGPoint(x: infoView.frame.origin.x, y: infoView.frame.origin.y + stackOffset), size: infoView.bounds.size)
-                    self._infoStackView.removeArrangedSubview(infoView)
-                    infoView.removeFromSuperview()
-                    self.insertSubview(infoView, belowSubview: self._infoStackView)
-                    infoView.topAnchor.constraint(equalTo: self.topAnchor, constant: frame.origin.y).isActive = true
-                    infoView.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
-                }
+            return infoView
+        }
+        
+        let duration = 0.5
+        let arrangedViews = _infoStackView.arrangedSubviews as! [_HumanReadingInfoView]
+        let newInfoTypes = newInfos.map{ $0.type }
+        let oldInfoTypes = humanReadingInfos.map{ $0.type }
+        let padding = _infoStackView.spacing
+        let stackOffset = infoContentInsets.top + padding
+        let originalFrameInfos   : [(type: HumanReading, frame: CGRect)] = arrangedViews.map{ ($0.type, $0.frame) }
+        var infoViewsToBeRemoved : [_HumanReadingInfoView] = []
+        var infoViewsToBeRemained: [_HumanReadingInfoView] = []
+        let infoViewsToBeAdded   : [_HumanReadingInfoView] = newInfos.flatMap({ oldInfoTypes.contains($0.type) ? nil: $0 }).flatMap({ _infoView(for: $0) })
+        arrangedViews.forEach { [unowned self] infoView in
+            if newInfoTypes.contains(infoView.type) {
+                infoViewsToBeRemained.append(infoView)
+            } else {
+                infoViewsToBeRemoved.append(infoView)
+                let frame = CGRect(origin: CGPoint(x: infoView.frame.origin.x, y: infoView.frame.origin.y + stackOffset), size: infoView.bounds.size)
+                self._infoStackView.removeArrangedSubview(infoView)
+                infoView.removeFromSuperview()
+                self.insertSubview(infoView, belowSubview: self._infoStackView)
+                infoView.topAnchor.constraint(equalTo: self.topAnchor, constant: frame.origin.y).isActive = true
+                infoView.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
             }
-            
-            let reversedNewInfoTypes = Array(newInfoTypes.reversed())
-            infoViewsToBeAdded.reversed().forEach { [unowned self] (infoView) in
+        }
+        
+        let reversedNewInfoTypes = Array(newInfoTypes.reversed())
+        infoViewsToBeAdded.reversed().forEach { [unowned self] (infoView) in
+            infoView.alpha = 0.0
+            let index = reversedNewInfoTypes.index(where: { $0 == infoView.type })!
+            self._infoStackView.insertArrangedSubview(infoView, at: index)
+            self._infoStackView.sendSubview(toBack: infoView)
+        }
+        _infoStackView.layoutIfNeeded()
+        infoViewsToBeAdded.forEach({ $0.transform = CGAffineTransform(translationX: 0.0, y: -$0.frame.height - padding) })
+        infoViewsToBeRemained.forEach { (infoView) in
+            let info = newInfos.filter{ $0.type == infoView.type }.first!
+            _infoView(for: info, updatedInfoView: infoView)
+            let originalFrame = originalFrameInfos.filter({ $0.type == infoView.type }).first!.frame
+            infoView.transform = CGAffineTransform(translationX: 0.0, y: originalFrame.minY - infoView.frame.minY)
+        }
+        
+        UIView.animate(withDuration: duration, delay: 0.0, usingSpringWithDamping: 1.0, initialSpringVelocity: 1.0, options: [.curveEaseOut], animations: {
+            infoViewsToBeRemoved.forEach({ (infoView) in
                 infoView.alpha = 0.0
-                let index = reversedNewInfoTypes.index(where: { $0 == infoView.type })!
-                self._infoStackView.insertArrangedSubview(infoView, at: index)
-                self._infoStackView.sendSubview(toBack: infoView)
-            }
-            _infoStackView.layoutIfNeeded()
-            infoViewsToBeAdded.forEach({ $0.transform = CGAffineTransform(translationX: 0.0, y: -$0.frame.height - padding) })
-            infoViewsToBeRemained.forEach { (infoView) in
-                let info = newInfos.filter{ $0.type == infoView.type }.first!
-                _infoView(for: info, updatedInfoView: infoView)
-                let originalFrame = originalFrameInfos.filter({ $0.type == infoView.type }).first!.frame
-                infoView.transform = CGAffineTransform(translationX: 0.0, y: originalFrame.minY - infoView.frame.minY)
-            }
-            
-            UIView.animate(withDuration: duration, delay: 0.0, usingSpringWithDamping: 1.0, initialSpringVelocity: 1.0, options: [.curveEaseOut], animations: {
-                infoViewsToBeRemoved.forEach({ (infoView) in
-                    infoView.alpha = 0.0
-                    infoView.transform = CGAffineTransform(translationX: 0.0, y: -infoView.frame.height-padding)
-                })
-                infoViewsToBeAdded.forEach({ (infoView) in
-                    infoView.alpha = 1.0
-                    infoView.transform = .identity
-                })
-                infoViewsToBeRemained.forEach{ $0.transform = .identity }
-            }) { (_) in
-                infoViewsToBeRemoved.forEach{ $0.removeFromSuperview() }
-            }
+                infoView.transform = CGAffineTransform(translationX: 0.0, y: -infoView.frame.height-padding)
+            })
+            infoViewsToBeAdded.forEach({ (infoView) in
+                infoView.alpha = 1.0
+                infoView.transform = .identity
+            })
+            infoViewsToBeRemained.forEach{ $0.transform = .identity }
+        }) { (_) in
+            infoViewsToBeRemoved.forEach{ $0.removeFromSuperview() }
         }
     }
 }
@@ -271,7 +269,7 @@ extension UIImage: HumanReadable {
     public var image: UIImage { return self }
 }
 
-public extension CameraViewController.CaptureVideoPreviewView {
+public extension CaptureVideoPreviewView {
     enum HumanReading {
         case autoModesLocked
         case flashOn
@@ -285,7 +283,7 @@ public extension CameraViewController.CaptureVideoPreviewView {
 
 // MARK: Actions.
 
-extension CameraViewController.CaptureVideoPreviewView {
+extension CaptureVideoPreviewView {
     @objc
     fileprivate func _handleCaptureDeviceSubjectAreaDidChange(_ notification: NSNotification) {
         if videoDevice?.focusMode != .continuousAutoFocus {
@@ -364,7 +362,7 @@ extension CameraViewController.CaptureVideoPreviewView {
         }
     }
     
-    override public func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+    override open func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         if keyPath == "adjustingFocus" {
             guard (object as? AVCaptureDevice) === videoDevice else { return }
             if let adjustingFocus = change?[.newKey] as? Bool, let device = videoDevice {
@@ -764,7 +762,7 @@ extension CameraViewController.CaptureVideoPreviewView {
     private func _untwinkle(content view: UIView) { view.layer.removeAnimation(forKey: "twinkle") }
 }
 
-extension CameraViewController.CaptureVideoPreviewView {
+extension CaptureVideoPreviewView {
     internal class _ImageView: UIImageView {
         override var intrinsicContentSize: CGSize { return image?.size ?? .zero }
         override var image: UIImage? {
@@ -773,7 +771,7 @@ extension CameraViewController.CaptureVideoPreviewView {
     }
 }
 
-extension CameraViewController.CaptureVideoPreviewView {
+extension CaptureVideoPreviewView {
     internal class _HumanReadingInfoView: UIView {
         let type: HumanReading
         init(type: HumanReading) {
@@ -788,149 +786,146 @@ extension CameraViewController.CaptureVideoPreviewView {
 
 // MARK: - CaptureVideoDisplayView.
 
-public extension CameraViewController {
-    // @available(*, unavailable)
-    public final class CaptureVideoDisplayView: GLKView {
-        // fileprivate class var `default`: Self { return CaptureVideoDisplayView() }
-        public var eaglContext: EAGLContext { return _eaglContext }
-        fileprivate let _eaglContext = EAGLContext(api: .openGLES3)!
-        
-        public var ciContext: CIContext! { return _ciContext }
-        fileprivate var _ciContext: CIContext!
-        
-        public var blured: Bool { return _blured }
-        internal var isDrawingEnabled: Bool = true
-        private var _blured: Bool = false
-        private let _blur: UIImageView = UIImageView()
-        private var _extent  : CGRect = .zero
-        private var _drawRect: CGRect = .zero
-        private var _drawRectNeedsUpdate: Bool = false
-        private let _queue = DispatchQueue(label: "com.capture.display.render")
-        
-        convenience public init() {
-            self.init(frame: .zero)
-        }
-        override public init(frame: CGRect) {
-            super.init(frame: frame, context: _eaglContext)
-            _initializer()
-        }
-        required public init?(coder aDecoder: NSCoder) {
-            fatalError("init(coder:) has not been implemented")
-        }
-        override public func layoutSubviews() {
-            super.layoutSubviews()
-            _drawRectNeedsUpdate = true
-        }
-        private func _initializer() {
-            _ciContext = CIContext(eaglContext: _eaglContext, options: [kCIContextWorkingColorSpace: NSNull()])
-            enableSetNeedsDisplay = false
-            // because the native video image from the back camera is in UIDeviceOrientationLandscapeLeft (i.e. the home button is on the right),
-            // we need to apply a clockwise 90 degree transform so that we can draw the video preview as if we were in a landscape-oriented view;
-            // if you're using the front camera and you want to have a mirrored preview (so that the user is seeing themselves in the mirror),
-            // you need to apply an additional horizontal flip (by concatenating CGAffineTransformMakeScale(-1.0, 1.0) to the rotation transform)
-            transform = CGAffineTransform(rotationAngle: CGFloat.pi * 0.5)
-            // bind the frame buffer to get the frame buffer width and height;
-            // the bounds used by CIContext when drawing to a GLKView are in pixels (not points),
-            // hence the need to read from the frame buffer's width and height;
-            // in addition, since we will be accessing the bounds in another queue (_captureSessionQueue),
-            // we want to obtain this piece of information so that we won't be
-            // accessing _videoPreviewView's properties from another thread/queue
-            // bindDrawable()
-            _blur.transform = CGAffineTransform(rotationAngle: -CGFloat.pi * 0.5)
-            _blur.contentMode = .scaleAspectFill
-            _blur.backgroundColor = .clear
-            _blur.translatesAutoresizingMaskIntoConstraints = false
-            addSubview(_blur)
-            _blur.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
-            _blur.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
-            _blur.topAnchor.constraint(equalTo: topAnchor).isActive = true
-            _blur.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
-        }
-        
-        public func draw(buffer: CMSampleBuffer) {
-            guard isDrawingEnabled else { return }
-            autoreleasepool{ _queue.async { [weak self] in
-                let _imgbuffer = CMSampleBufferGetImageBuffer(buffer)
-                guard _imgbuffer != nil && self != nil && self?.bounds.width != 0.0 && self?.bounds.height != 0.0 else {
-                    self?.deleteDrawable()
-                    return
-                }
-                let imageBuffer = _imgbuffer!
-                let wself = self!
-                let sourceImage = CIImage(cvPixelBuffer: imageBuffer)
-                let drawRect = wself._drawRect(for: sourceImage.extent)
-                wself.bindDrawable()
-                EAGLContext.setCurrent(wself._eaglContext)
-                // Clear eagl view to black
-                glClearColor(0.0, 0.0, 0.0, 1.0)
-                glClear(GLbitfield(GL_COLOR_BUFFER_BIT))
-                // Set the blend mode to "source over" so that CI will use that
-                glEnable(GLenum(GL_BLEND))
-                glBlendFunc(GLenum(GL_ONE), GLenum(GL_ONE_MINUS_SRC_ALPHA))
-                let _bounds = CGRect(origin: wself.bounds.origin, size: CGSize(width: wself.bounds.width * UIScreen.main.scale, height: wself.bounds.height * UIScreen.main.scale))
-                wself._ciContext.draw(sourceImage, in: _bounds, from: drawRect)
-                wself.display()
-                } }
-        }
-        
-        public func blur(_ image: UIImage?, animated: Bool = true, duration: TimeInterval = 0.15) {
-            guard !blured else { return }
-            _blured = true
-            if Thread.current.isMainThread {
-                __blur(image, animated: animated, duration: duration)
-            } else { DispatchQueue.main.async { [weak self] in
-                self?.__blur(image, animated: animated, duration: duration)
-                } }
-        }
-        
-        public func unBlur(_ animated: Bool = true, duration: TimeInterval = 0.15) {
-            guard blured else { return }
-            _blured = false
-            if Thread.current.isMainThread {
-                __blur(nil, animated: animated, duration: duration)
-            } else { DispatchQueue.main.async { [weak self] in
-                self?.__blur(nil, animated: animated, duration: duration)
-                } }
-        }
-        
-        private func __blur(_ image: UIImage?, animated: Bool, duration: TimeInterval = 0.15) {
-            if image != nil || !animated {
-                _blur.image = image
+open class CaptureVideoDisplayView: GLKView {
+    // fileprivate class var `default`: Self { return CaptureVideoDisplayView() }
+    public var eaglContext: EAGLContext { return _eaglContext }
+    fileprivate let _eaglContext = EAGLContext(api: .openGLES3)!
+    
+    public var ciContext: CIContext! { return _ciContext }
+    fileprivate var _ciContext: CIContext!
+    
+    open var blured: Bool { return _blured }
+    internal var isDrawingEnabled: Bool = true
+    private var _blured: Bool = false
+    private let _blur: UIImageView = UIImageView()
+    private var _extent  : CGRect = .zero
+    private var _drawRect: CGRect = .zero
+    private var _drawRectNeedsUpdate: Bool = false
+    private let _queue = DispatchQueue(label: "com.capture.display.render")
+    
+    convenience public init() {
+        self.init(frame: .zero)
+    }
+    override public init(frame: CGRect) {
+        super.init(frame: frame, context: _eaglContext)
+        _initializer()
+    }
+    required public init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    override open func layoutSubviews() {
+        super.layoutSubviews()
+        _drawRectNeedsUpdate = true
+    }
+    private func _initializer() {
+        _ciContext = CIContext(eaglContext: _eaglContext, options: [kCIContextWorkingColorSpace: NSNull()])
+        enableSetNeedsDisplay = false
+        // because the native video image from the back camera is in UIDeviceOrientationLandscapeLeft (i.e. the home button is on the right),
+        // we need to apply a clockwise 90 degree transform so that we can draw the video preview as if we were in a landscape-oriented view;
+        // if you're using the front camera and you want to have a mirrored preview (so that the user is seeing themselves in the mirror),
+        // you need to apply an additional horizontal flip (by concatenating CGAffineTransformMakeScale(-1.0, 1.0) to the rotation transform)
+        transform = CGAffineTransform(rotationAngle: CGFloat.pi * 0.5)
+        // bind the frame buffer to get the frame buffer width and height;
+        // the bounds used by CIContext when drawing to a GLKView are in pixels (not points),
+        // hence the need to read from the frame buffer's width and height;
+        // in addition, since we will be accessing the bounds in another queue (_captureSessionQueue),
+        // we want to obtain this piece of information so that we won't be
+        // accessing _videoPreviewView's properties from another thread/queue
+        // bindDrawable()
+        _blur.transform = CGAffineTransform(rotationAngle: -CGFloat.pi * 0.5)
+        _blur.contentMode = .scaleAspectFill
+        _blur.backgroundColor = .clear
+        _blur.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(_blur)
+        _blur.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
+        _blur.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
+        _blur.topAnchor.constraint(equalTo: topAnchor).isActive = true
+        _blur.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
+    }
+    
+    open func draw(buffer: CMSampleBuffer) {
+        guard isDrawingEnabled else { return }
+        autoreleasepool{ _queue.async { [weak self] in
+            let _imgbuffer = CMSampleBufferGetImageBuffer(buffer)
+            guard _imgbuffer != nil && self != nil && self?.bounds.width != 0.0 && self?.bounds.height != 0.0 else {
+                self?.deleteDrawable()
+                return
             }
-            if animated {
-                _blur.alpha = image == nil ? 1.0 : 0.0
-                UIView.animate(withDuration: duration, animations: { [unowned self] in
-                    self._blur.alpha = image == nil ? 0.0 : 1.0
-                    }, completion: { [unowned self] (_) in
-                        self._blur.alpha = 1.0
-                        if image == nil {
-                            self._blur.image = nil
-                        }
-                })
-            }
+            let imageBuffer = _imgbuffer!
+            let wself = self!
+            let sourceImage = CIImage(cvPixelBuffer: imageBuffer)
+            let drawRect = wself._drawRect(for: sourceImage.extent)
+            wself.bindDrawable()
+            EAGLContext.setCurrent(wself._eaglContext)
+            // Clear eagl view to black
+            glClearColor(0.0, 0.0, 0.0, 1.0)
+            glClear(GLbitfield(GL_COLOR_BUFFER_BIT))
+            // Set the blend mode to "source over" so that CI will use that
+            glEnable(GLenum(GL_BLEND))
+            glBlendFunc(GLenum(GL_ONE), GLenum(GL_ONE_MINUS_SRC_ALPHA))
+            let _bounds = CGRect(origin: wself.bounds.origin, size: CGSize(width: wself.bounds.width * UIScreen.main.scale, height: wself.bounds.height * UIScreen.main.scale))
+            wself._ciContext.draw(sourceImage, in: _bounds, from: drawRect)
+            wself.display()
+            } }
+    }
+    
+    open func blur(_ image: UIImage?, animated: Bool = true, duration: TimeInterval = 0.15) {
+        guard !blured else { return }
+        _blured = true
+        if Thread.current.isMainThread {
+            __blur(image, animated: animated, duration: duration)
+        } else { DispatchQueue.main.async { [weak self] in
+            self?.__blur(image, animated: animated, duration: duration)
+            } }
+    }
+    
+    open func unBlur(_ animated: Bool = true, duration: TimeInterval = 0.15) {
+        guard blured else { return }
+        _blured = false
+        if Thread.current.isMainThread {
+            __blur(nil, animated: animated, duration: duration)
+        } else { DispatchQueue.main.async { [weak self] in
+            self?.__blur(nil, animated: animated, duration: duration)
+            } }
+    }
+    
+    private func __blur(_ image: UIImage?, animated: Bool, duration: TimeInterval = 0.15) {
+        if image != nil || !animated {
+            _blur.image = image
         }
-        
-        private func _drawRect(`for` sourceExtent: CGRect) -> CGRect {
-            if _extent == sourceExtent && !_drawRectNeedsUpdate {
-                return _drawRect
-            }
-            _extent = sourceExtent
-            
-            let sourceAspect = _extent.width / _extent.height
-            let previewAspect = bounds.width / bounds.height
-            // we want to maintain the aspect radio of the screen size, so we clip the video image
-            _drawRect = sourceExtent
-            if sourceAspect > previewAspect {
-                // use full height of the video image, and center crop the width
-                _drawRect.origin.x += (_drawRect.width - _drawRect.height * previewAspect) * 0.5
-                _drawRect.size.width = _drawRect.height * previewAspect
-            } else {
-                // use full width of the video image, and center crop the height
-                _drawRect.origin.y += (_drawRect.height - _drawRect.width / previewAspect) * 0.5
-                _drawRect.size.height = _drawRect.width / previewAspect
-            }
-            _drawRectNeedsUpdate = false
+        if animated {
+            _blur.alpha = image == nil ? 1.0 : 0.0
+            UIView.animate(withDuration: duration, animations: { [unowned self] in
+                self._blur.alpha = image == nil ? 0.0 : 1.0
+                }, completion: { [unowned self] (_) in
+                    self._blur.alpha = 1.0
+                    if image == nil {
+                        self._blur.image = nil
+                    }
+            })
+        }
+    }
+    
+    private func _drawRect(`for` sourceExtent: CGRect) -> CGRect {
+        if _extent == sourceExtent && !_drawRectNeedsUpdate {
             return _drawRect
         }
+        _extent = sourceExtent
+        
+        let sourceAspect = _extent.width / _extent.height
+        let previewAspect = bounds.width / bounds.height
+        // we want to maintain the aspect radio of the screen size, so we clip the video image
+        _drawRect = sourceExtent
+        if sourceAspect > previewAspect {
+            // use full height of the video image, and center crop the width
+            _drawRect.origin.x += (_drawRect.width - _drawRect.height * previewAspect) * 0.5
+            _drawRect.size.width = _drawRect.height * previewAspect
+        } else {
+            // use full width of the video image, and center crop the height
+            _drawRect.origin.y += (_drawRect.height - _drawRect.width / previewAspect) * 0.5
+            _drawRect.size.height = _drawRect.width / previewAspect
+        }
+        _drawRectNeedsUpdate = false
+        return _drawRect
     }
 }
