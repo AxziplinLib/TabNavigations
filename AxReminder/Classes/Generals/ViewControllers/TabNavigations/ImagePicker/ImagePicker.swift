@@ -41,9 +41,9 @@ open class TabNavigationImagePickerController: TabNavigationController {
     fileprivate let _captureSessionQueue       = DispatchQueue(label: "com.imagepicker.session")
     internal    var _captureDeviceInput        : AVCaptureDeviceInput!
     fileprivate let _captureDisplayOutput      = AVCaptureVideoDataOutput()
-    internal    var _captureDisplayViews       : Set<CameraViewController.CaptureVideoDisplayView> = []
+    internal    var _captureDisplayViews       : Set<CameraViewController.DisplayView> = []
     internal    let _captureDisplayQueue       = DispatchQueue(label: "com.imagepicker.display.render")
-    internal    var _captureVideoPreviewView   : CameraViewController.CaptureVideoPreviewView!
+    internal    var _captureVideoPreviewView   : CameraViewController.PreviewView!
     // ---
     fileprivate var _lastSampleBuffer          : CMSampleBuffer!
     // ---
@@ -132,7 +132,7 @@ extension TabNavigationImagePickerController {
                     }
                     
                     DispatchQueue.main.async {
-                        wself._captureVideoPreviewView = CameraViewController.CaptureVideoPreviewView(session: wself._captureSession)
+                        wself._captureVideoPreviewView = CameraViewController.PreviewView(session: wself._captureSession)
                         wself._captureVideoPreviewView.previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill
                         wself._captureVideoPreviewView.translatesAutoresizingMaskIntoConstraints = false
                     }
