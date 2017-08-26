@@ -178,7 +178,7 @@ extension CameraViewController {
         
     }
     
-    @objc fileprivate func _handleToggleFace(_ sender: UIButton) { _previewView.toggle() }
+    @objc fileprivate func _handleToggleFace(_ sender: UIButton) { let _ = try? _previewView.toggle() }
     
     @objc
     fileprivate func _handleCancel(_ sender: UIButton) {
