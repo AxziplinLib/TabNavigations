@@ -72,12 +72,12 @@ extension CaptureVideoPreviewView {
             oldDevices.forEach({ if session.canAddInput($0) { session.addInput($0); observe(device: $0.device) } })
         }
         // Add transition animation.
-        let _transition = CATransition()
+        let transition = CATransition()
         // cube, suckEffect, oglFlip, rippleEffect, pageCurl, pageUnCurl, cameraIrisHollowOpen, cameraIrisHollowClose
-        _transition.type = "oglFlip"
-        _transition.subtype = kCATransitionFromLeft
-        _transition.duration = 0.25 * 2.0
-        previewLayer.add(_transition, forKey: "transition")
+        transition.type = "oglFlip"
+        transition.subtype = kCATransitionFromLeft
+        transition.duration = 0.25 * 2.0
+        previewLayer.add(transition, forKey: "transition")
         
         return true
     }
