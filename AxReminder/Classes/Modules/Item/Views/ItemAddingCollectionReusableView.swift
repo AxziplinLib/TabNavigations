@@ -10,4 +10,10 @@ import UIKit
 
 class ItemAddingCollectionReusableView: CollectionReusableView {
     class var reusedIdentifier: String { return "_ItemAddingCollectionReusableView" }
+    public var reusePreparing: (() -> Void)?
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        reusePreparing?()
+    }
 }

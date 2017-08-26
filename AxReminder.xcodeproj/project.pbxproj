@@ -32,8 +32,6 @@
 		DC8DD7FF1F00E397006D9706 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC8DD7FE1F00E397006D9706 /* ViewController.swift */; };
 		DC8DD8011F00E3B2006D9706 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC8DD8001F00E3B2006D9706 /* HomeViewController.swift */; };
 		DC8FC9FB1F1F5DBF009BB1F6 /* ItemAddingMapFilterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC8FC9FA1F1F5DBF009BB1F6 /* ItemAddingMapFilterView.swift */; };
-		DCB154E51F4FFCA400D8A716 /* Assets.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCB154DC1F4FFCA400D8A716 /* Assets.swift */; };
-		DCB154E61F4FFCA400D8A716 /* Camera.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCB154DD1F4FFCA400D8A716 /* Camera.swift */; };
 		DCB154E71F4FFCA400D8A716 /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCB154DE1F4FFCA400D8A716 /* ImagePicker.swift */; };
 		DCB154E81F4FFCA400D8A716 /* Resource.bundle in Resources */ = {isa = PBXBuildFile; fileRef = DCB154DF1F4FFCA400D8A716 /* Resource.bundle */; };
 		DCB154E91F4FFCA400D8A716 /* Resource.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCB154E01F4FFCA400D8A716 /* Resource.swift */; };
@@ -58,6 +56,15 @@
 		DCCFDD0C1F1DA2DD007CC8A0 /* TextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCCFDD0B1F1DA2DD007CC8A0 /* TextView.swift */; };
 		DCCFDD0E1F1DACF4007CC8A0 /* ItemAddingTextViewTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCCFDD0D1F1DACF4007CC8A0 /* ItemAddingTextViewTableViewCell.swift */; };
 		DCCFDD101F1DE3EB007CC8A0 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCCFDD0F1F1DE3EB007CC8A0 /* MapKit.framework */; };
+		DCD182FF1F504E7D00DB88EE /* Camera.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCD182FE1F504E7D00DB88EE /* Camera.swift */; };
+		DCD183011F504EA900DB88EE /* Previews.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCD183001F504EA900DB88EE /* Previews.swift */; };
+		DCD183051F504FB300DB88EE /* ToolBars.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCD183041F504FB300DB88EE /* ToolBars.swift */; };
+		DCD183071F50516100DB88EE /* Transition.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCD183061F50516100DB88EE /* Transition.swift */; };
+		DCD1830B1F5054F200DB88EE /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCD1830A1F5054F200DB88EE /* Configuration.swift */; };
+		DCEDE8741F51588900AD737B /* Assets.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCEDE8731F51588900AD737B /* Assets.swift */; };
+		DCEDE8761F5158BC00AD737B /* Cells.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCEDE8751F5158BC00AD737B /* Cells.swift */; };
+		DCEDE87A1F51671E00AD737B /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = DCEDE8791F51671E00AD737B /* LICENSE */; };
+		DCEDE87E1F517C0E00AD737B /* Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCEDE87D1F517C0E00AD737B /* Errors.swift */; };
 		DCF9D7F81F14CB680058B19C /* CategoryAddingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCF9D7F71F14CB680058B19C /* CategoryAddingViewController.swift */; };
 		DCF9D7FA1F15F2D40058B19C /* CategoryAddingTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCF9D7F91F15F2D40058B19C /* CategoryAddingTableViewCell.swift */; };
 		DCF9D8711F170D270058B19C /* ImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCF9D8701F170D270058B19C /* ImageView.swift */; };
@@ -120,8 +127,6 @@
 		DC8FC9FA1F1F5DBF009BB1F6 /* ItemAddingMapFilterView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ItemAddingMapFilterView.swift; sourceTree = "<group>"; };
 		DCA22CDA1F298B110003A9FA /* ImagePicker.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImagePicker.framework; path = Carthage/Build/iOS/ImagePicker.framework; sourceTree = "<group>"; };
 		DCA22CEA1F298F5F0003A9FA /* Fusuma.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Fusuma.framework; path = Carthage/Build/iOS/Fusuma.framework; sourceTree = "<group>"; };
-		DCB154DC1F4FFCA400D8A716 /* Assets.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Assets.swift; sourceTree = "<group>"; };
-		DCB154DD1F4FFCA400D8A716 /* Camera.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Camera.swift; sourceTree = "<group>"; };
 		DCB154DE1F4FFCA400D8A716 /* ImagePicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
 		DCB154DF1F4FFCA400D8A716 /* Resource.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Resource.bundle; sourceTree = "<group>"; };
 		DCB154E01F4FFCA400D8A716 /* Resource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Resource.swift; sourceTree = "<group>"; };
@@ -151,6 +156,15 @@
 		DCCFDD0B1F1DA2DD007CC8A0 /* TextView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextView.swift; sourceTree = "<group>"; };
 		DCCFDD0D1F1DACF4007CC8A0 /* ItemAddingTextViewTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ItemAddingTextViewTableViewCell.swift; sourceTree = "<group>"; };
 		DCCFDD0F1F1DE3EB007CC8A0 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
+		DCD182FE1F504E7D00DB88EE /* Camera.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Camera.swift; sourceTree = "<group>"; };
+		DCD183001F504EA900DB88EE /* Previews.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Previews.swift; sourceTree = "<group>"; };
+		DCD183041F504FB300DB88EE /* ToolBars.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToolBars.swift; sourceTree = "<group>"; };
+		DCD183061F50516100DB88EE /* Transition.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Transition.swift; sourceTree = "<group>"; };
+		DCD1830A1F5054F200DB88EE /* Configuration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
+		DCEDE8731F51588900AD737B /* Assets.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Assets.swift; sourceTree = "<group>"; };
+		DCEDE8751F5158BC00AD737B /* Cells.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Cells.swift; sourceTree = "<group>"; };
+		DCEDE8791F51671E00AD737B /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		DCEDE87D1F517C0E00AD737B /* Errors.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Errors.swift; sourceTree = "<group>"; };
 		DCF9D7F71F14CB680058B19C /* CategoryAddingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CategoryAddingViewController.swift; sourceTree = "<group>"; };
 		DCF9D7F91F15F2D40058B19C /* CategoryAddingTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CategoryAddingTableViewCell.swift; sourceTree = "<group>"; };
 		DCF9D8701F170D270058B19C /* ImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageView.swift; sourceTree = "<group>"; };
@@ -431,6 +445,7 @@
 				DCB154E21F4FFCA400D8A716 /* TabNavigationBar.swift */,
 				DCB154E31F4FFCA400D8A716 /* TabNavigationController.swift */,
 				DCB154E41F4FFCA400D8A716 /* TabNavigationUtility.swift */,
+				DCEDE8791F51671E00AD737B /* LICENSE */,
 			);
 			path = TabNavigations;
 			sourceTree = "<group>";
@@ -441,9 +456,10 @@
 				DCB154DF1F4FFCA400D8A716 /* Resource.bundle */,
 				DCB154E01F4FFCA400D8A716 /* Resource.swift */,
 				DCB154DE1F4FFCA400D8A716 /* ImagePicker.swift */,
-				DCB154DC1F4FFCA400D8A716 /* Assets.swift */,
-				DCB154DD1F4FFCA400D8A716 /* Camera.swift */,
+				DCEDE8721F51588900AD737B /* Assets */,
+				DCD182FD1F504E7D00DB88EE /* Camera */,
 				DCB154E11F4FFCA400D8A716 /* Utility.swift */,
+				DCEDE87D1F517C0E00AD737B /* Errors.swift */,
 			);
 			path = ImagePicker;
 			sourceTree = "<group>";
@@ -544,6 +560,27 @@
 				DC3374051F2825FE00C27923 /* ItemAddingCollectionReusableView.swift */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		DCD182FD1F504E7D00DB88EE /* Camera */ = {
+			isa = PBXGroup;
+			children = (
+				DCD182FE1F504E7D00DB88EE /* Camera.swift */,
+				DCD183001F504EA900DB88EE /* Previews.swift */,
+				DCD183041F504FB300DB88EE /* ToolBars.swift */,
+				DCD183061F50516100DB88EE /* Transition.swift */,
+				DCD1830A1F5054F200DB88EE /* Configuration.swift */,
+			);
+			path = Camera;
+			sourceTree = "<group>";
+		};
+		DCEDE8721F51588900AD737B /* Assets */ = {
+			isa = PBXGroup;
+			children = (
+				DCEDE8731F51588900AD737B /* Assets.swift */,
+				DCEDE8751F5158BC00AD737B /* Cells.swift */,
+			);
+			path = Assets;
 			sourceTree = "<group>";
 		};
 		DCF9D8741F1741310058B19C /* Models */ = {
@@ -680,6 +717,7 @@
 				DCB25A131F03B048001EFC1C /* Category.storyboard in Resources */,
 				DCB25A061F039707001EFC1C /* Localizable.strings in Resources */,
 				DC8DD7F81F00E291006D9706 /* LaunchScreen.storyboard in Resources */,
+				DCEDE87A1F51671E00AD737B /* LICENSE in Resources */,
 				DC8DD7F91F00E291006D9706 /* Main.storyboard in Resources */,
 				DC8DD7BD1F00D6C9006D9706 /* Assets.xcassets in Resources */,
 				DCB154E81F4FFCA400D8A716 /* Resource.bundle in Resources */,
@@ -757,28 +795,34 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DCD182FF1F504E7D00DB88EE /* Camera.swift in Sources */,
 				DCB154E71F4FFCA400D8A716 /* ImagePicker.swift in Sources */,
 				DC1782FA1F0A4DB9000738E9 /* ApplicationColor.swift in Sources */,
 				DCB643651F0247F300D89256 /* POPAnimatableProperty.swift in Sources */,
 				DC3374001F274AB900C27923 /* CollectionViewCell.swift in Sources */,
 				DCCFDD041F1CB77F007CC8A0 /* AxTabNavigationController.swift in Sources */,
+				DCD1830B1F5054F200DB88EE /* Configuration.swift in Sources */,
 				DCB154ED1F4FFCA400D8A716 /* TabNavigationUtility.swift in Sources */,
+				DCD183011F504EA900DB88EE /* Previews.swift in Sources */,
 				DC2577E21F010FC000C0C98E /* Colours-5.14.0.swift in Sources */,
 				DC65E1941F25A173009F0312 /* UserDefaults.swift in Sources */,
 				DC291AFC1F1655E50013E124 /* Types.swift in Sources */,
 				DC8FC9FB1F1F5DBF009BB1F6 /* ItemAddingMapFilterView.swift in Sources */,
 				DCF9D8711F170D270058B19C /* ImageView.swift in Sources */,
+				DCD183051F504FB300DB88EE /* ToolBars.swift in Sources */,
 				DCB154EA1F4FFCA400D8A716 /* Utility.swift in Sources */,
+				DCEDE87E1F517C0E00AD737B /* Errors.swift in Sources */,
 				DC3374041F274BEA00C27923 /* CollectionReusableView.swift in Sources */,
 				DCB25A1D1F03B4D3001EFC1C /* HomeTableViewCell.swift in Sources */,
 				DCB25A0B1F03A0A7001EFC1C /* AppDelegateHierarchy.swift in Sources */,
-				DCB154E61F4FFCA400D8A716 /* Camera.swift in Sources */,
 				DC8DD7FF1F00E397006D9706 /* ViewController.swift in Sources */,
 				DC3374021F274AF500C27923 /* ItemAddingImageCollectionViewCell.swift in Sources */,
 				DCCFDD0E1F1DACF4007CC8A0 /* ItemAddingTextViewTableViewCell.swift in Sources */,
 				DC6A9ACC1F18510200F63525 /* AppDelegateViewAppearance.swift in Sources */,
+				DCD183071F50516100DB88EE /* Transition.swift in Sources */,
 				DC8DD7F71F00E22B006D9706 /* AppDelegate.swift in Sources */,
 				DCC627171F00E77700D79D07 /* NavigationController.swift in Sources */,
+				DCEDE8741F51588900AD737B /* Assets.swift in Sources */,
 				DCF9D8731F1720BA0058B19C /* Label.swift in Sources */,
 				DCF9D7F81F14CB680058B19C /* CategoryAddingViewController.swift in Sources */,
 				DC7C77361F0F7C67003C9AF6 /* SettingsTableViewCell.swift in Sources */,
@@ -788,11 +832,11 @@
 				DCF9D8781F1746B70058B19C /* Category.swift in Sources */,
 				DC3374081F28265C00C27923 /* ItemAddingCollectionViewController.swift in Sources */,
 				DCCFDD0C1F1DA2DD007CC8A0 /* TextView.swift in Sources */,
+				DCEDE8761F5158BC00AD737B /* Cells.swift in Sources */,
 				DC1782F01F0A407F000738E9 /* SettingsViewController.swift in Sources */,
 				DC3374061F2825FE00C27923 /* ItemAddingCollectionReusableView.swift in Sources */,
 				DCC1BFEA1F0F8BFB00E7735C /* GradientColorView.swift in Sources */,
 				DCB259F81F0395A7001EFC1C /* TableViewController.swift in Sources */,
-				DCB154E51F4FFCA400D8A716 /* Assets.swift in Sources */,
 				DCB154E91F4FFCA400D8A716 /* Resource.swift in Sources */,
 				DCCFDD0A1F1D9FC4007CC8A0 /* ItemAddingViewController.swift in Sources */,
 				DCB25A1B1F03B4B7001EFC1C /* TableViewCell.swift in Sources */,

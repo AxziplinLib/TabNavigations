@@ -1038,7 +1038,7 @@ static NSString *const kAXKeyframeTimgingFunctionFlagGravity = @"gravity";
 
 - (instancetype)filter:(id)filter {
     if (![self.animation respondsToSelector:@selector(setFilter:)]) return self;
-    self.animation.filter = filter;
+    // self.animation.filter = filter;
     return self;
 }
 @end

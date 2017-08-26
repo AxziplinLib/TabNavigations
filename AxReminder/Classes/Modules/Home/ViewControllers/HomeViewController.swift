@@ -23,7 +23,26 @@ class HomeViewController: TableViewController {
         super.viewDidLoadSetup()
         
         setTabNavigationTitle("主页")
-        setTabNavigationItems([TabNavigationItem(image: #imageLiteral(resourceName: "add")), TabNavigationItem(image: #imageLiteral(resourceName: "navigation_search"))])
+        setTabNavigationItems([TabNavigationItem(image: #imageLiteral(resourceName: "add"), target: self, selector: #selector(_handleAddingNavigationItem(_:))), TabNavigationItem(image: #imageLiteral(resourceName: "navigation_search"))])
+    }
+}
+
+// MARK: - Actions.
+
+extension HomeViewController {
+    @objc
+    fileprivate func _handleSearchNavigationItem(_ sender: UIButton) {
+        
+    }
+    
+    @objc
+    fileprivate func _handleAddingNavigationItem(_ sender: UIButton) {
+        // let itemAdding = ItemAddingViewController.instance(from: UIStoryboard(name: "Home", bundle: .main))!
+        let itemAdding = ItemAddingCollectionViewController.instance(from: UIStoryboard(name: "Home", bundle: .main))!
+        let tabNavigationController = AxTabNavigationController()
+        tabNavigationController.setViewControllers([itemAdding])
+        tabNavigationController.setSelectedViewController(at: 0, animated: false)
+        self.present(tabNavigationController, animated: true, completion: nil)
     }
 }
 
