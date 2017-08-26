@@ -33,6 +33,13 @@ extension CaptureVideoPreviewView {
             return toggle(to: .back)
         }
     }
+    /// Toggle the position of device's pos to the specified position.
+    /// The exchanging will fail if the target position is the same as the current position 
+    /// or being `.unspecified`.
+    ///
+    /// - Parameter to: The target position of the pos.
+    ///
+    /// - Returns     : A boolean value indicates the result(true for success) of position changing.
     @discardableResult
     public func toggle(to pos: AVCaptureDevicePosition) -> Bool {
         guard pos != position && pos != .unspecified else { return false }
