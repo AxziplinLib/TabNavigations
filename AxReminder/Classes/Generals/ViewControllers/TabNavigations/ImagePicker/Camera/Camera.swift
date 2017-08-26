@@ -76,7 +76,7 @@ open class CameraViewController: UIViewController {
     private func _initializer() {
         _configureSession()
         if _previewView == nil {
-            _previewView = CaptureVideoPreviewView(session: _session)
+            _previewView = PreviewView(session: _session)
         }
     }
     
@@ -178,7 +178,7 @@ extension CameraViewController {
         
     }
     
-    @objc fileprivate func _handleToggleFace(_ sender: UIButton) { /*_previewView.toggle()*/ }
+    @objc fileprivate func _handleToggleFace(_ sender: UIButton) { _previewView.toggle() }
     
     @objc
     fileprivate func _handleCancel(_ sender: UIButton) {
@@ -193,4 +193,16 @@ extension CameraViewController {
 extension CameraViewController {
     override open var prefersStatusBarHidden: Bool { return true }
     override open var preferredStatusBarUpdateAnimation: UIStatusBarAnimation { return .fade }
+}
+
+// MARK: - CaptureVideoPreviewView.
+
+extension CameraViewController {
+    public final class PreviewView: CaptureVideoPreviewView {}
+}
+
+// MARK: - CaptureVideoDisplayView.
+
+extension CameraViewController {
+    public final class DisplayView: CaptureVideoDisplayView {}
 }
