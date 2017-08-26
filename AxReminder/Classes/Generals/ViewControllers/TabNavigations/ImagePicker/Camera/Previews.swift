@@ -59,7 +59,7 @@ open class CaptureVideoPreviewView: UIView {
     fileprivate let _lengthOfSliderSpace: CGFloat = 150.0
     
     // Device observing keypaths.
-    private var _deviceObservingKeyPaths: [String] = []
+    fileprivate let _deviceObservingKeyPaths = ["adjustingFocus", "focusMode", "flashActive", "exposureDuration", "ISO", "exposureTargetBias",  "exposureTargetOffset"]
     
     public init(session: AVCaptureSession) {
         super.init(frame: .zero)
@@ -75,7 +75,7 @@ open class CaptureVideoPreviewView: UIView {
         NotificationCenter.default.removeObserver(self)
         
         _exposureIndicator.removeObserver(self, forKeyPath: "center")
-        _deviceObservingKeyPaths.forEach{ videoDevice?.removeObserver(self, forKeyPath: $0, context: nil) }
+        if let device = videoDevice { observe(device: device, removing: true) }
     }
     
     // MARK: Override.
@@ -97,7 +97,6 @@ open class CaptureVideoPreviewView: UIView {
         
         _setupFoexposureGestures()
         
-        _deviceObservingKeyPaths = ["adjustingFocus", "focusMode", "flashActive", "exposureDuration", "ISO", "exposureTargetBias",  "exposureTargetOffset"]
         _observeProperties()
         _observeNotifications()
     }
@@ -146,7 +145,7 @@ open class CaptureVideoPreviewView: UIView {
     
     private func _observeProperties() {
         _exposureIndicator.addObserver(self, forKeyPath: "center", options: .new, context: nil)
-        _deviceObservingKeyPaths.forEach{ videoDevice?.addObserver(self, forKeyPath: $0, options: .new, context: nil) }
+        if let device = videoDevice { observe(device: device) }
     }
     private func _observeNotifications() {
         NotificationCenter.default.addObserver(self, selector: #selector(_handleCaptureDeviceSubjectAreaDidChange(_:)), name: .AVCaptureDeviceSubjectAreaDidChange, object: nil)
@@ -252,6 +251,23 @@ open class CaptureVideoPreviewView: UIView {
             infoViewsToBeRemained.forEach{ $0.transform = .identity }
         }) { (_) in
             infoViewsToBeRemoved.forEach{ $0.removeFromSuperview() }
+        }
+    }
+}
+
+extension CaptureVideoPreviewView {
+    /// Add/Remove the key-path observing info to observe the device 
+    /// for the changes of environments of the device if any to update
+    /// the corresponding ui or other infos.
+    ///
+    /// - Parameter device  : The device to be added or removed.
+    /// - Parameter removing: True to remove the observed key-paths, otherwise, 
+    ///                       add the key-paths to it.
+    internal func observe(device: AVCaptureDevice, removing: Bool = false) {
+        if removing {
+            _deviceObservingKeyPaths.forEach{ device.removeObserver(self, forKeyPath: $0, context: nil) }
+        } else {
+            _deviceObservingKeyPaths.forEach{ device.addObserver(self, forKeyPath: $0, options: .new, context: nil) }
         }
     }
 }
