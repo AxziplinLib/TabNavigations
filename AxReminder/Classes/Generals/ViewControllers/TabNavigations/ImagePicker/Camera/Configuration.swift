@@ -25,12 +25,12 @@ extension CaptureVideoPreviewView {
     ///
     /// - Returns: A boolean value indicates the result(true for success) of position changing.
     @discardableResult
-    public func toggle() -> Bool {
+    public func toggle() throws -> Bool {
         switch position {
         case .back:
-            return toggle(to: .front)
+            return try toggle(to: .front)
         default:
-            return toggle(to: .back)
+            return try toggle(to: .back)
         }
     }
     /// Toggle the position of device's pos to the specified position.
@@ -41,7 +41,7 @@ extension CaptureVideoPreviewView {
     ///
     /// - Returns     : A boolean value indicates the result(true for success) of position changing.
     @discardableResult
-    public func toggle(to pos: AVCaptureDevicePosition) -> Bool {
+    public func toggle(to pos: AVCaptureDevicePosition) throws -> Bool {
         guard pos != position && pos != .unspecified else { return false }
         guard let session = previewLayer.session else { return false }
         
@@ -58,13 +58,13 @@ extension CaptureVideoPreviewView {
         } else {
             if let _devices = AVCaptureDevice.devices() as? [AVCaptureDevice] { devices = _devices }
         }
-        guard !devices.isEmpty else { return false }
+        guard !devices.isEmpty else { throw CaptureVideoPreviewViewError.configuration(.noneOfAvailableDevices) }
         
         let targetDevices = devices.flatMap({ $0.position == pos && $0.hasMediaType(AVMediaTypeVideo) ? $0 : nil })
         guard targetDevices.count == 1 else { return false }// Only one device for the specified position.
         
         let newDevice = targetDevices[0]
-        guard let newDeviceInput = try? AVCaptureDeviceInput(device: newDevice) else {  return false }
+        let newDeviceInput = try AVCaptureDeviceInput(device: newDevice)
         
         session.beginConfiguration()
         defer { session.commitConfiguration() }
@@ -77,6 +77,8 @@ extension CaptureVideoPreviewView {
         if session.canAddInput(newDeviceInput) { session.addInput(newDeviceInput); observe(device: newDeviceInput.device) } else {
             // Reverse the old devices.
             oldDevices.forEach({ if session.canAddInput($0) { session.addInput($0); observe(device: $0.device) } })
+            // Throw the cannot add input error.
+            throw CaptureVideoPreviewViewError.configuration(.sessionCannotAddInput)
         }
         // Add transition animation.
         let transition = CATransition()
