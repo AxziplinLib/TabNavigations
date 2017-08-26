@@ -10,10 +10,20 @@ import UIKit
 import AVFoundation
 
 extension CaptureVideoPreviewView {
+    /// Get the current video input device's pos position if any. 
+    /// Returns `.unspecified` if the video input device is not available.
+    ///
+    /// - Returns: Any of the values in `AVCaptureDevicePosition` indicates the position of device's pos.
     public var position: AVCaptureDevicePosition { return videoDevice?.position ?? .unspecified }
 }
 
 extension CaptureVideoPreviewView {
+    /// Toggle the position of device's pos to the opposite sides.
+    ///
+    /// - Changes the pos's position to the `.front` if the current position is at back.
+    /// - Changes the pos's position to the `.back` if the current position is at front or unknown.
+    ///
+    /// - Returns: A boolean value indicates the result(true for success) of position changing.
     @discardableResult
     public func toggle() -> Bool {
         switch position {
