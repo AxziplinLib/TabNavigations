@@ -61,10 +61,16 @@ extension CaptureVideoPreviewView {
         
         session.beginConfiguration()
         defer { session.commitConfiguration() }
+        // Get the devices inputs.
+        let oldDevices = session.inputs.flatMap({ ($0 is AVCaptureDeviceInput && ($0 as! AVCaptureDeviceInput).device.hasMediaType(AVMediaTypeVideo)) ? $0 : nil }) as! [AVCaptureDeviceInput]
+        // Remove the KVO observing info of the old devices.
         // Remove all the device inputs if any.
-        session.inputs.flatMap({ ($0 is AVCaptureDeviceInput && ($0 as! AVCaptureDeviceInput).device.hasMediaType(AVMediaTypeVideo)) ? $0 : nil }).forEach({ session.removeInput($0 as! AVCaptureInput) })
-        // Add the new device input.
-        if session.canAddInput(newDeviceInput) { session.addInput(newDeviceInput) }
+        oldDevices.forEach({ observe(device:$0.device , removing: true); session.removeInput($0) })
+        // Add the new device input if new device can be added.
+        if session.canAddInput(newDeviceInput) { session.addInput(newDeviceInput); observe(device: newDeviceInput.device) } else {
+            // Reverse the old devices.
+            oldDevices.forEach({ if session.canAddInput($0) { session.addInput($0); observe(device: $0.device) } })
+        }
         // Add transition animation.
         let _transition = CATransition()
         // cube, suckEffect, oglFlip, rippleEffect, pageCurl, pageUnCurl, cameraIrisHollowOpen, cameraIrisHollowClose
