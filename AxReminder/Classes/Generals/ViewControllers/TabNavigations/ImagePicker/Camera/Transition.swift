@@ -42,7 +42,7 @@ extension CameraViewController._PresentationAnimator: UIViewControllerAnimatedTr
         
         if isDismissal {
             containerView.insertSubview(transitionContext.view(forKey: .to)!, at: 0)
-            let displayView = CameraViewController.CaptureVideoDisplayView()
+            let displayView = CameraViewController.DisplayView()
             displayView.frame = view.bounds
             containerView.insertSubview(displayView, belowSubview: view)
             imagePicker._captureDisplayViews.update(with: displayView)
