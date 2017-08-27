@@ -41,8 +41,8 @@ extension CaptureVideoPreviewView {
     ///
     /// - Returns     : A boolean value indicates the result(true for success) of position changing.
     @discardableResult
-    public func toggle(to pos: AVCaptureDevicePosition) throws -> Bool {
-        guard pos != position && pos != .unspecified else { return false }
+    public func toggle(to position: AVCaptureDevicePosition) throws -> Bool {
+        guard position != self.position && position != .unspecified else { return false }
         guard let session = previewLayer.session else { return false }
         
         // Get new device.
@@ -54,13 +54,13 @@ extension CaptureVideoPreviewView {
             } else {
                 deviceTypes.append(.builtInDuoCamera)
             }
-            if let _devices = AVCaptureDeviceDiscoverySession(deviceTypes: deviceTypes, mediaType: AVMediaTypeVideo, position: pos).devices { devices = _devices }
+            if let _devices = AVCaptureDeviceDiscoverySession(deviceTypes: deviceTypes, mediaType: AVMediaTypeVideo, position: position).devices { devices = _devices }
         } else {
             if let _devices = AVCaptureDevice.devices() as? [AVCaptureDevice] { devices = _devices }
         }
         guard !devices.isEmpty else { throw CaptureVideoPreviewViewError.configuration(.noneOfAvailableDevices) }
         
-        let targetDevices = devices.flatMap({ $0.position == pos && $0.hasMediaType(AVMediaTypeVideo) ? $0 : nil })
+        let targetDevices = devices.flatMap({ $0.position == position && $0.hasMediaType(AVMediaTypeVideo) ? $0 : nil })
         guard targetDevices.count == 1 else { return false }// Only one device for the specified position.
         
         let newDevice = targetDevices[0]
