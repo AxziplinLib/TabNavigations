@@ -11,41 +11,82 @@ import Accelerate
 import AVFoundation
 
 public extension UIEdgeInsets {
+    /// A value indicate the horizontal length of the edge insets.
+    ///
+    /// - Returns: `.left` + `.right`.
     public var width: CGFloat { return left + right }
+    /// A value indicate the vertical length of the edge insets.
+    ///
+    /// - Returns: `.top` + `.bottom`.
     public var height: CGFloat { return top + bottom }
-    public init(width: CGFloat) {
-        self.init(top: 0.0, left: width * 0.5, bottom: 0.0, right: width * 0.5)
-    }
-    public init(height: CGFloat) {
-        self.init(top: height * 0.5, left: 0.0, bottom: height * 0.5, right: 0.0)
-    }
-    public init(left: CGFloat) {
-        self.init(top: 0.0, left: left, bottom: 0.0, right: 0.0)
-    }
-    public init(right: CGFloat) {
-        self.init(top: 0.0, left: 0.0, bottom: 0.0, right: right)
-    }
-    public init(top: CGFloat) {
-        self.init(top: top, left: 0.0, bottom: 0.0, right: 0.0)
-    }
-    public init(bottom: CGFloat) {
-        self.init(top: 0.0, left: 0.0, bottom: bottom, right: 0.0)
-    }
+    /// Initialize a new `UIEdgeInsets` instance with horizontal length.
+    /// The values of `.left` and `.right` will both be `width * 0.5`.
+    ///
+    /// - Parameter width: The hotizontal length of the edge insets.
+    /// - Returns: A new instance of `UIEdgeInsets` both `.left` and `.right` are width * 0.5.
+    public init(width : CGFloat) { self.init(top: 0.0, left: width * 0.5, bottom: 0.0, right: width * 0.5) }
+    /// Initialize a new `UIEdgeInsets` instance with vertical length.
+    /// The values of `.top` and `.bottom` will both be `width * 0.5`.
+    ///
+    /// - Parameter height: The vertical length of the edge insets.
+    /// - Returns: A new instance of `UIEdgeInsets` both `.top` and `.bottom` are height * 0.5.
+    public init(height: CGFloat) { self.init(top: height * 0.5, left: 0.0, bottom: height * 0.5, right: 0.0) }
+    /// Initialize a new `UIEdgeInsets` instance with left length.
+    ///
+    /// - Parameter left: The left length of the edge insets.
+    /// - Returns: A new instance of `UIEdgeInsets` with only left length.
+    public init(left  : CGFloat) { self.init(top: 0.0, left: left, bottom: 0.0, right: 0.0) }
+    /// Initialize a new `UIEdgeInsets` instance with right length.
+    ///
+    /// - Parameter right: The right length of the edge insets.
+    /// - Returns: A new instance of `UIEdgeInsets` with only right length.
+    public init(right : CGFloat) { self.init(top: 0.0, left: 0.0, bottom: 0.0, right: right) }
+    /// Initialize a new `UIEdgeInsets` instance with top length.
+    ///
+    /// - Parameter top: The top length of the edge insets.
+    /// - Returns: A new instance of `UIEdgeInsets` with only top length.
+    public init(top   : CGFloat) { self.init(top: top, left: 0.0, bottom: 0.0, right: 0.0) }
+    /// Initialize a new `UIEdgeInsets` instance with bottom length.
+    ///
+    /// - Parameter bottom: The bottom length of the edge insets.
+    /// - Returns: A new instance of `UIEdgeInsets` with only bottom length.
+    public init(bottom: CGFloat) { self.init(top: 0.0, left: 0.0, bottom: bottom, right: 0.0) }
 }
 
 internal extension UIView {
+    /// Remove the specified constraint from the receiver if the constraint is not nil.
+    /// And do nothing if the constraint is nil.
+    ///
+    /// - Parameter constraint: The target constraint to be removed if any.
+    ///
     func removeConstraintIfNotNil(_ constraint: NSLayoutConstraint?) { if let const_ = constraint { removeConstraint(const_) } }
 }
 
 public extension UIImage {
-    public func blur(radius: CGFloat) -> UIImage? { return _blur(radius: radius, tintColor: nil, saturationDeltaFactor: -1.0, mask: nil) }
-    
+    /// Get the light-blured image from the original image. Nil if blur failed.
     public var lightBlur: UIImage? { return _blur(radius: 40.0, tintColor: UIColor(white: 1.0, alpha: 0.3), saturationDeltaFactor: 1.8, mask: nil) }
+    /// Get the extra-light-blured image from the original image. Nil if blur failed.
     public var extraLightBlur: UIImage? { return _blur(radius: 40.0, tintColor: UIColor(white: 0.97, alpha: 0.82), saturationDeltaFactor: 1.8, mask: nil) }
+    /// Get the dark-blured image from the original image. Nil if blur failed.
     public var darkBlur: UIImage? { return _blur(radius: 40.0, tintColor: UIColor(white: 0.11, alpha: 0.73), saturationDeltaFactor: 1.8, mask: nil) }
-    
+    /// Blur the receive image to an image with the tint color as "mask".
+    ///
+    /// - Parameter tintColor: The color used to be the "mask".
+    /// - Returns: A color-blured image or nil if blur failed.
     public func blur(tint tintColor: UIColor) -> UIImage? { return _blur(radius: 20.0, tintColor: tintColor.withAlphaComponent(0.6), saturationDeltaFactor: -1.0, mask: nil) }
-    
+    /// Blur the receive image to an image with blur radius.
+    ///
+    /// - Parameter radius: The radius used to blur.
+    /// - Returns: A blured image or nil if blur failed.
+    public func blur(radius: CGFloat) -> UIImage? { return _blur(radius: radius, tintColor: nil, saturationDeltaFactor: -1.0, mask: nil) }
+    /// Create a blured image from the original with parameters.
+    ///
+    /// - Parameter radius: The blur radius.
+    /// - Parameter tintColor: The color used as "mask".
+    /// - Parameter saturationDeltaFactor: A value for factor of saturation.
+    /// - Parameter mask: The mask image used to mask the blured image.
+    ///
+    /// - Returns: A blured image from the params or nil if blur failed.
     private func _blur(radius: CGFloat, tintColor: UIColor?, saturationDeltaFactor: CGFloat, mask: UIImage?) -> UIImage? {
         // Check pre-conditions.
         guard size.width >= 1.0 && size.height >= 1.0 else { return nil }
@@ -207,6 +248,12 @@ public extension UIImage {
 }
 
 extension UIImage {
+    /// Create an image from the core media sample buffer by applying a affine transform.
+    ///
+    /// - Parameter sampleBuffer: The buffer data representing the original basal image data.
+    /// - Parameter applying: The closure to apply affine transform.
+    ///
+    /// - Returns: An image instance from the sample buffer.
     public class func image(from sampleBuffer: CMSampleBuffer, applying: ((CGSize) -> CGAffineTransform)? = nil) -> UIImage? {
         // Get a CMSampleBuffer's Core Video image buffer for the media data
         guard let imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return nil }
