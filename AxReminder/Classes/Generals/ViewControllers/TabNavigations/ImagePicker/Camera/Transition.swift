@@ -10,11 +10,17 @@ import UIKit
 import Foundation
 
 extension CameraViewController {
+    /// A type used to represent the presentation animator of the presenting/dissmissal of the camera view controller.
+    ///
     internal final class _PresentationAnimator: NSObject {
+        /// Indicates the style of the camera during the presentation of the camera view controller.
+        /// True for dismissing and false for the presenting.
         var isDismissal: Bool = false
+        /// The begins frame of the view of the controller to run transition from.
         var previewOriginFrame: CGRect = .zero
-        
+        /// Get an animator for presenting animation.
         class var presentation: _PresentationAnimator { return _PresentationAnimator() }
+        /// Get an animator for dismissal animation.
         class var dismissal: _PresentationAnimator {
             let dismissal = _PresentationAnimator()
             dismissal.isDismissal = true
