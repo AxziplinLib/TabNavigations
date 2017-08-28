@@ -17,7 +17,11 @@ import AVFoundation
 @available(iOS 9.0, *)
 open class CameraViewController: UIViewController {
     open weak var delegate: CameraViewControllerDelegate?
-    open var stopSessionWhenDisposed: Bool = false
+    open   var stopSessionWhenDisposed: Bool = false
+    public var configurationQueue: DispatchQueue { return _sessionQueue }
+    /// Sample buffer delegates queue.
+    fileprivate
+    var _sampleBufferDelegates: NSHashTable<AVCaptureVideoDataOutputSampleBufferDelegate> = NSHashTable.weakObjects()
     
     private var _session: AVCaptureSession!
     private var _input  : AVCaptureDeviceInput!
@@ -127,13 +131,42 @@ open class CameraViewController: UIViewController {
     
     // MARK: Private.
     
+    private func _initSession() throws {
+        // Initialize the device input for the session.
+        var adevice: AVCaptureDevice!
+        if #available(iOS 10.0, *) {
+            adevice = AVCaptureDevice.defaultDevice(withDeviceType: .builtInWideAngleCamera, mediaType: AVMediaTypeVideo, position: .back)
+        } else {
+            adevice = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeVideo)
+        }
+        guard let device = adevice else { throw CameraError.initializing(.noneOfCaptureDevice) }
+        
+        _input = try AVCaptureDeviceInput(device: device)
+        // Configure the display out put.
+        _displayOutput.videoSettings = [kCVPixelBufferPixelFormatTypeKey as AnyHashable: kCVPixelFormatType_32BGRA]
+        _displayOutput.setSampleBufferDelegate(self, queue: _displayQueue)
+        _displayOutput.alwaysDiscardsLateVideoFrames = true
+        // Initialize and configure the session of the capture.
+        _session = AVCaptureSession()
+        if _session.canSetSessionPreset(AVCaptureSessionPresetPhoto) {
+            _session.sessionPreset = AVCaptureSessionPresetPhoto
+        }
+        
+    }
+    
     private func _configureSession() {
-        if _session.inputs.isEmpty || _session.canAddInput(_input) {
-            _session.addInput(_input)
-        }
-        if _session.outputs.isEmpty || _session.canAddOutput(_output) {
-            _session.addOutput(_output)
-        }
+        _sessionQueue.async { [weak self] in autoreleasepool{
+            guard let wself = self else { return }
+            if wself._session.canAddInput(wself._input) {
+                wself._session.addInput(wself._input)
+            }
+            if wself._session.canAddOutput(wself._output) {
+                wself._session.addOutput(wself._output)
+            }
+            if wself._session.canAddOutput(wself._displayOutput) {
+                wself._session.addOutput(wself._displayOutput)
+            }
+        } }
     }
     
     private func _setupTopBar() {
@@ -205,4 +238,58 @@ extension CameraViewController {
 
 extension CameraViewController {
     public final class DisplayView: CaptureVideoDisplayView {}
+}
+
+// MARK: - Sample buffer delegates.
+
+extension CameraViewController {
+    /// Get all the sample buffer delegate as `[AVCaptureVideoDataOutputSampleBufferDelegate]`.
+    /// Do not add or remove delegates using the the result since the result is copied.
+    ///
+    public var  sampleBufferDelegates: [AVCaptureVideoDataOutputSampleBufferDelegate] { return _sampleBufferDelegates.allObjects }
+    /// Replace the old managed sample buffer delegates with the new delegates.
+    /// 
+    /// - Parameter sampleBufferDelegates: The new delegates queue to replace with.
+    ///
+    public func set(sampleBufferDelegates delegates: [AVCaptureVideoDataOutputSampleBufferDelegate]) {
+        removeAllSampleBufferDelegates()
+        add(sampleBufferDelegates: delegates)
+    }
+    /// Add a delegates queue to the managed delegates queue without changing the orders.
+    ///
+    /// - Parameter sampleBufferDelegates: The new delegates queue to add.
+    ///
+    public func add(sampleBufferDelegates delegates: [AVCaptureVideoDataOutputSampleBufferDelegate]) {
+        delegates.forEach({ [unowned self] in self._sampleBufferDelegates.add($0) })
+    }
+    /// Add a new sample buffer delegate to the managed delegates queue.
+    ///
+    /// - Parameter sampleBufferDelegate: A instance of AVCaptureVideoDataOutputSampleBufferDelegate to be added.
+    ///
+    public func add(sampleBufferDelegate delegate: AVCaptureVideoDataOutputSampleBufferDelegate?) {
+        _sampleBufferDelegates.add(delegate)
+    }
+    /// Remove a sample buffer from the managed delegates queue.
+    ///
+    /// - Parameter sampleBufferDelegate: A instance of AVCaptureVideoDataOutputSampleBufferDelegate to be removed.
+    ///
+    public func remove(sampleBufferDelegate delegate: AVCaptureVideoDataOutputSampleBufferDelegate?) {
+        _sampleBufferDelegates.remove(delegate)
+    }
+    /// Remove all the managed sample buffer delegates.
+    public func removeAllSampleBufferDelegates() {
+        _sampleBufferDelegates.removeAllObjects()
+    }
+}
+
+// MARK: - AVCaptureVideoDataOutputSampleBufferDelegate.
+
+extension CameraViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
+    public func captureOutput(_ captureOutput: AVCaptureOutput!, didOutputSampleBuffer sampleBuffer: CMSampleBuffer!, from connection: AVCaptureConnection!) {
+        sampleBufferDelegates.forEach({ $0.captureOutput?(captureOutput, didOutputSampleBuffer: sampleBuffer, from: connection) })
+    }
+    
+    public func captureOutput(_ captureOutput: AVCaptureOutput!, didDrop sampleBuffer: CMSampleBuffer!, from connection: AVCaptureConnection!) {
+        sampleBufferDelegates.forEach({ $0.captureOutput?(captureOutput, didDrop: sampleBuffer, from: connection) })
+    }
 }
