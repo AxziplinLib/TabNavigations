@@ -27,6 +27,8 @@ public enum CameraError: Error {
         case noneOfCaptureDevice
         /// Indicates the input cannot be added to the video capture session.
         case sessionCannotAddInput
+        /// Indicates the output cannot be added to the video capture session.
+        case sessionCannotAddOutput
     }
     /// Indicates the errors occured during the initializing.
     case initializing(InitialzingError)
