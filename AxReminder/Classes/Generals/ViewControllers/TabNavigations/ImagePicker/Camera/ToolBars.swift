@@ -11,16 +11,27 @@ import UIKit
 // MARK: - TopBar.
 
 extension CameraViewController {
+    /// A type representing the top tool bar view of the camera view controller.
+    /// Any instance of this type is managed by the camera view controller and do not set the `items` directly.
+    /// The `countMeetsFullScreen` indicates the showing count of the bar items in horizontal space at one time. Setting this 
+    /// value can change the showing count and showing spacing among the items.
     @available(iOS 9.0, *)
     public final class TopBar: UIView {
+        /// Indicates the showing count of the bar items in horizontal space at one time.
+        /// Setting this value can change the showing count and showing spacing among the items.
+        /// Default is 5.
         public var countMeetsFullScreen: Int = 5
-        
+        /// A closure of ItemsSelection will be triggered when any of the bar items is being selected.
         internal var didSelectItem  : ItemsSelection?
+        /// A closure of ActionsPresentation will be triggered when subitems any of the bar items will show.
         internal var willShowActions: ActionsPresentation?
+        /// A closure of ActionsDismissal will be triggered when subitems any of the bar items will hide.
         internal var willHideActions: ActionsDismissal?
+        /// A closure of ActionsSelection will be triggered when any of the bar subitems is being selected.
         internal var didSelectAction: ActionsSelection?
-        
+        /// Indicates the state of the bar view. The value of state is descriped in type `_State`.
         fileprivate var state: _State = .items(selected: .index(0))
+        ///
         public var items: [BarItem] = [] { didSet { _updateItemViews(items: items) } }
         fileprivate var _itemsBackup: [BarItem] = []
         fileprivate let _stackContentInset: UIEdgeInsets = UIEdgeInsets(top: 0.0, left: 15.0, bottom: 0.0, right: 15.0)
