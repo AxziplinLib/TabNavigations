@@ -80,13 +80,6 @@ extension CaptureVideoPreviewView {
             // Throw the cannot add input error.
             throw CaptureVideoPreviewViewError.configuration(.sessionCannotAddInput)
         }
-        // Add transition animation.
-        let transition = CATransition()
-        // cube, suckEffect, oglFlip, rippleEffect, pageCurl, pageUnCurl, cameraIrisHollowOpen, cameraIrisHollowClose
-        transition.type = "oglFlip"
-        transition.subtype = kCATransitionFromLeft
-        transition.duration = 0.25 * 2.0
-        previewLayer.add(transition, forKey: "transition")
         
         return true
     }
