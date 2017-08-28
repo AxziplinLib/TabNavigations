@@ -25,6 +25,8 @@ public enum CameraError: Error {
     public enum InitialzingError: Error {
         /// Indicates the capture device initialized from the AVCaptureDevice is nil.
         case noneOfCaptureDevice
+        /// Indicates the input cannot be added to the video capture session.
+        case sessionCannotAddInput
     }
     /// Indicates the errors occured during the initializing.
     case initializing(InitialzingError)
