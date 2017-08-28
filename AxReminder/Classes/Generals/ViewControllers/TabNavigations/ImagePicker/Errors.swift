@@ -18,3 +18,14 @@ public enum CaptureVideoPreviewViewError: Error {
     /// Indicates the errors occured during session's configuration.
     case configuration(ConfiguragionError)
 }
+
+/// An error type descriping the errors occured in the CameraViewController type.
+public enum CameraError: Error {
+    /// An error type descriping the errors occured in the Configuragion modules.
+    public enum InitialzingError: Error {
+        /// Indicates the capture device initialized from the AVCaptureDevice is nil.
+        case noneOfCaptureDevice
+    }
+    /// Indicates the errors occured during the initializing.
+    case initializing(InitialzingError)
+}
