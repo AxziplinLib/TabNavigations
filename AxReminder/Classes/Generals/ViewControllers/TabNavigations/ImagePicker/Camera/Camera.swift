@@ -335,7 +335,7 @@ extension CameraViewController {
     override open var preferredStatusBarUpdateAnimation: UIStatusBarAnimation { return .fade }
 }
 
-// MARK: - Session
+// MARK: - SessionStarting.
 
 extension CameraViewController {
     /// A type representing the starting time of the session.
