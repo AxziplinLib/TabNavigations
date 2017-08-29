@@ -13,28 +13,46 @@ import AVFoundation
 @objc public protocol CameraViewControllerDelegate {
     @objc optional func cameraViewControllerDidCancel(_ cameraViewController: CameraViewController)
 }
-
+/// A type subclassing `UIViewController` to manage the data, session, inputs and outputs of camera capture device.
+///
 @available(iOS 9.0, *)
 open class CameraViewController: UIViewController {
-    open weak var delegate: CameraViewControllerDelegate?
+    weak
+    open   var delegate               : CameraViewControllerDelegate?
     open   var stopSessionWhenDisposed: Bool = false
-    public var configurationQueue: DispatchQueue { return _sessionQueue }
     /// Sample buffer delegates queue.
     fileprivate
     var _sampleBufferDelegates: NSHashTable<AVCaptureVideoDataOutputSampleBufferDelegate> = NSHashTable.weakObjects()
-    
-    private var _session: AVCaptureSession!
-    private var _input  : AVCaptureDeviceInput!
-    private var _output : AVCapturePhotoOutput!
-    
-    public var previewView: CaptureVideoPreviewView! { return _previewView }
+    // ------------------------------------
+    // Capture session, inputs and outputs.
+    // ------------------------------------
+    public      var  captureSession        : AVCaptureSession!        { return _session               }
+    fileprivate var _session               : AVCaptureSession!        { didSet { _initPreviewView() } }
+    public      var  captureSessionQueue   : DispatchQueue            { return _sessionQueue          }
+    fileprivate let _sessionQueue          : DispatchQueue            = DispatchQueue(label: "com.config.session.camera")
+    public      var  captureDeviceInput    : AVCaptureDeviceInput!    { return _input                 }
+    fileprivate var _input                 : AVCaptureDeviceInput!
+    @available(iOS 10.0, *)
+    public      var  capturePhotoOutput    : AVCapturePhotoOutput!    { return _photoOutput as! AVCapturePhotoOutput  }
+    fileprivate var _photoOutput           : Any! = { if #available(iOS 10.0, *) { return AVCapturePhotoOutput() } else { return nil } }()
+    public      var  captureDisplayQueue   : DispatchQueue            { return _displayQueue          }
+    fileprivate let _displayQueue          : DispatchQueue            = DispatchQueue(label: "com.render.display.camera")
+    public      var  captureVideoDataOutput: AVCaptureVideoDataOutput { return _displayOutput         }
+    fileprivate var _displayOutput         : AVCaptureVideoDataOutput = AVCaptureVideoDataOutput()
+    // ------------------------------------
+    // Capture video preview view.
+    // ------------------------------------
+    public      var  previewView: CaptureVideoPreviewView! { return _previewView }
     fileprivate var _previewView: CaptureVideoPreviewView!
-    
-    // MARK: Tool Views.
-    
-    private let _flashConfigs: [(title: String, image: UIImage)] = [("自动", #imageLiteral(resourceName: "flash_auto")), ("打开", #imageLiteral(resourceName: "flash_on")), ("关闭", #imageLiteral(resourceName: "flash_off"))]
-    private let _hdrConfigs: [(title: String, image: UIImage)] = [("自动", UIImage(named: _Resource.bundle+"HDR_auto")!), ("打开", UIImage(named: _Resource.bundle+"HDR_on")!), ("关闭", UIImage(named: _Resource.bundle+"HDR_off")!)]
-    public var topBar: TopBar { return _topBar }
+    // ------------------------------------
+    // Flash and hrd items configs.
+    // ------------------------------------
+    private let _flashConfigs: [(title: String, image: UIImage)] = [("自动", UIImage(named: _Resource.bundle+"flash_auto")!), ("打开", UIImage(named: _Resource.bundle+"flash_on")!), ("关闭", UIImage(named: _Resource.bundle+"flash_off")!)]
+    private let _hdrConfigs  : [(title: String, image: UIImage)] = [("自动", UIImage(named: _Resource.bundle+"HDR_auto")!), ("打开", UIImage(named: _Resource.bundle+"HDR_on")!), ("关闭", UIImage(named: _Resource.bundle+"HDR_off")!)]
+    // ------------------------------------
+    // Top and bottom tool bars.
+    // ------------------------------------
+    public           var  topBar: TopBar   { return _topBar }
     fileprivate lazy var _topBar: TopBar = { () -> TopBar in
         let topBar = TopBar()
         topBar.tintColor = .white
@@ -42,7 +60,8 @@ open class CameraViewController: UIViewController {
         topBar.translatesAutoresizingMaskIntoConstraints = false
         return topBar
     }()
-    public var bottomBar: BottomBar { return _bottomBar }
+    
+    public           var  bottomBar: BottomBar   { return _bottomBar }
     fileprivate lazy var _bottomBar: BottomBar = { () -> BottomBar in
         let bottomBar = BottomBar()
         bottomBar.tintColor = .white
@@ -51,36 +70,44 @@ open class CameraViewController: UIViewController {
         return bottomBar
     }()
     
+    private var _startingOfSession: SessionStarting
+    
     // MARK: Initializer.
-    public init?(previewView: CaptureVideoPreviewView? = nil, session: AVCaptureSession? = nil, input: AVCaptureDeviceInput? = nil) {
-        guard let __input = input ?? (try? AVCaptureDeviceInput(device: AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeVideo))) else {
-            return nil
-        }
-        _session = session ?? previewView?.previewLayer.session ?? AVCaptureSession()
-        if previewView?.previewLayer.session === _session {
-            _previewView = previewView
-        }
-        _input = __input
-        _output = AVCapturePhotoOutput()
-        
+    public init?(session: AVCaptureSession? = nil, starting: SessionStarting = .never) throws {
+        self._startingOfSession = starting
+        self._session = session
         super.init(nibName: nil, bundle: nil)
-        _initializer()
+        try _initSession()
+        // Start the session immediately if the starting mode is `.immediately`.
+        switch _startingOfSession {
+        case .immediately:
+            if !_session.isRunning {
+                _session.startRunning()
+            }
+        default: break
+        }
+    }
+    
+    public init() {
+        fatalError("Using designated initializer to create instance.")
     }
     
     override public init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
-        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
-        _initializer()
+        fatalError("Using designated initializer to create instance.")
     }
     
     required public init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-        _initializer()
+        fatalError("Using designated initializer to create instance.")
     }
     
-    private func _initializer() {
-        _configureSession()
-        if _previewView == nil {
-            _previewView = PreviewView(session: _session)
+    deinit {
+        switch _startingOfSession {
+        case .immediately: fallthrough
+        case .at(_)  :
+            if  _session.isRunning, stopSessionWhenDisposed {
+                _session.stopRunning()
+            }
+        default: break
         }
     }
     
@@ -99,12 +126,29 @@ open class CameraViewController: UIViewController {
         
         _setupTopBar()
         _setupBottomBar()
+        
+        // Start the session immediately if the starting mode is `.at(.loading)`.
+        switch _startingOfSession {
+        case .at(.loading):
+            if !_session.isRunning {
+                _session.startRunning()
+            }
+        default: break
+        }
     }
     
     override open func viewDidLoad() {
         super.viewDidLoad()
         
         view.backgroundColor = .black
+        // Start the session immediately if the starting mode is `.at(.loaded)`.
+        switch _startingOfSession {
+        case .at(.loaded):
+            if !_session.isRunning {
+                _session.startRunning()
+            }
+        default: break
+        }
     }
     
     override open func viewDidLayoutSubviews() {
@@ -115,58 +159,91 @@ open class CameraViewController: UIViewController {
     
     override open func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        // Start the session when view will appear if necessary.
-        if !_session.isRunning {
-            _session.startRunning()
+        
+        // Start the session immediately if the starting mode is `.at(.willAppear)`.
+        switch _startingOfSession {
+        case .at(.willAppear):
+            if !_session.isRunning {
+                _session.startRunning()
+            }
+        default: break
+        }
+    }
+    
+    open override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        // Start the session immediately if the starting mode is `.at(.didAppear)`.
+        switch _startingOfSession {
+        case .at(.didAppear):
+            if !_session.isRunning {
+                _session.startRunning()
+            }
+        default: break
         }
     }
     
     override open func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         // Stop the session when view did disappear.
-        if stopSessionWhenDisposed {
+        /* if stopSessionWhenDisposed {
             _session.stopRunning()
-        }
+        } */
     }
     
     // MARK: Private.
     
+    /// Create session and device input if session is nil and device inputs of session is empty.
     private func _initSession() throws {
-        // Initialize the device input for the session.
-        var adevice: AVCaptureDevice!
-        if #available(iOS 10.0, *) {
-            adevice = AVCaptureDevice.defaultDevice(withDeviceType: .builtInWideAngleCamera, mediaType: AVMediaTypeVideo, position: .back)
-        } else {
-            adevice = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeVideo)
+        func create_add_input() throws {
+            var adevice:  AVCaptureDevice!
+            if #available(iOS 10.0, *) {
+                adevice = AVCaptureDevice.defaultDevice(withDeviceType: .builtInWideAngleCamera, mediaType: AVMediaTypeVideo, position: .back)
+            } else {
+                adevice = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeVideo)
+            }
+            guard let device = adevice else { throw CameraError.initializing(.noneOfCaptureDevice) }
+            
+            _input = try AVCaptureDeviceInput(device: device)
+            _session =  AVCaptureSession()
+            if  _session.canAddInput (_input) {
+                _session.addInput    (_input)
+            } else { throw CameraError.initializing(.sessionCannotAddInput) }
         }
-        guard let device = adevice else { throw CameraError.initializing(.noneOfCaptureDevice) }
-        
-        _input = try AVCaptureDeviceInput(device: device)
         // Configure the display out put.
         _displayOutput.videoSettings = [kCVPixelBufferPixelFormatTypeKey as AnyHashable: kCVPixelFormatType_32BGRA]
         _displayOutput.setSampleBufferDelegate(self, queue: _displayQueue)
         _displayOutput.alwaysDiscardsLateVideoFrames = true
         // Initialize and configure the session of the capture.
-        _session = AVCaptureSession()
-        if _session.canSetSessionPreset(AVCaptureSessionPresetPhoto) {
-            _session.sessionPreset = AVCaptureSessionPresetPhoto
+        if  _session == nil {
+            // Initialize the device input for the session.
+            try create_add_input()
+        } else {
+            // Find the available device inputs.
+            let deviceInputs = _session.inputs.flatMap({ ($0 is AVCaptureDeviceInput && ($0 as! AVCaptureDeviceInput).device.hasMediaType(AVMediaTypeVideo)) ? $0 : nil }) as! [AVCaptureDeviceInput]
+            if  deviceInputs.isEmpty {
+                try create_add_input()
+            } else if deviceInputs.startIndex == deviceInputs.index(before: deviceInputs.endIndex) {
+                // Has only one video device inputs.
+                _input = deviceInputs.first
+            }
         }
-        
+        _initPreviewView() // Call the initialzer of preview view obviously.
+        // Configure session.
+        if #available(iOS 10.0, *) {
+            if  _session.canAddOutput(capturePhotoOutput) {
+                _session.addOutput   (capturePhotoOutput)
+            } else { throw CameraError.initializing(.sessionCannotAddOutput) }
+        }
+        if  _session.canAddOutput(_displayOutput) {
+            _session.addOutput   (_displayOutput)
+        } else { throw CameraError.initializing(.sessionCannotAddOutput) }
     }
-    
-    private func _configureSession() {
-        _sessionQueue.async { [weak self] in autoreleasepool{
-            guard let wself = self else { return }
-            if wself._session.canAddInput(wself._input) {
-                wself._session.addInput(wself._input)
-            }
-            if wself._session.canAddOutput(wself._output) {
-                wself._session.addOutput(wself._output)
-            }
-            if wself._session.canAddOutput(wself._displayOutput) {
-                wself._session.addOutput(wself._displayOutput)
-            }
-        } }
+    /// Initialize the preview view if the session is not nil and inputs of the session is not empty.
+    private func _initPreviewView() {
+        guard _previewView?.previewLayer.session !== _session && _session != nil && !_session.inputs.filter({ ($0 is AVCaptureDeviceInput && ($0 as! AVCaptureDeviceInput).device.hasMediaType(AVMediaTypeVideo)) }).isEmpty else { return }
+        
+        _previewView = PreviewView(session: _session)
     }
     
     private func _setupTopBar() {
@@ -203,6 +280,12 @@ open class CameraViewController: UIViewController {
     }
 }
 
+// MARK: - Public.
+
+extension CameraViewController {
+    public class var `default`: CameraViewController! { return try! CameraViewController(session: nil, starting: .at(.loaded)) }
+}
+
 // MARK: Actions.
 
 extension CameraViewController {
@@ -211,7 +294,18 @@ extension CameraViewController {
         
     }
     
-    @objc fileprivate func _handleToggleFace(_ sender: UIButton) { let _ = try? _previewView.toggle() }
+    @objc fileprivate func _handleToggleFace(_ sender: UIButton) {
+        _sessionQueue.async { [unowned self] in
+            let _ = try? self._previewView.toggle()
+        }
+        // Add transition animation.
+        let transition = CATransition()
+        // cube, suckEffect, oglFlip, rippleEffect, pageCurl, pageUnCurl, cameraIrisHollowOpen, cameraIrisHollowClose
+        transition.type = "oglFlip"
+        transition.subtype = kCATransitionFromLeft
+        transition.duration = 0.25 * 2.0
+        self.previewView.layer.add(transition, forKey: "transition")
+    }
     
     @objc
     fileprivate func _handleCancel(_ sender: UIButton) {
@@ -226,6 +320,31 @@ extension CameraViewController {
 extension CameraViewController {
     override open var prefersStatusBarHidden: Bool { return true }
     override open var preferredStatusBarUpdateAnimation: UIStatusBarAnimation { return .fade }
+}
+
+// MARK: - Session
+
+extension CameraViewController {
+    /// A type representing the starting time of the session.
+    public enum SessionStarting {
+        /// A type representing the life cycle of view of the view controller.
+        public enum ViewLifeCycle {
+            /// Indicates the view is during loading at calling `loadView()`.
+            case loading
+            /// Indicates the view is loaded at calling of `viewDidLoad()`.
+            case loaded
+            /// Indicates the view is about to show at calling of `viewWillAppear(_:)`
+            case willAppear
+            /// Indicates the view is showed at calling of `viewDidAppear(_:)`.
+            case didAppear
+        }
+        /// Indicates the session is never starting or stopping.
+        case never
+        /// Indicates the session will start at initializing and stop at disposed.
+        case immediately
+        /// Indicates the session will start at the point of the  life cycle of the view and stop at disposed.
+        case at(ViewLifeCycle)
+    }
 }
 
 // MARK: - CaptureVideoPreviewView.
