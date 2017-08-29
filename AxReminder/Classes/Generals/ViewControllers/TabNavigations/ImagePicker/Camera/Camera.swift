@@ -22,7 +22,11 @@ open class CameraViewController: UIViewController {
     open   var stopSessionWhenDisposed: Bool = false
     /// Sample buffer delegates queue.
     fileprivate
-    var _sampleBufferDelegates: NSHashTable<AVCaptureVideoDataOutputSampleBufferDelegate> = NSHashTable.weakObjects()
+    var _sampleBufferDelegates         : NSHashTable<AVCaptureVideoDataOutputSampleBufferDelegate> = NSHashTable.weakObjects()
+    /// The latest sample buffer from the capture session's connection.
+    public      var  latestSampleBuffer: CMSampleBuffer! { return _latestSampleBuffer }
+    /// The storage latest sample buffer.
+    fileprivate var _latestSampleBuffer: CMSampleBuffer!
     // ------------------------------------
     // Capture session, inputs and outputs.
     // ------------------------------------
@@ -418,6 +422,7 @@ extension CameraViewController {
 
 extension CameraViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
     public func captureOutput(_ captureOutput: AVCaptureOutput!, didOutputSampleBuffer sampleBuffer: CMSampleBuffer!, from connection: AVCaptureConnection!) {
+       _latestSampleBuffer = sampleBuffer
         sampleBufferDelegates.forEach({ $0.captureOutput?(captureOutput, didOutputSampleBuffer: sampleBuffer, from: connection) })
     }
     
