@@ -204,6 +204,19 @@ open class CameraViewController: UIViewController {
             }
             guard let device = adevice else { throw CameraError.initializing(.noneOfCaptureDevice) }
             
+            do {
+                try device.lockForConfiguration()
+                device.isSubjectAreaChangeMonitoringEnabled = true
+                if #available(iOS 10.0, *) {} else {
+                    if device.isFlashModeSupported(.auto) {
+                        device.flashMode = .auto
+                    }
+                }
+                device.unlockForConfiguration()
+            } catch {
+                print("Lock device for configuration failed: \(error)")
+            }
+            
             _input = try AVCaptureDeviceInput(device: device)
             _session =  AVCaptureSession()
             if  _session.canAddInput (_input) {
