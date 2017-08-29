@@ -321,7 +321,20 @@ extension CameraViewController {
         transition.type = "oglFlip"
         transition.subtype = kCATransitionFromLeft
         transition.duration = 0.25 * 2.0
+        let imageView = UIImageView(image: UIImage.image(from: _latestSampleBuffer)!.lightBlur!)
+        imageView.frame = self.previewView.bounds
+        self.previewView.addSubview(imageView)
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        CATransaction.setCompletionBlock {
+            UIView.animate(withDuration: 0.25, animations: {
+                imageView.alpha = 0.0
+            }, completion: { (_) in
+                imageView.removeFromSuperview()
+            })
+        }
         self.previewView.layer.add(transition, forKey: "transition")
+        CATransaction.commit()
     }
     
     @objc
