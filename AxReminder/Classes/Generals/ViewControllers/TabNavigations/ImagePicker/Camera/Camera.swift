@@ -456,6 +456,23 @@ extension CameraViewController {
     public final class PreviewView: CaptureVideoPreviewView {}
 }
 
+
+extension CaptureVideoPreviewView {
+    /// The camera view controller managing the preview view.
+    ///
+    /// Returns the managing camera view controller if the preview view is created attaching to any camera view controller.
+    ///
+    /// Returns nil if there is no any managing camera view controllers.
+    public var camera: CameraViewController? {
+        var resp = self.next
+        while resp != nil {
+            if resp is CameraViewController { return resp as? CameraViewController }
+            resp = resp?.next
+        }
+        return nil
+    }
+}
+
 // MARK: - CaptureVideoDisplayView.
 
 extension CameraViewController {
