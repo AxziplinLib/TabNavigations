@@ -430,7 +430,7 @@ extension CaptureVideoPreviewView {
                 humanReadingInfos = [humanReadingInfos.filter({ $0.type != .exposureTargetOffset }), [(HumanReading.exposureTargetOffset, "Exposure target offset: \(exposureTargetOffset)")]].joined().reversed()
             }
         } else if keyPath == "center" {
-            guard (object as? AVCaptureDevice) === videoDevice else { return }
+            guard (object as? UIImageView) === _exposureIndicator else { return }
             _updateSizeOfExposureIndicator()
             _updatePositionsOfExposureSliders()
             if #available(iOS 8.0, *) {
