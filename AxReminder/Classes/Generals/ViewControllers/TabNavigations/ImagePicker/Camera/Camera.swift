@@ -41,30 +41,35 @@ open class CameraViewController: UIViewController {
     // ------------------------------------
     //
     /// The capture session of the camera device to run the photo sample buffer data connections.
-    public      var  captureSession        : AVCaptureSession!        { return _session               }
+    public      var  captureSession         : AVCaptureSession!        { return _session               }
     /// The storage of the capture session.
-    fileprivate var _session               : AVCaptureSession!        { didSet { _initPreviewView() } }
+    fileprivate var _session                : AVCaptureSession!        { didSet { _initPreviewView() } }
     /// The dispatch queue of the configuration handlers of the capture session.
-    public      var  captureSessionQueue   : DispatchQueue            { return _sessionQueue          }
+    public      var  captureSessionQueue    : DispatchQueue            { return _sessionQueue          }
     /// The storage of the capture session queue.
-    fileprivate let _sessionQueue          : DispatchQueue            = DispatchQueue(label: "com.config.session.camera")
+    fileprivate let _sessionQueue           : DispatchQueue            = DispatchQueue(label: "com.config.session.camera")
     /// The input instance of device capture contains the video media type.
-    public      var  captureDeviceInput    : AVCaptureDeviceInput!    { return _input                 }
+    public      var  captureDeviceInput     : AVCaptureDeviceInput!    { return _input                 }
     /// The storage of the capture device input.
-    fileprivate var _input                 : AVCaptureDeviceInput!
+    fileprivate var _input                  : AVCaptureDeviceInput!
     /// The photo output of the session to general view photo data.
     @available(iOS 10.0, *)
-    public      var  capturePhotoOutput    : AVCapturePhotoOutput!    { return _photoOutput as! AVCapturePhotoOutput  }
+    public      var  capturePhotoOutput     : AVCapturePhotoOutput!    { return _photoOutput as! AVCapturePhotoOutput  }
     /// The storage of the capture photo output.
-    fileprivate var _photoOutput           : Any! = { if #available(iOS 10.0, *) { return AVCapturePhotoOutput() } else { return nil } }()
+    fileprivate var  _photoOutput           : Any! = { if #available(iOS 10.0, *) { return AVCapturePhotoOutput() } else { return nil }}()
+    /// The still image output of the session to general still photo image data.
+    @available(iOS, introduced: 9.0, deprecated: 10.0, message: "Use capturePhotoOutput instead")
+    public      var  captureStillImageOutput: AVCaptureStillImageOutput! { return _stillImageOutput as! AVCaptureStillImageOutput }
+    /// The storage of the capture still image output.
+    fileprivate var _stillImageOutput       : Any! = { if #available(iOS 10.0, *) { return nil } else { return AVCaptureStillImageOutput() }}()
     /// The dispatch queue of the configuration of the display view and handlers of the output sample buffer.
-    public      var  captureDisplayQueue   : DispatchQueue            { return _displayQueue          }
+    public      var  captureDisplayQueue    : DispatchQueue            { return _displayQueue          }
     /// The storage of capture display queue.
-    fileprivate let _displayQueue          : DispatchQueue            = DispatchQueue(label: "com.render.display.camera")
+    fileprivate let _displayQueue           : DispatchQueue            = DispatchQueue(label: "com.render.display.camera")
     /// The video data output generates the real-time sample buffers.
-    public      var  captureVideoDataOutput: AVCaptureVideoDataOutput { return _displayOutput         }
+    public      var  captureVideoDataOutput : AVCaptureVideoDataOutput { return _displayOutput         }
     /// The storage of the capture video data output.
-    fileprivate var _displayOutput         : AVCaptureVideoDataOutput = AVCaptureVideoDataOutput()
+    fileprivate var _displayOutput          : AVCaptureVideoDataOutput = AVCaptureVideoDataOutput()
     //
     // ------------------------------------
     // Capture video preview view.
