@@ -498,11 +498,15 @@ extension CameraViewController {
 
 extension CameraViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
     public func captureOutput(_ captureOutput: AVCaptureOutput!, didOutputSampleBuffer sampleBuffer: CMSampleBuffer!, from connection: AVCaptureConnection!) {
-       _latestSampleBuffer = sampleBuffer
-        sampleBufferDelegates.forEach({ $0.captureOutput?(captureOutput, didOutputSampleBuffer: sampleBuffer, from: connection) })
+        autoreleasepool{ [weak self] in self?._displayQueue.async { [weak self] in
+            self?._latestSampleBuffer = sampleBuffer
+            self?.sampleBufferDelegates.forEach({ $0.captureOutput?(captureOutput, didOutputSampleBuffer: sampleBuffer, from: connection) })
+        } }
     }
     
     public func captureOutput(_ captureOutput: AVCaptureOutput!, didDrop sampleBuffer: CMSampleBuffer!, from connection: AVCaptureConnection!) {
-        sampleBufferDelegates.forEach({ $0.captureOutput?(captureOutput, didDrop: sampleBuffer, from: connection) })
+        autoreleasepool{ [weak self] in self?._displayQueue.async { [weak self] in
+            self?.sampleBufferDelegates.forEach({ $0.captureOutput?(captureOutput, didDrop: sampleBuffer, from: connection) })
+        } }
     }
 }
