@@ -63,10 +63,21 @@ open class CaptureVideoPreviewView: UIView {
     
     public init(session: AVCaptureSession) {
         super.init(frame: .zero)
+        // Fatal checking layer class.
+        guard self.layer is AVCaptureVideoPreviewLayer else { fatalError("The class of layer for customizing subclass of CaptureVideoPreviewView must be subclass of AVCaptureVideoPreviewLayer.") }
         previewLayer.session = session
         _initializer()
     }
     
+    @available(*, unavailable)
+    public init() {
+        fatalError("Using designated initializer instead.")
+    }
+    @available(*, unavailable)
+    public override init(frame: CGRect) {
+        fatalError("Using designated initializer instead.")
+    }
+    @available(*, unavailable)
     required public init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
