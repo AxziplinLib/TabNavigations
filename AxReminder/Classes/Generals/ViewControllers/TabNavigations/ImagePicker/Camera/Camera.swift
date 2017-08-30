@@ -10,53 +10,88 @@ import UIKit
 import GLKit
 import AVFoundation
 
+/// A protocol defines the handlers of the call backs of the camera view controller.
+/// Conforms this protocol to provide the corresponding call backs of the camera view 
+/// controller such as the cancling of the camera view controller.
+///
 @objc public protocol CameraViewControllerDelegate {
+    /// Indicates the camera view controller did cancel and dismissed from presentation.
+    ///
+    /// - Parameter cameraViewController: The camera view controller which is canceled.
     @objc optional func cameraViewControllerDidCancel(_ cameraViewController: CameraViewController)
 }
 /// A type subclassing `UIViewController` to manage the data, session, inputs and outputs of camera capture device.
 ///
 @available(iOS 9.0, *)
 open class CameraViewController: UIViewController {
-    weak
-    open   var delegate               : CameraViewControllerDelegate?
-    open   var stopSessionWhenDisposed: Bool = false
-    /// Sample buffer delegates queue.
+    /// A delegate instance conforms to `CameraViewControllerDelegate` of the camera view controller to provide call backs' implementions.
+    weak open var delegate               : CameraViewControllerDelegate?
+    /// A boolean value to decide the session should stop running or not when the camera view controller has been disposed.
+    open      var stopSessionWhenDisposed: Bool = false
+    /// A hash table queue to manage sample buffer delegates.
     fileprivate
-    var _sampleBufferDelegates         : NSHashTable<AVCaptureVideoDataOutputSampleBufferDelegate> = NSHashTable.weakObjects()
+    var _sampleBufferDelegates           : NSHashTable<AVCaptureVideoDataOutputSampleBufferDelegate> = NSHashTable.weakObjects()
     /// The latest sample buffer from the capture session's connection.
-    public      var  latestSampleBuffer: CMSampleBuffer! { return _latestSampleBuffer }
+    public      var  latestSampleBuffer  : CMSampleBuffer! { return _latestSampleBuffer }
     /// The storage latest sample buffer.
-    fileprivate var _latestSampleBuffer: CMSampleBuffer!
+    fileprivate var _latestSampleBuffer  : CMSampleBuffer!
+    //
     // ------------------------------------
     // Capture session, inputs and outputs.
     // ------------------------------------
+    //
+    /// The capture session of the camera device to run the photo sample buffer data connections.
     public      var  captureSession        : AVCaptureSession!        { return _session               }
+    /// The storage of the capture session.
     fileprivate var _session               : AVCaptureSession!        { didSet { _initPreviewView() } }
+    /// The dispatch queue of the configuration handlers of the capture session.
     public      var  captureSessionQueue   : DispatchQueue            { return _sessionQueue          }
+    /// The storage of the capture session queue.
     fileprivate let _sessionQueue          : DispatchQueue            = DispatchQueue(label: "com.config.session.camera")
+    /// The input instance of device capture contains the video media type.
     public      var  captureDeviceInput    : AVCaptureDeviceInput!    { return _input                 }
+    /// The storage of the capture device input.
     fileprivate var _input                 : AVCaptureDeviceInput!
+    /// The photo output of the session to general view photo data.
     @available(iOS 10.0, *)
     public      var  capturePhotoOutput    : AVCapturePhotoOutput!    { return _photoOutput as! AVCapturePhotoOutput  }
+    /// The storage of the capture photo output.
     fileprivate var _photoOutput           : Any! = { if #available(iOS 10.0, *) { return AVCapturePhotoOutput() } else { return nil } }()
+    /// The dispatch queue of the configuration of the display view and handlers of the output sample buffer.
     public      var  captureDisplayQueue   : DispatchQueue            { return _displayQueue          }
+    /// The storage of capture display queue.
     fileprivate let _displayQueue          : DispatchQueue            = DispatchQueue(label: "com.render.display.camera")
+    /// The video data output generates the real-time sample buffers.
     public      var  captureVideoDataOutput: AVCaptureVideoDataOutput { return _displayOutput         }
+    /// The storage of the capture video data output.
     fileprivate var _displayOutput         : AVCaptureVideoDataOutput = AVCaptureVideoDataOutput()
+    //
     // ------------------------------------
     // Capture video preview view.
     // ------------------------------------
+    //
+    /// A view which layer is an instance of `AVCaptureVideoPreviewLayer` to provide the preview of the photo data.
+    /// With the events handling of the touch gestures, the tap-to-focus liking functions can be reached.
     public      var  previewView: CaptureVideoPreviewView! { return _previewView }
+    /// The storage of the preview view.
     fileprivate var _previewView: CaptureVideoPreviewView!
+    //
     // ------------------------------------
     // Flash and hrd items configs.
     // ------------------------------------
+    //
+    /// The flash items of the top bar item.
     private let _flashConfigs: [(title: String, image: UIImage)] = [("自动", UIImage(named: _Resource.bundle+"flash_auto")!), ("打开", UIImage(named: _Resource.bundle+"flash_on")!), ("关闭", UIImage(named: _Resource.bundle+"flash_off")!)]
+    /// The hdr items of the top bar item.
     private let _hdrConfigs  : [(title: String, image: UIImage)] = [("自动", UIImage(named: _Resource.bundle+"HDR_auto")!), ("打开", UIImage(named: _Resource.bundle+"HDR_on")!), ("关闭", UIImage(named: _Resource.bundle+"HDR_off")!)]
+    //
     // ------------------------------------
     // Top and bottom tool bars.
     // ------------------------------------
+    //
+    /// The top tool bar of the camera view controller provides the options of flash's and hdr's modes.
     public           var  topBar: TopBar   { return _topBar }
+    /// The storage of top bar.
     fileprivate lazy var _topBar: TopBar = { () -> TopBar in
         let topBar = TopBar()
         topBar.tintColor = .white
@@ -64,8 +99,9 @@ open class CameraViewController: UIViewController {
         topBar.translatesAutoresizingMaskIntoConstraints = false
         return topBar
     }()
-    
+    /// The botton tool bar of the camera view controller provides the actions of canceling, shotting and position-switching.
     public           var  bottomBar: BottomBar   { return _bottomBar }
+    /// The storage of the bottom bar.
     fileprivate lazy var _bottomBar: BottomBar = { () -> BottomBar in
         let bottomBar = BottomBar()
         bottomBar.tintColor = .white
@@ -73,10 +109,30 @@ open class CameraViewController: UIViewController {
         bottomBar.translatesAutoresizingMaskIntoConstraints = false
         return bottomBar
     }()
-    
+    /// The starting mode of the session.
+    public  var  startingOfSession: SessionStarting { return _startingOfSession }
+    /// The storage of the starting of session.
     private var _startingOfSession: SessionStarting
     
     // MARK: Initializer.
+    
+    /// Create an instance of `CameraViewController` with a capture session and starting mode of the session.
+    ///
+    /// The session will be nil and the session will never start by default.
+    ///
+    /// The session will use the default session by adding the default device input and outputs if passing nil
+    /// and can be overrided by passing a fully customed session with necessary inputs.
+    ///
+    /// Provides the starting mode of the session can decide the starting time of the session. Mode `.never` 
+    /// will never starting or stoping the session's running but managed by clients.
+    ///
+    /// - Parameter session: A instance of `AVCaptureSession` provides the data and connections managing of the 
+    ///                      device input and outputs.
+    /// - Parameter starting: A value of `SessionStarting` indicates the starting time of the managed session.
+    ///
+    /// - Throws: Errors descriping in the `CameraError` during the initializing and configuration of the session.
+    ///
+    /// - Returns: An instance of `CameraViewController` with a specified session and starting mode.
     public init?(session: AVCaptureSession? = nil, starting: SessionStarting = .never) throws {
         self._startingOfSession = starting
         self._session = session
@@ -92,16 +148,17 @@ open class CameraViewController: UIViewController {
         }
     }
     
+    @available(*, unavailable)
     public init() {
-        fatalError("Using designated initializer to create instance.")
+        fatalError("Using designated initializer instead.")
     }
-    
+    @available(*, unavailable)
     override public init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
-        fatalError("Using designated initializer to create instance.")
+        fatalError("Using designated initializer instead.")
     }
-    
+    @available(*, unavailable)
     required public init?(coder aDecoder: NSCoder) {
-        fatalError("Using designated initializer to create instance.")
+        fatalError("Using designated initializer instead.")
     }
     
     deinit {
@@ -116,6 +173,7 @@ open class CameraViewController: UIViewController {
     }
     
     // MARK: LifeCycle.
+    
     override open func loadView() {
         super.loadView()
         view.addSubview(_previewView)
@@ -300,10 +358,15 @@ open class CameraViewController: UIViewController {
 // MARK: - Public.
 
 extension CameraViewController {
-    public class var `default`: CameraViewController! { return try! CameraViewController(session: nil, starting: .at(.loaded)) }
+    /// Get a `default` camera view controller which session will start running at view loaded.
+    public class var `default`   : CameraViewController! { return try! CameraViewController(session: nil, starting: .at(.loaded)) }
+    /// Get a `unmanaged` camera view controller which session will never start or stop running.
+    public class var  unmanaged  : CameraViewController! { return try! CameraViewController(session: nil, starting: .never) }
+    /// Get a `immediately` camera view controller which session will start running immediately.
+    public class var  immediately: CameraViewController! { return try! CameraViewController(session: nil, starting: .immediately) }
 }
 
-// MARK: Actions.
+// MARK: - Actions.
 
 extension CameraViewController {
     @objc
@@ -345,7 +408,7 @@ extension CameraViewController {
     }
 }
 
-// MARK: Status Bar Supporting.
+// MARK: - Status Bar Supporting.
 
 extension CameraViewController {
     override open var prefersStatusBarHidden: Bool { return true }
