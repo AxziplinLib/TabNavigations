@@ -364,7 +364,7 @@ extension CameraViewController {
     
     @objc fileprivate func _handleToggleFace(_ sender: UIButton) {
         _sessionQueue.async { [unowned self] in
-            let _ = try? self._previewView.toggle()
+            let _ = try? self._previewView.toggle() { try? self.configure(deviceFitsDefault: $0) }
         }
         // Add transition animation.
         let transition = CATransition()
