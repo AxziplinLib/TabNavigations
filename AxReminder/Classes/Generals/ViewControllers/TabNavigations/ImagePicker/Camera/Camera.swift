@@ -302,6 +302,10 @@ open class CameraViewController: UIViewController {
             if  _session.canAddOutput(capturePhotoOutput) {
                 _session.addOutput   (capturePhotoOutput)
             } else { throw CameraError.initializing(.sessionCannotAddOutput) }
+        } else {
+            if  _session.canAddOutput(captureStillImageOutput) {
+                _session.addOutput   (captureStillImageOutput)
+            } else { throw CameraError.initializing(.sessionCannotAddOutput) }
         }
         if  _session.canAddOutput(_displayOutput) {
             _session.addOutput   (_displayOutput)
