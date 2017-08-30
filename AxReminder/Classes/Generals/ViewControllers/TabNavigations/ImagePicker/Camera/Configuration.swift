@@ -25,12 +25,12 @@ extension CaptureVideoPreviewView {
     ///
     /// - Returns: A boolean value indicates the result(true for success) of position changing.
     @discardableResult
-    public func toggle() throws -> Bool {
+    public func toggle(configuration:((AVCaptureDevice) -> Void)? = nil) throws -> Bool {
         switch position {
         case .back:
-            return try toggle(to: .front)
+            return try toggle(to: .front, configuration: configuration)
         default:
-            return try toggle(to: .back)
+            return try toggle(to: .back, configuration: configuration)
         }
     }
     /// Toggle the position of device's pos to the specified position.
@@ -41,7 +41,7 @@ extension CaptureVideoPreviewView {
     ///
     /// - Returns     : A boolean value indicates the result(true for success) of position changing.
     @discardableResult
-    public func toggle(to position: AVCaptureDevicePosition) throws -> Bool {
+    public func toggle(to position: AVCaptureDevicePosition, configuration:((AVCaptureDevice) -> Void)? = nil) throws -> Bool {
         guard position != self.position && position != .unspecified else { return false }
         guard let session = previewLayer.session else { return false }
         
@@ -64,6 +64,10 @@ extension CaptureVideoPreviewView {
         guard targetDevices.count == 1 else { return false }// Only one device for the specified position.
         
         let newDevice = targetDevices[0]
+        // Configure device to fit default configuration if can.
+        camera?.captureSessionQueue.async { autoreleasepool { [weak self] in
+            configuration?(newDevice)
+        } }
         let newDeviceInput = try AVCaptureDeviceInput(device: newDevice)
         
         session.beginConfiguration()
