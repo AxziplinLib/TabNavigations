@@ -265,19 +265,7 @@ open class CameraViewController: UIViewController {
                 adevice = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeVideo)
             }
             guard let device = adevice else { throw CameraError.initializing(.noneOfCaptureDevice) }
-            
-            do {
-                try device.lockForConfiguration()
-                device.isSubjectAreaChangeMonitoringEnabled = true
-                if #available(iOS 10.0, *) {} else {
-                    if device.isFlashModeSupported(.auto) {
-                        device.flashMode = .auto
-                    }
-                }
-                device.unlockForConfiguration()
-            } catch {
-                print("Lock device for configuration failed: \(error)")
-            }
+            try configure(deviceFitsDefault: device)
             
             _input = try AVCaptureDeviceInput(device: device)
             _session =  AVCaptureSession()
@@ -437,6 +425,28 @@ extension CameraViewController {
         case immediately
         /// Indicates the session will start at the point of the  life cycle of the view and stop at disposed.
         case at(ViewLifeCycle)
+    }
+}
+
+// MARK: - Default device configuration.
+
+extension CameraViewController {
+    /// Configure the device to fit the default required options:
+    /// - The device needs to monitor the changes of subject area at beginning.
+    /// - The device needs to use auto-flash mode.
+    ///
+    /// - Parameter device: The new device to fits default.
+    ///
+    /// - Throws: Errors of locking device will be thrown if failed to lock device for configuration.
+    internal func configure(deviceFitsDefault device: AVCaptureDevice) throws {
+        try device.lockForConfiguration()
+        device.isSubjectAreaChangeMonitoringEnabled = true
+        if #available(iOS 10.0, *) {} else {
+            if device.isFlashModeSupported(.auto) {
+                device.flashMode = .auto
+            }
+        }
+        device.unlockForConfiguration()
     }
 }
 
