@@ -453,9 +453,10 @@ extension CameraViewController {
 // MARK: - CaptureVideoPreviewView.
 
 extension CameraViewController {
-    public final class PreviewView: CaptureVideoPreviewView {}
+    public final class PreviewView: CaptureVideoPreviewView {
+        override open class var layerClass: AnyClass { return CALayer.self }
+    }
 }
-
 
 extension CaptureVideoPreviewView {
     /// The camera view controller managing the preview view.
@@ -467,7 +468,7 @@ extension CaptureVideoPreviewView {
         var resp = self.next
         while resp != nil {
             if resp is CameraViewController { return resp as? CameraViewController }
-            resp = resp?.next
+                resp = resp?.next
         }
         return nil
     }
