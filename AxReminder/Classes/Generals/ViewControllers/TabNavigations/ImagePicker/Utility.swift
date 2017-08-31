@@ -299,3 +299,26 @@ extension UIImage {
         return image
     }
 }
+
+// MARK: - UIImage_Alpha.
+
+extension UIImage {
+    /// A boolean value indicates whether the image has alpha channel.
+    public var hasAlpha: Bool {
+        guard let alp = self.cgImage?.alphaInfo else { return false }
+        let alp_ops: [CGImageAlphaInfo] = [.first, .last, .premultipliedFirst, .premultipliedLast]
+        return alp_ops.contains(alp)
+    }
+    /// Create a new instance based on the receiver if the receiver image contains no any alpha channels.
+    /// The original image will be returned if the new image context cannot be created or any other errors occured.
+    public var alpha: UIImage {
+        guard !hasAlpha else { return self }
+        guard let cgImage = self.cgImage, let colorSpace = cgImage.colorSpace else { return self }
+        // The bitsPerComponent and bitmapInfo values are hard-coded to prevent an "unsupported parameter combination" error
+        guard let context = CGContext(data: nil, width: cgImage.width, height: cgImage.height, bitsPerComponent: 8, bytesPerRow: 0, space: colorSpace, bitmapInfo: (CGImageAlphaInfo.premultipliedFirst.rawValue | CGBitmapInfo(rawValue: (0 << 12)).rawValue)) else { return self }
+        // Draw the image into the context and retrieve the new image, which will now have an alpha layer
+        context.draw(cgImage, in: CGRect(origin: .zero, size: CGSize(width: cgImage.width, height: cgImage.height)))
+        guard let alp_img = context.makeImage() else { return self }
+        return UIImage(cgImage: alp_img)
+    }
+}
