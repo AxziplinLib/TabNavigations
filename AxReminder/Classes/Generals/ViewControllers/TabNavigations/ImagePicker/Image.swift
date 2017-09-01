@@ -1122,3 +1122,97 @@ extension UIImage {
         return image(fromPDFAtPath: path, scalesToFit: size, pageCountLimits: pageCountLimits, tint: color)
     }
 }
+
+// MARK: - Orientation.
+
+extension UIImage {
+    /// Creates a copy of the receiver image with orientation fixed if the image orientation
+    /// is not the `.up`.
+    public var orientationFixed: UIImage! {
+        guard imageOrientation != .up else { return self }
+        
+        let transform: CGAffineTransform = .identity
+        switch imageOrientation {
+        case .down: fallthrough
+        case .downMirrored:
+            transform.translatedBy(x: size.width, y: size.height).rotated(by: CGFloat.pi)
+        case .left: fallthrough
+        case .leftMirrored:
+            transform.translatedBy(x: size.width, y: 0.0).rotated(by: CGFloat.pi * 0.5)
+        case .right: fallthrough
+        case .rightMirrored:
+            transform.translatedBy(x: 0.0, y: size.height).rotated(by: -CGFloat.pi * 0.5)
+        default: break
+        }
+        
+        switch imageOrientation {
+        case .upMirrored: fallthrough
+        case .downMirrored:
+            transform.translatedBy(x: size.width, y: 0.0).scaledBy(x: -1.0, y: 1.0)
+        case .leftMirrored: fallthrough
+        case .rightMirrored:
+            transform.translatedBy(x: size.height, y: 0.0).scaledBy(x: -1.0, y: 0.0)
+        default: break
+        }
+        
+        guard let cgImage = self.cgImage, let colorSpace = cgImage.colorSpace, let context = CGContext(data: nil, width: cgImage.width, height: cgImage.height, bitsPerComponent: cgImage.bitsPerComponent, bytesPerRow: 0, space: colorSpace, bitmapInfo: cgImage.bitmapInfo.rawValue) else { return nil }
+        context.concatenate(transform)
+        
+        switch imageOrientation {
+        case .left: fallthrough
+        case .leftMirrored: fallthrough
+        case .right: fallthrough
+        case .rightMirrored:
+            context.draw(cgImage, in: CGRect(origin: .zero, size: CGSize(width: size.height, height: size.width)))
+        default:
+            context.draw(cgImage, in: CGRect(origin: .zero, size: CGSize(width: size.width, height: size.height)))
+        }
+        guard let image = context.makeImage() else { return nil }
+        
+        return UIImage(cgImage: image)
+    }
+    /// Creates and returns a copy of the receiver image with flipped vertically.
+    public var verticallyFlipped: UIImage! { return _flip(horizontally: false) }
+    /// Creates and returns a copy of the receiver image with flipped horizontally.
+    public var horizontallyFlipped: UIImage! { return _flip(horizontally: true) }
+    /// Creates a copy of the receiver image by the given angle.
+    /// 
+    /// - Parameter angle: A float value indicates the angle to rotate by.
+    ///
+    /// - Returns: A new image with the given angle rotated.
+    public func rotate(by angle: CGFloat) -> UIImage! {
+        // Calculate the size of the rotated view's containing box for our drawing space.
+        let transform = CGAffineTransform(rotationAngle: angle)
+        let rotatedBox = CGRect(origin: .zero, size: size).applying(transform)
+        // Create the bitmap context.
+        UIGraphicsBeginImageContextWithOptions(rotatedBox.size, false, UIScreen.main.scale)
+        guard let cgImage = self.cgImage, let context = UIGraphicsGetCurrentContext() else { return nil }
+        // Move the origin to the middle of the image so we will rotate and scale around the center.
+        context.translateBy(x: rotatedBox.width * 0.5, y: rotatedBox.height * 0.5)
+        // Rotate the image context.
+        context.rotate(by: angle)
+        // Now, draw the rotated/scaled image into the context.
+        context.scaleBy(x: 1.0, y: -1.0)
+        
+        context.draw(cgImage, in: CGRect(x: -size.width * 0.5, y: -size.height * 0.5, width: size.width, height: size.height))
+        let image = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        return image
+    }
+    
+    private func _flip(horizontally: Bool) -> UIImage! {
+        let rect = CGRect(origin: .zero, size: size)
+        UIGraphicsBeginImageContextWithOptions(rect.size, false, UIScreen.main.scale)
+        guard let cgImage = self.cgImage, let context = UIGraphicsGetCurrentContext() else { return nil }
+        context.clip(to: rect)
+        if horizontally {
+            context.rotate(by: CGFloat.pi)
+            context.translateBy(x: -rect.width, y: -rect.height)
+        }
+        context.draw(cgImage, in: rect)
+        let image = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return image
+    }
+}
