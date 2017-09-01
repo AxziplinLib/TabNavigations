@@ -639,7 +639,7 @@ extension UIImage {
 
 extension UIImage {
     /// Creates a data stream of the receiver by compressing to the specific max allowed 
-    /// bits length and max allowed width of size.
+    /// bits length and max allowed width of size using `JPEGRepresentation`.
     ///
     /// - Parameter length: An integer value indicates the max allowed bits length to compress to.
     ///                     The length to compress to can not be negative or zero.
@@ -665,5 +665,142 @@ extension UIImage {
         }
         
         return data
+    }
+}
+
+// MARK: - Vector.
+
+extension UIImage {
+    /// Creates an image from any instances of `String` with the specific font and tint color.
+    /// The `String` contents' count should not be zero. If so, nil will be returned.
+    ///
+    /// - Parameter content: An instance of `String` to generate `UIImage` with.
+    /// - Parameter font   : The font used to draw image with. Using `.systemFont(ofSize: 17)` by default.
+    /// - Parameter color  : The color used to fill image with. Using `.black` by default.
+    ///
+    /// - Returns: A `String` contents image created with specific font and color.
+    public class func image(from content: String, using font: UIFont = .systemFont(ofSize: 17), tint color: UIColor = .black) -> UIImage! {
+        let ligature = NSMutableAttributedString(string: content)
+        ligature.setAttributes([(kCTLigatureAttributeName as String): 2, (kCTFontAttributeName as String): font], range: NSMakeRange(0, content.lengthOfBytes(using: .utf8)))
+        
+        var imageSize    = ligature.size()
+        imageSize.width  = ceil(imageSize.width)
+        imageSize.height = ceil(imageSize.height)
+        guard !imageSize.equalTo(.zero) else { return nil }
+        
+        UIGraphicsBeginImageContextWithOptions(imageSize, false, UIScreen.main.scale)
+        guard let context = UIGraphicsGetCurrentContext() else { return nil }
+        ligature.draw(at: .zero)
+        guard let cgImage = UIGraphicsGetImageFromCurrentImageContext()?.cgImage else { return nil }
+        
+        context.scaleBy(x: 1.0, y: -1.0)
+        context.translateBy(x: 0.0, y: -imageSize.height)
+        let rect = CGRect(origin: .zero, size: imageSize)
+        context.clip(to: rect, mask: cgImage)
+        color.setFill()
+        context.fill(rect)
+        
+        let image = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        return image
+    }
+    /// Creates an image from any instances of `CGPDFDocument` with the specific size and tint color.
+    ///
+    /// - Parameter pdf  : An instance of `CGPDFDocument` to generate `UIImage` with.
+    /// - Parameter size : The size used to draw image fitting with.
+    /// - Parameter color: The color used to fill image with. Using nil by default.
+    ///
+    /// - Returns: A `CGPDFDocument` contents image created with specific size and color.
+    public class func image(fromPDFDocument pdf: CGPDFDocument, scalesToFit size: CGSize, tint color: UIColor? = nil) -> UIImage! {
+        var pageIndex = 1
+        var image: UIImage!
+        while pageIndex <= pdf.numberOfPages, let page = pdf.page(at: pageIndex) { autoreleasepool {
+            let mediaRect = page.getBoxRect(.cropBox)
+            // Calculate the real fits size of the image.
+            var imageSize = mediaRect.size
+            if  imageSize.height < size.height && size.height != CGFloat.greatestFiniteMagnitude {
+                imageSize.width = (size.height / imageSize.height * imageSize.width).rounded()
+                imageSize.height = size.height
+            }
+            if  imageSize.width < size.width && size.width != CGFloat.greatestFiniteMagnitude {
+                imageSize.height = (size.width / imageSize.width  * imageSize.height).rounded()
+                imageSize.width = size.width
+            }
+            if  imageSize.height > size.height {
+                imageSize.width = (size.height / imageSize.height * imageSize.width).rounded()
+                imageSize.height = size.height
+            }
+            if  imageSize.width > size.width {
+                imageSize.height = (size.width / imageSize.width  * imageSize.height).rounded()
+                imageSize.width  =  size.width
+            }
+            // Draw the current page image.
+            UIGraphicsBeginImageContextWithOptions(imageSize, false, UIScreen.main.scale)
+            guard let context = UIGraphicsGetCurrentContext() else { return }
+            context.scaleBy(x: 1.0, y: -1.0)
+            context.translateBy(x: 0.0, y: -imageSize.height)
+            let scale = min(imageSize.width / mediaRect.width, imageSize.height / mediaRect.height)
+            context.scaleBy(x: scale, y: scale)
+            context.drawPDFPage(page)
+            let currentImage = UIGraphicsGetImageFromCurrentImageContext()
+            UIGraphicsEndImageContext()
+            // Merge the former and current page image.
+            if let wholeImage = image, let pageImage = currentImage {
+                let wholeSize = wholeImage.size
+                var pageSize  = pageImage.size
+                let ratio     = max(wholeSize.width, pageSize.width) / pageSize.width
+                pageSize      = CGSize(width: max(wholeSize.width, pageSize.width), height: pageSize.height * ratio)
+                let imageSize = CGSize(width: max(wholeSize.width, pageSize.width), height: wholeSize.height + pageSize.height * ratio)
+                UIGraphicsBeginImageContextWithOptions(imageSize, false, UIScreen.main.scale)
+                if let context = UIGraphicsGetCurrentContext(), let wholeCgImage = wholeImage.cgImage, let pageCgImage = pageImage.cgImage {
+                    context.scaleBy(x: 1.0, y: -1.0)
+                    context.translateBy(x: 0.0, y: -imageSize.height)
+                    context.draw(wholeCgImage, in: CGRect(origin: .zero, size: wholeSize))
+                    context.draw(pageCgImage , in: CGRect(origin: CGPoint(x: 0.0, y: wholeSize.height), size: pageSize))
+                }
+                if let _img = UIGraphicsGetImageFromCurrentImageContext() { image = _img }
+                UIGraphicsEndImageContext()
+            } else {
+                image = currentImage
+            }
+            
+            pageIndex += 1
+        } }
+        
+        if let tintColor = color, let cgImage = image.cgImage {
+            UIGraphicsBeginImageContextWithOptions(image.size, false, UIScreen.main.scale)
+            guard let context = UIGraphicsGetCurrentContext() else { return image }
+            context.scaleBy(x: 1.0, y: -1.0)
+            context.translateBy(x: 0.0, y: -image.size.height)
+            let rect = CGRect(origin: .zero, size: image.size)
+            context.clip(to: rect, mask: cgImage)
+            tintColor.setFill()
+            context.fill(rect)
+            image = UIGraphicsGetImageFromCurrentImageContext()
+            UIGraphicsEndImageContext()
+        }
+        return image
+    }
+    public class func image(fromPDFData pdfData: Data, scalesToFit size: CGSize, tint color: UIColor? = nil) -> UIImage! {
+        // Creates the pdg document from the data.
+        guard let dataProvider = CGDataProvider(data: pdfData as CFData) else { return nil }
+        guard let pdf = CGPDFDocument(dataProvider) else { return nil }
+        
+        return image(fromPDFDocument: pdf, scalesToFit: size, tint: color)
+    }
+    public class func image(fromPDFUrl pdfUrl: URL, scalesToFit size: CGSize, tint color: UIColor? = nil) -> UIImage! {
+        // Creates the pdg document from the url.
+        guard let pdf = CGPDFDocument(pdfUrl as CFURL) else { return nil }
+        
+        return image(fromPDFDocument: pdf, scalesToFit: size, tint: color)
+    }
+    public class func image(fromPDFAt pdfPath: String, scalesToFit size: CGSize, tint color: UIColor? = nil) -> UIImage! {
+        return image(fromPDFUrl: URL(fileURLWithPath: pdfPath), scalesToFit: size, tint: color)
+    }
+    public class func image(fromPDFNamed pdfName: String, scalesToFit size: CGSize, tint color: UIColor? = nil) -> UIImage! {
+        guard let path = Bundle.main.path(forResource: pdfName, ofType: "pdf") else { return nil }
+        
+        return image(fromPDFAt: path, scalesToFit: size, tint: color)
     }
 }
