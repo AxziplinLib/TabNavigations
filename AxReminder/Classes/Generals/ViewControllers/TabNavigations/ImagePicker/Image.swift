@@ -7,8 +7,31 @@
 //
 
 import UIKit
+import ImageIO
 import Accelerate
+import CoreGraphics
 import AVFoundation
+
+// MARK: - General.
+
+extension UIView {
+    /// Creates and render a snapshot of the view hierarchy into the current context. Returns nil if the snapshot is missing image data, an image object if the snapshot is complete.
+    public var contents: UIImage! {
+        UIGraphicsBeginImageContextWithOptions(bounds.size, isOpaque, UIScreen.main.scale)
+        if #available(iOS 7.0, *) {
+            if !drawHierarchy(in: bounds, afterScreenUpdates: false) {
+                guard let context = UIGraphicsGetCurrentContext() else { return nil }
+                layer.render(in: context)
+            }
+        } else {
+            guard let context = UIGraphicsGetCurrentContext() else { return nil }
+            layer.render(in: context)
+        }
+        let image = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return image
+    }
+}
 
 // MARK: - Blur.
 
@@ -460,7 +483,7 @@ extension UIImage {
         
         return crop(to: croppingRect)
     }
-    /// Creates a copy of this image that is squared to the thumbnail size.
+    /// Creates a copy of this image that is squared to the thumbnail size using `QuartzCore` redrawing.
     ///
     /// If borderWidth is non-zero, a transparent border of the given size will
     /// be added around the edges of the thumbnail. (Adding a transparent border
@@ -474,7 +497,7 @@ extension UIImage {
     ///                           interpolation of the receiver. Defaults to `.default.`
     ///
     /// - Returns: A copy of the receiver that is squared to the thumbnail size.
-    public func thumbnail(squares sizet: CGFloat, borderWidth: CGFloat = 0.0, cornerRadius: CGFloat = 0.0, quality: CGInterpolationQuality = .default) -> UIImage! {
+    public func thumbnail(squaresTo sizet: CGFloat, borderWidth: CGFloat = 0.0, cornerRadius: CGFloat = 0.0, quality: CGInterpolationQuality = .default) -> UIImage! {
         // Resize the original image.
         guard let resizedImage = resize(fits: CGSize(width: sizet, height: sizet), using: .scaleAspectFill, quality: quality) else { return nil }
         // Crop out any part of the image that's larger than the thumbnail size
@@ -486,6 +509,28 @@ extension UIImage {
         if borderWidth > 0.0 { borderedImage = croppedImage.bordered(borderWidth) }
         
         return borderedImage.round(cornerRadius, border: borderWidth)
+    }
+    /// Creates a copy of this image that is scale-aspect-fit to the thumbnail size using `ImageIO`.
+    ///
+    /// - Parameter size: A size of thumbnail to scale-aspect-fit to.
+    ///
+    /// - Returns: A copy of the receiver that is squared to the thumbnail size.
+    public func thumbnail(scalesToFit size: CGFloat) -> UIImage! {
+        guard let data = UIImageJPEGRepresentation(self, 1.0) as CFData? else { return nil }
+        // Create an image source from NSData; no options.
+        guard let imageSource = CGImageSourceCreateWithData(data, nil) else { return nil }
+        // Package the integer as a  CFNumber object. Using CFTypes allows you
+        // to more easily create the options dictionary later.
+        var intSize = Int(size)
+        guard let thumbnailSize = CFNumberCreate(nil, .intType, &intSize) else { return nil }
+        // Set up the thumbnail options.
+        let keys  : [CFString]  = [kCGImageSourceCreateThumbnailWithTransform, kCGImageSourceCreateThumbnailFromImageIfAbsent, kCGImageSourceThumbnailMaxPixelSize]
+        let values: [CFTypeRef] = [kCFBooleanTrue, kCFBooleanTrue, thumbnailSize]
+        let options = NSDictionary(objects: values, forKeys: keys as! [NSCopying]) as CFDictionary
+        // Create the thumbnail image using the specified options.
+        guard let thumbnail = CGImageSourceCreateThumbnailAtIndex(imageSource, 0, options) else { return nil }
+        
+        return UIImage(cgImage: thumbnail)
     }
     /// Resizes the image according to the given content mode, taking into account the image's orientation.
     ///
@@ -587,5 +632,38 @@ extension UIImage {
         default: break
         }
         return transform
+    }
+}
+
+// MARK: - Compressing.
+
+extension UIImage {
+    /// Creates a data stream of the receiver by compressing to the specific max allowed 
+    /// bits length and max allowed width of size.
+    ///
+    /// - Parameter length: An integer value indicates the max allowed bits length to compress to.
+    ///                     The length to compress to can not be negative or zero.
+    /// - Parameter width : A float value indicates the max allowed width of the size of the reveiver.
+    ///                     The width to compress to can not be negative or zero.
+    ///
+    /// - Returns: A compressed data stream of the receiver if any.
+    public func compress(toBits length: Int, scalesToFit width: CGFloat? = nil) -> Data! {
+        guard length > 0 else { return nil }
+        // Scales the image to fit the specific size if any.
+        var scaled = self
+        if let maxSize = width {
+            guard maxSize > 0.0 else { return nil }
+            scaled = thumbnail(scalesToFit: maxSize)
+        }
+        // Do compress.
+        var compressionQuality: CGFloat = 0.9
+        var data              : Data?   = UIImageJPEGRepresentation(scaled, compressionQuality)
+        
+        while data?.count ?? 0 > length && compressionQuality > 0.01 {
+            compressionQuality -= 0.02
+            data                = UIImageJPEGRepresentation(scaled, compressionQuality)
+        }
+        
+        return data
     }
 }
