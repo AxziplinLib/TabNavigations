@@ -1350,7 +1350,7 @@ extension UIImage {
 
 extension UIImage {
     /// Indicates whether the image is animated image contains multiple images.
-    public var animatable: Bool { return !(images?.isEmpty ?? true) }
+    public var animatable: Bool { return images?.count ?? 0 > 1 }
     /// Creates a `GIF` animated image with the given data by get the frame info of the image source.
     ///
     /// - Parameter data: A data object that image source reading from.
