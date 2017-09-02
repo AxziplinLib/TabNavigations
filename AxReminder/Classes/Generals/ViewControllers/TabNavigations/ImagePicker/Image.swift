@@ -33,6 +33,12 @@ extension UIView {
     }
 }
 
+extension UIImage {
+    public var scaledWidth : CGFloat { return size.width * scale }
+    public var scaledHeight: CGFloat { return size.height * scale }
+    public var scaledSize  : CGSize  { return CGSize(width: scaledWidth, height: scaledHeight) }
+}
+
 // MARK: - Blur.
 
 public extension UIImage {
@@ -272,53 +278,121 @@ extension UIImage {
     }
 }
 
+// MARK: - Supported Pixel Formats:
+//----------------------------------------------------------------------------------------------------
+//| CS   | Pixel format and bitmap information constant                              | Availability  |
+//----------------------------------------------------------------------------------------------------
+//| Null | 8   bpp, 8  bpc, kCGImageAlphaOnly                                        | Mac OS X, iOS |
+//----------------------------------------------------------------------------------------------------
+//| Gray | 8   bpp, 8  bpc, kCGImageAlphaNone                                        | Mac OS X, iOS |
+//----------------------------------------------------------------------------------------------------
+//| Gray | 8   bpp, 8  bpc, kCGImageAlphaOnly                                        | Mac OS X, iOS |
+//----------------------------------------------------------------------------------------------------
+//| Gray | 16  bpp, 16 bpc, kCGImageAlphaNone                                        | Mac OS X      |
+//----------------------------------------------------------------------------------------------------
+//| Gray | 32  bpp, 32 bpc, kCGImageAlphaNone|kCGBitmapFloatComponents               | Mac OS X      |
+//----------------------------------------------------------------------------------------------------
+//| RGB  | 16  bpp, 5  bpc, kCGImageAlphaNoneSkipFirst                               | Mac OS X, iOS |
+//----------------------------------------------------------------------------------------------------
+//| RGB  | 32  bpp, 8  bpc, kCGImageAlphaNoneSkipFirst                               | Mac OS X, iOS |
+//----------------------------------------------------------------------------------------------------
+//| RGB  | 32  bpp, 8  bpc, kCGImageAlphaNoneSkipLast                                | Mac OS X, iOS |
+//----------------------------------------------------------------------------------------------------
+//| RGB  | 32  bpp, 8  bpc, kCGImageAlphaPremultipliedFirst                          | Mac OS X, iOS |
+//----------------------------------------------------------------------------------------------------
+//| RGB  | 32  bpp, 8  bpc, kCGImageAlphaPremultipliedLast                           | Mac OS X, iOS |
+//----------------------------------------------------------------------------------------------------
+//| RGB  | 64  bpp, 16 bpc, kCGImageAlphaPremultipliedLast                           | Mac OS X      |
+//----------------------------------------------------------------------------------------------------
+//| RGB  | 64  bpp, 16 bpc, kCGImageAlphaNoneSkipLast                                | Mac OS X      |
+//----------------------------------------------------------------------------------------------------
+//| RGB  | 128 bpp, 32 bpc, kCGImageAlphaNoneSkipLast |kCGBitmapFloatComponents      | Mac OS X      |
+//----------------------------------------------------------------------------------------------------
+//| RGB  | 128 bpp, 32 bpc, kCGImageAlphaPremultipliedLast |kCGBitmapFloatComponents | Mac OS X      |
+//----------------------------------------------------------------------------------------------------
+//| CMYK | 32  bpp, 8  bpc, kCGImageAlphaNone                                        | Mac OS X      |
+//----------------------------------------------------------------------------------------------------
+//| CMYK | 64  bpp, 16 bpc, kCGImageAlphaNone                                        | Mac OS X      |
+//----------------------------------------------------------------------------------------------------
+//| CMYK | 128 bpp, 32 bpc, kCGImageAlphaNone |kCGBitmapFloatComponents              | Mac OS X      |
+//----------------------------------------------------------------------------------------------------
+
+fileprivate func _correct(bitmapInfo: CGBitmapInfo, `for` colorSpace: CGColorSpace) -> CGBitmapInfo {
+    var bitmap = bitmapInfo
+    if colorSpace.model == .rgb {
+        if  [CGImageAlphaInfo.first.rawValue, CGImageAlphaInfo.last.rawValue].contains(bitmap.rawValue) {
+            bitmap = CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedFirst.rawValue | CGBitmapInfo(rawValue: (0 << 12)).rawValue)
+        }
+        if  bitmap.rawValue == CGImageAlphaInfo.none.rawValue {
+            bitmap = CGBitmapInfo(rawValue: CGImageAlphaInfo.noneSkipFirst.rawValue | CGBitmapInfo(rawValue: (0 << 12)).rawValue)
+        }
+    } else if colorSpace.model == .monochrome {
+        if  [CGImageAlphaInfo.noneSkipLast.rawValue, CGImageAlphaInfo.noneSkipFirst.rawValue].contains(bitmap.rawValue) {
+            bitmap = CGBitmapInfo(rawValue: CGImageAlphaInfo.none.rawValue | CGBitmapInfo(rawValue: (0 << 12)).rawValue)
+        }
+        if  [CGImageAlphaInfo.premultipliedLast.rawValue, CGImageAlphaInfo.premultipliedFirst.rawValue, CGImageAlphaInfo.last.rawValue, CGImageAlphaInfo.first.rawValue].contains(bitmap.rawValue) {
+            bitmap = CGBitmapInfo(rawValue: CGImageAlphaInfo.alphaOnly.rawValue | CGBitmapInfo(rawValue: (0 << 12)).rawValue)
+        }
+    }
+    return bitmap
+}
+
 // MARK: - Alpha.
 
 extension UIImage {
     /// A boolean value indicates whether the image has alpha channel.
     public var hasAlpha: Bool {
-        guard let alp = self.cgImage?.alphaInfo else { return false }
+        guard let alp = self.cgImage?.alphaInfo, let colorSpace = self.cgImage?.colorSpace else { return false }
         let alp_ops: [CGImageAlphaInfo] = [.first, .last, .premultipliedFirst, .premultipliedLast]
-        return alp_ops.contains(alp)
+        return (alp_ops.contains(alp) && colorSpace.model == .rgb) || (colorSpace.model == .monochrome && alp == .alphaOnly)
     }
-    /// Returns a copied instance based on the receiver if the receiver image contains no any alpha channels.
+    /// Returns a copied instance based on the receiver if the receiver image contains no any alpha channels. 
+    /// Animated image supported.
     ///
     /// Nil will be returned if the new image context cannot be created or any other errors occured.
     public var alpha: UIImage! {
+        guard !animatable else { return UIImage.animatedImage(with: self.images!.flatMap({ _img in autoreleasepool{ _img.alpha } }), duration: duration) }
+        
         guard !hasAlpha else { return self }
         guard let cgImage = self.cgImage, let colorSpace = cgImage.colorSpace else { return nil }
         // The bitsPerComponent and bitmapInfo values are hard-coded to prevent an "unsupported parameter combination" error
-        guard let context = CGContext(data: nil, width: cgImage.width, height: cgImage.height, bitsPerComponent: 8, bytesPerRow: 0, space: colorSpace, bitmapInfo: (CGImageAlphaInfo.premultipliedFirst.rawValue | CGBitmapInfo(rawValue: (0 << 12)).rawValue)) else { return nil }
+        guard let context = CGContext(data: nil, width: cgImage.width, height: cgImage.height, bitsPerComponent: 8, bytesPerRow: 0, space: colorSpace.model == .rgb ? colorSpace : CGColorSpaceCreateDeviceRGB(), bitmapInfo: (CGImageAlphaInfo.premultipliedFirst.rawValue | CGBitmapInfo(rawValue: (0 << 12)).rawValue)) else { return nil }
         // Draw the image into the context and retrieve the new image, which will now have an alpha layer
         context.draw(cgImage, in: CGRect(origin: .zero, size: CGSize(width: cgImage.width, height: cgImage.height)))
         guard let alp_img = context.makeImage() else { return nil }
-        return UIImage(cgImage: alp_img)
+        return UIImage(cgImage: alp_img, scale: scale, orientation: imageOrientation)
     }
-    /// Creates a copy of the image with a transparent border of the given size added around its edges.
+    /// Creates a copy of the image with a transparent border of the given size added around its edges in pixels.
+    /// Animated image supported.
     ///
     /// If the image has no alpha layer, one will be added to it.
     ///
     /// - Parameter transparentBorderWidth: The arounded border size.
     /// - Returns: A copy of the image with a transparent border of the given size added around its edges.
     public func bordered(_ transparentBorderWidth: CGFloat) -> UIImage! {
+        guard !animatable else { return UIImage.animatedImage(with: self.images!.flatMap({ _img in autoreleasepool{ _img.bordered(transparentBorderWidth) } }), duration: duration) }
+        
         // If the image does not have an alpha layer, add one.
         guard let cgImage = self.alpha.cgImage, let colorSpace = cgImage.colorSpace else { return nil }
-        let newRect = CGRect(origin: .zero, size: CGSize(width: size.width + transparentBorderWidth * 2.0, height: size.height + transparentBorderWidth * 2.0))
+        let cgSize  = CGSize(width: CGFloat(cgImage.width), height: CGFloat(cgImage.height))
+        let bitmap  = _correct(bitmapInfo: cgImage.bitmapInfo, for: colorSpace)
+        var rect    = CGRect(origin: .zero, size: cgSize).insetBy(dx: -transparentBorderWidth, dy: -transparentBorderWidth)
+        rect.origin = .zero
         // Build a context that's the same dimensions as the new size
-        guard let context = CGContext(data: nil, width: Int(newRect.width), height: Int(newRect.height), bitsPerComponent: cgImage.bitsPerComponent, bytesPerRow: 0, space: colorSpace, bitmapInfo: cgImage.bitmapInfo.rawValue) else { return nil }
+        guard let context = CGContext(data: nil, width: cgImage.width, height: cgImage.height, bitsPerComponent: cgImage.bitsPerComponent, bytesPerRow: 0, space: colorSpace, bitmapInfo: bitmap.rawValue) else { return nil }
         // Draw the image in the center of the context, leaving a gap around the edges
-        let croppingRect = newRect.insetBy(dx: transparentBorderWidth, dy: transparentBorderWidth)
+        let croppingRect = rect.insetBy(dx: transparentBorderWidth, dy: transparentBorderWidth)
         context.draw(cgImage, in: croppingRect)
         guard let centeredImg = context.makeImage() else { return nil }
         // Create a mask to make the border transparent, and combine it with the image
-        guard let mask = type(of: self)._borderedMask(newRect.size, borderWidth: transparentBorderWidth) else { return nil }
+        guard let mask = type(of: self)._borderedMask(rect.size, borderWidth: transparentBorderWidth) else { return nil }
         
         guard let maskedCgImg = centeredImg.masking(mask) else { return nil }
-        return UIImage(cgImage: maskedCgImg)
+        return UIImage(cgImage: maskedCgImg, scale: scale, orientation: imageOrientation)
     }
-    /// Creates a mask that makes the outer edges transparent and everything else opaque
+    /// Creates a mask that makes the outer edges transparent and everything else opaque.
     ///
-    /// The size must include the entire mask (opaque part + transparent border)
+    /// The size must include the entire mask (opaque part + transparent border).
     ///
     /// - Parameter size: The outter size of the mask image to drawing.
     /// - Parameter borderWidth: The border width of the transparent part.
@@ -347,11 +421,11 @@ extension UIImage {
 // MARK: - RoundedCorner.
 
 extension UIImage {
-    /// Returns an copy of the receiver with critical rounding.
-    public var cornered: UIImage! { return round(min(size.width, size.height) * 0.5, border: 0.0) }
-    /// Creates a copy of this image with rounded corners
+    /// Returns an copy of the receiver with critical rounding in pixels. Animated image supported.
+    public var cornered: UIImage! { return round(min(scaledWidth, scaledHeight) * 0.5, border: 0.0) }
+    /// Creates a copy of this image with rounded corners in pixels. Animated image supported. Animated image supported.
     ///
-    /// If borderWidth is non-zero, a transparent border of the given size will also be added
+    /// If borderWidth is non-zero, a transparent border of the given size will also be added.
     ///
     /// Original author: Björn Sållarp. Used with permission. See: [http://blog.sallarp.com/iphone-uiimage-round-corners/](http://blog.sallarp.com/iphone-uiimage-round-corners/)
     ///
@@ -360,16 +434,22 @@ extension UIImage {
     ///
     /// - Returns: An image with rounded corners.
     public func round(_ cornerRadius: CGFloat, border borderWidth: CGFloat = 0.0) -> UIImage! {
+        guard !animatable else { return UIImage.animatedImage(with: self.images!.flatMap({ _img in autoreleasepool{ _img.round(cornerRadius, border: borderWidth) } }), duration: duration) }
+        
         // Early fatal checking.
         guard cornerRadius >= 0.0 && borderWidth >= 0.0 else { return nil }
         
         // If the image does not have an alpha layer, add one
         guard let cgImage = self.alpha.cgImage, let colorSpace = cgImage.colorSpace else { return nil }
+        let cgSize  = CGSize(width: CGFloat(cgImage.width), height: CGFloat(cgImage.height))
+        let bitmap  = _correct(bitmapInfo: cgImage.bitmapInfo, for: colorSpace)
+        var rect    = CGRect(origin: .zero, size: cgSize).insetBy(dx: -borderWidth, dy: -borderWidth)
+        rect.origin = .zero
         // Build a context that's the same dimensions as the new size
-        guard let context = CGContext(data: nil, width: cgImage.width, height: cgImage.height, bitsPerComponent: cgImage.bitsPerComponent, bytesPerRow: 0, space: colorSpace, bitmapInfo: cgImage.bitmapInfo.rawValue) else { return nil }
+        guard let context = CGContext(data: nil, width: Int(rect.width), height: Int(rect.height), bitsPerComponent: cgImage.bitsPerComponent, bytesPerRow: 0, space: colorSpace, bitmapInfo: bitmap.rawValue) else { return nil }
         // Create a clipping path with rounded corners
         context.beginPath()
-        let roundedRect = CGRect(x: borderWidth, y: borderWidth, width: size.width - borderWidth * 2.0, height: size.height - borderWidth * 2.0)
+        let roundedRect = rect.insetBy(dx: borderWidth, dy: borderWidth)
         if cornerRadius == 0 {
             context.addRect(roundedRect)
         } else {
@@ -391,12 +471,12 @@ extension UIImage {
         context.closePath()
         context.clip()
         // Draw the image to the context; the clipping path will make anything outside the rounded rect transparent
-        context.draw(cgImage, in: CGRect(origin: .zero, size: CGSize(width: size.width, height: size.height)))
+        context.draw(cgImage, in: rect)
         // Create a CGImage from the context
         guard let clippedImage = context.makeImage() else { return nil }
         
         // Create a UIImage from the CGImage
-        return UIImage(cgImage: clippedImage)
+        return UIImage(cgImage: clippedImage, scale: scale, orientation: imageOrientation)
     }
 }
 
@@ -418,7 +498,7 @@ extension UIImage {
         case bottomLeft
         case bottomRight
     }
-    /// Creates a copy of the receiver that is cropped to the given rectangle.
+    /// Creates a copy of the receiver that is cropped to the given rectangle in pixels. Animated image supported.
     ///
     /// The bounds will be adjusted using `CGRectIntegral`.
     ///
@@ -429,13 +509,15 @@ extension UIImage {
     ///
     /// - Returns: An copy of the receiver cropped to the given rectangle.
     public func crop(to rect: CGRect) -> UIImage! {
+        guard !animatable else { return UIImage.animatedImage(with: self.images!.flatMap({ _img in autoreleasepool{ _img.crop(to: rect) } }), duration: duration) }
         // Early fatal checking.
         guard rect.width > 0.0 && rect.height > 0.0 else { return nil }
+        let croppingRect = CGRect(origin: rect.origin, size: rect.size)
         
-        guard let cgImage = self.cgImage?.cropping(to: rect) else { return nil }
-        return UIImage(cgImage: cgImage)
+        guard let cgImage = self.cgImage?.cropping(to: croppingRect) else { return nil }
+        return UIImage(cgImage: cgImage, scale: scale, orientation: imageOrientation)
     }
-    /// Creates a copy of the receiver that is cropped to the given size with a specific resizing mode.
+    /// Creates a copy of the receiver that is cropped to the given size with a specific resizing mode in pixels. Animated image supported.
     ///
     /// The size will be adjusted using `CGRectIntegral`.
     ///
@@ -451,36 +533,36 @@ extension UIImage {
         var croppingRect = CGRect(origin: .zero, size: size)
         switch mode {
         case .scaleToFill:
-            return resize(fits: size, quality: .default)
+            return resize(fills: size, quality: .default)
         case .scaleAspectFill: fallthrough
         case .scaleAspectFit :
             return resize(fits: size, using: mode, quality: .default)
         case .center:
-            croppingRect.origin.x = (self.size.width  - croppingRect.width)  * 0.5
-            croppingRect.origin.y = (self.size.height - croppingRect.height) * 0.5
+            croppingRect.origin.x = (scaledWidth  - croppingRect.width)  * 0.5
+            croppingRect.origin.y = (scaledHeight - croppingRect.height) * 0.5
         case .top:
-            croppingRect.origin.x = (self.size.width  - croppingRect.width)  * 0.5
+            croppingRect.origin.x = (scaledWidth  - croppingRect.width)  * 0.5
         case .bottom:
-            croppingRect.origin.x = (self.size.width  - croppingRect.width)  * 0.5
-            croppingRect.origin.y =  self.size.height - croppingRect.height
+            croppingRect.origin.x = (scaledWidth  - croppingRect.width)  * 0.5
+            croppingRect.origin.y = (scaledHeight - croppingRect.height)
         case .left:
-            croppingRect.origin.y = (self.size.height - croppingRect.height) * 0.5
+            croppingRect.origin.y = (scaledHeight - croppingRect.height) * 0.5
         case .right:
-            croppingRect.origin.x =  self.size.width  - croppingRect.width
-            croppingRect.origin.y = (self.size.height - croppingRect.height) * 0.5
+            croppingRect.origin.x = (scaledWidth  - croppingRect.width)
+            croppingRect.origin.y = (scaledHeight - croppingRect.height) * 0.5
         case .topLeft: break
         case .topRight:
-            croppingRect.origin.x = self.size.width  - croppingRect.width
+            croppingRect.origin.x = (scaledWidth  - croppingRect.width)
         case .bottomLeft:
-            croppingRect.origin.y = self.size.height - croppingRect.height
+            croppingRect.origin.y = (scaledHeight - croppingRect.height)
         case .bottomRight:
-            croppingRect.origin.x = self.size.width  - croppingRect.width
-            croppingRect.origin.y = self.size.height - croppingRect.height
+            croppingRect.origin.x = (scaledWidth  - croppingRect.width)
+            croppingRect.origin.y = (scaledHeight - croppingRect.height)
         }
         
         return crop(to: croppingRect)
     }
-    /// Creates a copy of this image that is squared to the thumbnail size using `QuartzCore` redrawing.
+    /// Creates a copy of this image that is squared to the thumbnail size using `QuartzCore` redrawing in pixels. Animated image supported.
     ///
     /// If borderWidth is non-zero, a transparent border of the given size will
     /// be added around the edges of the thumbnail. (Adding a transparent border
@@ -495,12 +577,14 @@ extension UIImage {
     ///
     /// - Returns: A copy of the receiver that is squared to the thumbnail size.
     public func thumbnail(squaresTo sizet: CGFloat, borderWidth: CGFloat = 0.0, cornerRadius: CGFloat = 0.0, quality: CGInterpolationQuality = .default) -> UIImage! {
+        guard !animatable else { return UIImage.animatedImage(with: self.images!.flatMap({ _img in autoreleasepool{ _img.thumbnail(squaresTo: sizet, borderWidth: borderWidth, cornerRadius: cornerRadius, quality: quality) } }), duration: duration) }
+        
         // Resize the original image.
         guard let resizedImage = resize(fits: CGSize(width: sizet, height: sizet), using: .scaleAspectFill, quality: quality) else { return nil }
         // Crop out any part of the image that's larger than the thumbnail size
         // The cropped rect must be centered on the resized image
         // Round the origin points so that the size isn't altered when CGRectIntegral is later invoked
-        let croppedRect = CGRect(x: ((resizedImage.size.width - sizet) * 0.5).rounded(), y: ((resizedImage.size.height - sizet) * 0.5).rounded(), width: sizet, height: sizet)
+        let croppedRect = CGRect(x: ((resizedImage.scaledWidth - sizet) * 0.5).rounded(), y: ((resizedImage.scaledHeight - sizet) * 0.5).rounded(), width: sizet, height: sizet)
         guard let croppedImage = resizedImage.crop(to: croppedRect) else { return nil }
         var borderedImage = croppedImage
         if borderWidth > 0.0 { borderedImage = croppedImage.bordered(borderWidth) }
@@ -508,14 +592,16 @@ extension UIImage {
         return borderedImage.round(cornerRadius, border: borderWidth)
     }
     /// Creates a copy of this image that is scale-aspect-fit to the thumbnail size using `ImageIO`.
+    /// Animated image supported.
     ///
     /// - Parameter size: A size of thumbnail to scale-aspect-fit to.
     ///
     /// - Returns: A copy of the receiver that is squared to the thumbnail size.
     public func thumbnail(scalesToFit size: CGFloat) -> UIImage! {
-        guard let data = UIImageJPEGRepresentation(self, 1.0) as CFData? else { return nil }
+        guard !animatable else { return UIImage.animatedImage(with: self.images!.flatMap({ _img in autoreleasepool{ _img.thumbnail(scalesToFit: size) } }), duration: duration) }
+        
         // Create an image source from NSData; no options.
-        guard let imageSource = CGImageSourceCreateWithData(data, nil) else { return nil }
+        guard let data = UIImageJPEGRepresentation(self, 1.0) as CFData?, let imageSource = CGImageSourceCreateWithData(data, nil) else { return nil }
         // Package the integer as a  CFNumber object. Using CFTypes allows you
         // to more easily create the options dictionary later.
         var intSize = Int(size)
@@ -527,9 +613,10 @@ extension UIImage {
         // Create the thumbnail image using the specified options.
         guard let thumbnail = CGImageSourceCreateThumbnailAtIndex(imageSource, 0, options) else { return nil }
         
-        return UIImage(cgImage: thumbnail)
+        return UIImage(cgImage: thumbnail, scale: scale, orientation: imageOrientation)
     }
-    /// Resizes the image according to the given content mode, taking into account the image's orientation.
+    /// Resizes the image according to the given content mode, taking into account the image's orientation in pixels.
+    /// Animated image supported.
     ///
     /// - Parameter size        : A value of `CGSize` indicates the size to draw of the image.
     /// - Parameter resizingMode: An instance of `UIImage.ResizingMode` using to decide the size of the resizing.
@@ -538,8 +625,8 @@ extension UIImage {
     ///
     /// - Returns: A copy of the receiver resized to the given size.
     public func resize(fits size: CGSize, using resizingMode: ResizingMode, quality: CGInterpolationQuality = .default) -> UIImage! {
-        let horizontalRatio = size.width  / self.size.width
-        let verticalRatio   = size.height / self.size.height
+        let horizontalRatio = size.width  / scaledWidth
+        let verticalRatio   = size.height / scaledHeight
         var ratio: CGFloat
         
         switch resizingMode {
@@ -548,13 +635,13 @@ extension UIImage {
         case .scaleAspectFit:
             ratio = min(horizontalRatio, verticalRatio)
         default:
-            return resize(fits: size, quality: quality)
+            return resize(fills: size, quality: quality)
         }
         
-        let newSize = CGSize(width: (self.size.width * ratio).rounded(), height: (self.size.height * ratio).rounded())
-        return resize(fits: newSize, quality: quality)
+        let newSize = CGSize(width: (scaledWidth * ratio).rounded(), height: (scaledHeight * ratio).rounded())
+        return resize(fills: newSize, quality: quality)
     }
-    /// Creates a rescaled copy of the image, taking into account its orientation.
+    /// Creates a rescaled copy of the image, taking into account its orientation in pixels. Animated image supported.
     ///
     /// The image will be scaled disproportionately if necessary to fit the bounds specified by the parameter.
     ///
@@ -563,7 +650,7 @@ extension UIImage {
     ///                      interpolation of the receiver. Defaults to `.default.`
     ///
     /// - Returns: A rescaled copy of the receiver.
-    public func resize(fits size: CGSize, quality: CGInterpolationQuality = .default) -> UIImage! {
+    public func resize(fills size: CGSize, quality: CGInterpolationQuality = .default) -> UIImage! {
         var transposed = false
         switch imageOrientation {
         case .left         : fallthrough
@@ -574,23 +661,23 @@ extension UIImage {
         default: break
         }
         
-        return _resize(fits: size, applying: _transform(forOrientation: size), transposed: transposed, quality: quality)
+        return _resize(fills: size, applying: _transform(forOrientation: size), transposed: transposed, quality: quality)
     }
-    /// Returns a copy of the image that has been transformed using the given affine transform and scaled to the new size
+    /// Returns a copy of the image that has been transformed using the given affine transform and scaled to the new size in pixels.
+    /// Animated image supported.
     ///
     /// The new image's orientation will be UIImageOrientationUp, regardless of the current image's orientation
     ///
     /// If the new size is not integral, it will be rounded up.
-    private func _resize(fits newSize: CGSize, applying transform: CGAffineTransform, transposed: Bool, quality: CGInterpolationQuality) -> UIImage! {
+    private func _resize(fills newSize: CGSize, applying transform: CGAffineTransform, transposed: Bool, quality: CGInterpolationQuality) -> UIImage! {
+        guard !animatable else { return UIImage.animatedImage(with: self.images!.flatMap({ _img in autoreleasepool{ _img._resize(fills: newSize, applying: transform, transposed: transposed, quality: quality) } }), duration: duration) }
+        
         let newRect        = CGRect(origin: .zero, size: newSize).integral
-        let transposedRect = CGRect(origin: .zero, size: CGSize(width: newRect.height, height: newRect.width))
+        let transposedRect = CGRect(origin: .zero, size: CGSize(width: newRect.height, height: newRect.width)).integral
         guard let cgImage = self.cgImage, let colorSpace = cgImage.colorSpace else { return nil }
         // Build a context that's the same dimensions as the new size
-        var bitmap = cgImage.bitmapInfo
-        let containing: [CGImageAlphaInfo] = [.first, .none]
-        if  containing.map({ $0.rawValue }).contains(bitmap.rawValue) {
-            bitmap = CGBitmapInfo(rawValue: CGImageAlphaInfo.noneSkipLast.rawValue)
-        }
+        // FIXME: How to decide the right alpha info of the bitmap.
+        let bitmap = _correct(bitmapInfo: cgImage.bitmapInfo, for: colorSpace)
         
         guard let context = CGContext(data: nil, width: Int(newRect.width), height: Int(newRect.height), bitsPerComponent: cgImage.bitsPerComponent, bytesPerRow: 0, space: colorSpace, bitmapInfo: bitmap.rawValue) else { return nil }
         // Rotate and/or flip the image if required by its orientation
@@ -601,7 +688,7 @@ extension UIImage {
         context.draw(cgImage, in: transposed ? transposedRect : newRect)
         // Get the resized image from the context and a UIImage
         guard let resized_img = context.makeImage() else { return nil }
-        return UIImage(cgImage: resized_img)
+        return UIImage(cgImage: resized_img, scale: scale, orientation: imageOrientation)
     }
     /// Returns an affine transform that takes into account the image orientation when drawing a scaled image.
     private func _transform(forOrientation size: CGSize) -> CGAffineTransform {
@@ -693,16 +780,19 @@ extension UIImage {
     }
     /// Creates a new instance of UIImage with the given images merged to the receiver by using the merging mode.
     /// The same direction resizing mode of the horizontal or vertical merging mode act just like the overlay mode.
+    /// Animated image supported. Each frame of the animated image will merge with the given images if animatable,
     ///
     /// - Parameter images: A collection of instance of UIImage to merge with.
     /// - Parameter mode  : A value defined in the type `MergingMode` used to calculate the rectangle area of the images.
     ///
     /// - Returns: A new image object with all the images merged using the specific merging mode.
     public func merge(with images: [UIImage], using mode: MergingMode) -> UIImage! {
+        guard !animatable else { return UIImage.animatedImage(with: self.images!.flatMap({ _img in autoreleasepool{ _img.merge(with: images, using: mode) } }), duration: duration) }
+        
         var resultImage: UIImage = self
         images.forEach { (image) in autoreleasepool{
-            var resultRect = CGRect(origin: .zero, size: resultImage.size)
-            var pageRect   = CGRect(origin: .zero, size: image.size)
+            var resultRect = CGRect(origin: .zero, size: resultImage.scaledSize)
+            var pageRect   = CGRect(origin: .zero, size: image.scaledSize)
             var imageRect  : CGRect = .zero
             switch mode {
             case .overlay(let resizing):
@@ -902,7 +992,7 @@ extension UIImage {
         guard let cgImage = self.cgImage, let mergingCgImage = image.cgImage else { return nil }
         var mergedImage: UIImage! = self
         
-        UIGraphicsBeginImageContextWithOptions(size, false, UIScreen.main.scale)
+        UIGraphicsBeginImageContextWithOptions(size, false, scale)
         defer { UIGraphicsEndImageContext() }
         guard let context = UIGraphicsGetCurrentContext() else { return nil }
         let transform = CGAffineTransform(scaleX: 1.0, y: -1.0).translatedBy(x: 0.0, y: -size.height)
@@ -1122,7 +1212,7 @@ extension UIImage {
 
 extension UIImage {
     /// Creates a copy of the receiver image with orientation fixed if the image orientation
-    /// is not the `.up`.
+    /// is not the `.up`. Animated image supported.
     public var orientationFixed: UIImage! {
         guard imageOrientation != .up else { return self }
         
@@ -1130,23 +1220,23 @@ extension UIImage {
         switch imageOrientation {
         case .down: fallthrough
         case .downMirrored:
-            transform.translatedBy(x: size.width, y: size.height).rotated(by: CGFloat.pi)
+            transform.translatedBy(x: scaledWidth, y: scaledHeight).rotated(by: CGFloat.pi)
         case .left: fallthrough
         case .leftMirrored:
-            transform.translatedBy(x: size.width, y: 0.0).rotated(by: CGFloat.pi * 0.5)
+            transform.translatedBy(x: scaledWidth, y: 0.0).rotated(by: CGFloat.pi * 0.5)
         case .right: fallthrough
         case .rightMirrored:
-            transform.translatedBy(x: 0.0, y: size.height).rotated(by: -CGFloat.pi * 0.5)
+            transform.translatedBy(x: 0.0, y: scaledHeight).rotated(by: -CGFloat.pi * 0.5)
         default: break
         }
         
         switch imageOrientation {
         case .upMirrored: fallthrough
         case .downMirrored:
-            transform.translatedBy(x: size.width, y: 0.0).scaledBy(x: -1.0, y: 1.0)
+            transform.translatedBy(x: scaledWidth, y: 0.0).scaledBy(x: -1.0, y: 1.0)
         case .leftMirrored: fallthrough
         case .rightMirrored:
-            transform.translatedBy(x: size.height, y: 0.0).scaledBy(x: -1.0, y: 0.0)
+            transform.translatedBy(x: scaledHeight, y: 0.0).scaledBy(x: -1.0, y: 0.0)
         default: break
         }
         
@@ -1158,27 +1248,31 @@ extension UIImage {
         case .leftMirrored: fallthrough
         case .right: fallthrough
         case .rightMirrored:
-            context.draw(cgImage, in: CGRect(origin: .zero, size: CGSize(width: size.height, height: size.width)))
+            context.draw(cgImage, in: CGRect(origin: .zero, size: CGSize(width: scaledHeight, height: scaledWidth)))
         default:
-            context.draw(cgImage, in: CGRect(origin: .zero, size: CGSize(width: size.width, height: size.height)))
+            context.draw(cgImage, in: CGRect(origin: .zero, size: CGSize(width: scaledWidth, height: scaledHeight)))
         }
         guard let image = context.makeImage() else { return nil }
         
-        return UIImage(cgImage: image)
+        return UIImage(cgImage: image, scale: scale, orientation: .up)
     }
     /// Creates and returns a copy of the receiver image with flipped vertically.
+    /// Animated image supported.
     public var verticallyFlipped: UIImage! { return _flip(horizontally: false) }
     /// Creates and returns a copy of the receiver image with flipped horizontally.
+    /// Animated image supported.
     public var horizontallyFlipped: UIImage! { return _flip(horizontally: true) }
-    /// Creates a copy of the receiver image by the given angle.
+    /// Creates a copy of the receiver image by the given angle. Animated image supported.
     /// 
     /// - Parameter angle: A float value indicates the angle to rotate by.
     ///
     /// - Returns: A new image with the given angle rotated.
     public func rotate(by angle: CGFloat) -> UIImage! {
+        guard !animatable else { return UIImage.animatedImage(with: self.images!.flatMap({ _img in autoreleasepool{ _img.rotate(by: angle) } }), duration: duration) }
+        
         // Calculate the size of the rotated view's containing box for our drawing space.
         let transform = CGAffineTransform(rotationAngle: angle)
-        let rotatedBox = CGRect(origin: .zero, size: size).applying(transform)
+        let rotatedBox = CGRect(origin: .zero, size: scaledSize).applying(transform)
         // Create the bitmap context.
         UIGraphicsBeginImageContextWithOptions(rotatedBox.size, false, scale)
         defer { UIGraphicsEndImageContext() }
@@ -1190,12 +1284,14 @@ extension UIImage {
         // Now, draw the rotated/scaled image into the context.
         context.scaleBy(x: 1.0, y: -1.0)
         
-        context.draw(cgImage, in: CGRect(x: -size.width * 0.5, y: -size.height * 0.5, width: size.width, height: size.height))
+        context.draw(cgImage, in: CGRect(x: -scaledWidth * 0.5, y: -scaledHeight * 0.5, width: scaledWidth, height: scaledHeight))
         return UIGraphicsGetImageFromCurrentImageContext()
     }
     
     private func _flip(horizontally: Bool) -> UIImage! {
-        let rect = CGRect(origin: .zero, size: size)
+        guard !animatable else { return UIImage.animatedImage(with: self.images!.flatMap({ _img in autoreleasepool{ _img._flip(horizontally: horizontally) } }), duration: duration) }
+        
+        let rect = CGRect(origin: .zero, size: scaledSize)
         UIGraphicsBeginImageContextWithOptions(rect.size, false, scale)
         defer { UIGraphicsEndImageContext() }
         guard let cgImage = self.cgImage, let context = UIGraphicsGetCurrentContext() else { return nil }
@@ -1218,10 +1314,10 @@ extension UIImage {
         let colorSpace = CGColorSpaceCreateDeviceGray()
         guard let context = CGContext(data: nil, width: cgImage.width, height: cgImage.height, bitsPerComponent: 8, bytesPerRow: 0, space: colorSpace, bitmapInfo: CGImageAlphaInfo.none.rawValue) else { return nil }
         
-        context.draw(cgImage, in: CGRect(origin: .zero, size: size))
+        context.draw(cgImage, in: CGRect(origin: .zero, size: scaledSize))
         guard let image = context.makeImage() else { return nil }
         
-        return UIImage(cgImage: image)
+        return UIImage(cgImage: image, scale: scale, orientation: imageOrientation)
     }
     /// Creates a copy of the receiver image with the given color filled same as the system's
     /// temple image with tint color.
@@ -1230,13 +1326,13 @@ extension UIImage {
     ///
     /// - Returns: A new image with the given color filled.
     public func tint(with color: UIColor) -> UIImage! {
-        UIGraphicsBeginImageContextWithOptions(size, false, scale)
+        UIGraphicsBeginImageContextWithOptions(scaledSize, false, scale)
         defer { UIGraphicsEndImageContext() }
         guard let cgImage = self.cgImage, let context = UIGraphicsGetCurrentContext() else { return nil }
-        context.translateBy(x: 0.0, y: size.height)
+        context.translateBy(x: 0.0, y: scaledHeight)
         context.scaleBy(x: 1.0, y: -1.0)
         context.setBlendMode(.normal)
-        let rect = CGRect(origin: .zero, size: size)
+        let rect = CGRect(origin: .zero, size: scaledSize)
         context.clip(to: rect, mask: cgImage)
         color.setFill()
         context.fill(rect)
@@ -1353,10 +1449,11 @@ extension UIImage {
     public var animatable: Bool { return images?.count ?? 0 > 1 }
     /// Creates a `GIF` animated image with the given data by get the frame info of the image source.
     ///
-    /// - Parameter data: A data object that image source reading from.
+    /// - Parameter data : A data object that image source reading from.
+    /// - Parameter scale: The scale factor of the source image.
     ///
     /// - Returns: An instance of animated image contains multiple frame of images.
-    public class func gif(_ data: Data) -> UIImage! {
+    public class func gif(_ data: Data, scale: CGFloat = 1.0) -> UIImage! {
         guard let imageSource = CGImageSourceCreateWithData(data as CFData, nil) else { return nil }
         let imagesCount = CGImageSourceGetCount(imageSource)
         
@@ -1366,7 +1463,7 @@ extension UIImage {
             var duration: TimeInterval = 0.0
             for index in 0..<imagesCount {
                 guard let cgImage = CGImageSourceCreateImageAtIndex(imageSource, index, nil) else { continue }
-                images.append(UIImage(cgImage: cgImage, scale: UIScreen.main.scale, orientation: .up))
+                images.append(UIImage(cgImage: cgImage, scale: 1.0, orientation: .up))
                 // Calculate durations.
                 guard let frameProps = CGImageSourceCopyPropertiesAtIndex(imageSource, index, nil) as NSDictionary? else { continue }
                 guard let gifProps   = frameProps[kCGImagePropertyGIFDictionary as String] as? NSDictionary else { continue }
