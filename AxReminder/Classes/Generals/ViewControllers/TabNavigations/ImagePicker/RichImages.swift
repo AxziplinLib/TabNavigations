@@ -535,17 +535,31 @@ extension UIImage {
     ///
     /// - Parameter rect: The rectangle area coordinates in the receiver. The value
     ///                   of the rectangle must not be zero or negative sizing.
+    /// - Parameter dest: A value of `RenderDestination` indicates the rendering destination of the image cropping processing.
     ///
     /// - Returns: An copy of the receiver cropped to the given rectangle.
-    public func crop(to rect: CGRect) -> UIImage! {
-        guard !animatable else { return UIImage.animatedImage(with: self.images!.flatMap({ _img in autoreleasepool{ _img.crop(to: rect) } }), duration: duration) }
+    public func crop(to rect: CGRect, rendering dest: RenderDestination = .gpu(.metal)) -> UIImage! {
+        guard !animatable else { return UIImage.animatedImage(with: self.images!.flatMap({ _img in autoreleasepool{ _img.crop(to: rect, rendering: dest) } }), duration: duration) }
         // Early fatal checking.
         guard rect.width > 0.0 && rect.height > 0.0 else { return nil }
         // Scales points to pxiels.
         let croppingRect = CGRect(origin: rect.origin, size: rect.size).scale(by: scale)
         
-        guard let cgImage = self.cgImage?.cropping(to: croppingRect) else { return nil }
-        return UIImage(cgImage: cgImage, scale: scale, orientation: imageOrientation)
+        var fallthroughToCpu = false
+        switch dest {
+        case .auto:
+            fallthroughToCpu = true
+            fallthrough
+        case .gpu(_):
+            guard let ciImage = _makeCiImage()?.cropping(to: croppingRect)             else { return fallthroughToCpu ? crop(to:rect, rendering: .cpu) : nil }
+            guard let ciContext = _ciContext(of: dest)                                 else { return fallthroughToCpu ? crop(to:rect, rendering: .cpu) : nil }
+            guard let cgImage = ciContext.createCGImage(ciImage, from: ciImage.extent) else { return fallthroughToCpu ? crop(to:rect, rendering: .cpu) : nil }
+            
+            return UIImage(cgImage: cgImage, scale: scale, orientation: imageOrientation)
+        default:
+            guard let cgImage = self.cgImage?.cropping(to: croppingRect) else { return nil }
+            return UIImage(cgImage: cgImage, scale: scale, orientation: imageOrientation)
+        }
     }
     /// Creates a copy of the receiver that is cropped to the given size with a specific resizing mode in pixels. Animated image supported.
     ///
@@ -559,7 +573,7 @@ extension UIImage {
     ///                   The value will use `.center` by default.
     ///
     /// - Returns: An copy of the receiver cropped to the given size and resizing mode.
-    public func crop(fits size: CGSize, using mode: ResizingMode = .center) -> UIImage! {
+    public func crop(fits size: CGSize, using mode: ResizingMode = .center, rendering dest: RenderDestination = .gpu(.metal)) -> UIImage! {
         // Scales points to pxiels.
         var croppingRect = CGRect(origin: .zero, size: size).scale(by: scale)
         switch mode {
@@ -591,7 +605,7 @@ extension UIImage {
             croppingRect.origin.y = (scaledHeight - croppingRect.height)
         }
         
-        return crop(to: croppingRect.scale(by: 1.0 / scale))
+        return crop(to: croppingRect.scale(by: 1.0 / scale), rendering: dest)
     }
     /// Creates a copy of this image that is squared to the thumbnail size using `QuartzCore` redrawing in points. Animated image supported.
     ///
@@ -1619,3 +1633,39 @@ private var _autoCIContext    = UIImage._AutomaticCIContext()
 private var _metalCIContext   = UIImage._MetalBasedCIContext()
 private var _openGLESCIContex = UIImage._OpenGLESBasedCIContext()
 
+/// Get the context of core image with the given render destination.
+private func _ciContext(of dest: UIImage.RenderDestination) -> CIContext! {
+    switch dest {
+    case .auto:
+        return _autoCIContext.context
+    case .gpu(let gpu):
+        switch gpu {
+        case .metal:
+            return _metalCIContext.context
+        case .openGLES:
+            return _openGLESCIContex.context
+        }
+    default: return nil
+    }
+}
+
+extension UIImage {
+    /// Returns the underlying ci-image if CoreImage-Based.
+    ///
+    /// Otherwise returns the ci-image initialized with the bitmap cg-image.
+    ///
+    /// Otherwise returns the ci-image based on the receiver image.
+    fileprivate func _makeCiImage() -> CIImage! {
+        var ciImage: CIImage! = nil
+        if let underlyingCiImage = self.ciImage {
+            ciImage = underlyingCiImage
+        } else if let cgImage = self.cgImage {
+            ciImage = CIImage(cgImage: cgImage)
+        } else if let _ciImage = CIImage(image: self) {
+            ciImage = _ciImage
+        } else if let data = UIImageJPEGRepresentation(self, 1.0) {
+            ciImage = CIImage(data: data)
+        }
+        return ciImage
+    }
+}
