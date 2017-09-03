@@ -600,8 +600,6 @@ extension UIImage {
     public func thumbnail(scalesToFit size: CGFloat) -> UIImage! {
         guard !animatable else { return UIImage.animatedImage(with: self.images!.flatMap({ _img in autoreleasepool{ _img.thumbnail(scalesToFit: size) } }), duration: duration) }
         
-        // Create an image source from NSData; no options.
-        guard let data = UIImageJPEGRepresentation(self, 1.0) as CFData?, let imageSource = CGImageSourceCreateWithData(data, nil) else { return nil }
         // Package the integer as a  CFNumber object. Using CFTypes allows you
         // to more easily create the options dictionary later.
         var intSize = Int(size)
@@ -610,6 +608,12 @@ extension UIImage {
         let keys  : [CFString]  = [kCGImageSourceCreateThumbnailWithTransform, kCGImageSourceCreateThumbnailFromImageIfAbsent, kCGImageSourceThumbnailMaxPixelSize]
         let values: [CFTypeRef] = [kCFBooleanTrue, kCFBooleanTrue, thumbnailSize]
         let options = NSDictionary(objects: values, forKeys: keys as! [NSCopying]) as CFDictionary
+        // Create an image source from CGDataProvider; no options.
+        if let dataProvider = self.cgImage?.dataProvider, let imageSource = CGImageSourceCreateWithDataProvider(dataProvider, nil), let thumbnail = CGImageSourceCreateThumbnailAtIndex(imageSource, 0, options) {
+            return UIImage(cgImage: thumbnail, scale: scale, orientation: imageOrientation)
+        }
+        // Create an image source from NSData; no options.
+        guard let data = UIImageJPEGRepresentation(self, 1.0) as CFData?, let imageSource = CGImageSourceCreateWithData(data, nil) else { return nil }
         // Create the thumbnail image using the specified options.
         guard let thumbnail = CGImageSourceCreateThumbnailAtIndex(imageSource, 0, options) else { return nil }
         
