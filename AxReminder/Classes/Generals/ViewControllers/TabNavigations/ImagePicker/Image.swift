@@ -1463,7 +1463,7 @@ extension UIImage {
             var duration: TimeInterval = 0.0
             for index in 0..<imagesCount {
                 guard let cgImage = CGImageSourceCreateImageAtIndex(imageSource, index, nil) else { continue }
-                images.append(UIImage(cgImage: cgImage, scale: 1.0, orientation: .up))
+                images.append(UIImage(cgImage: cgImage, scale: scale, orientation: .up))
                 // Calculate durations.
                 guard let frameProps = CGImageSourceCopyPropertiesAtIndex(imageSource, index, nil) as NSDictionary? else { continue }
                 guard let gifProps   = frameProps[kCGImagePropertyGIFDictionary as String] as? NSDictionary else { continue }
@@ -1497,9 +1497,9 @@ extension UIImage {
     /// - parameter options: Options for the read operation. Default value is `[]`.
     ///
     /// - Returns: An instance of animated image contains multiple frame of images.
-    public class func gif(contentsOf url: URL, options: Data.ReadingOptions = []) -> UIImage! {
+    public class func gif(contentsOf url: URL, options: Data.ReadingOptions = [], scale: CGFloat = 1.0) -> UIImage! {
         guard let data = try? Data(contentsOf: url, options: options) else {return nil }
-        return gif(data)
+        return gif(data, scale: scale)
     }
     /// Creates a `GIF` animated image with the name path extension in a `Bundle`.
     ///
@@ -1508,16 +1508,16 @@ extension UIImage {
     ///
     /// - Returns: An instance of animated image contains multiple frame of images.
     public class func gif(named name: String, `in` bundle: Bundle = .main) -> UIImage! {
-        var fileName: String = name
+        var fileName: String = name; var scale: CGFloat = 1.0
         switch UIScreen.main.scale {
         case 3.0: //@3x
-            fileName += "@3x"
+            fileName += "@3x"; scale = 3.0
         case 2.0: //@2x
-            fileName += "@2x"
+            fileName += "@2x"; scale = 2.0
         default: // @1x
-            fileName += "@1x"
+            fileName += "@1x"; scale = 1.0
         }
-        if let path = bundle.path(forResource: fileName, ofType: "gif"), let image = gif(contentsOf: URL(fileURLWithPath: path)) {
+        if let path = bundle.path(forResource: fileName, ofType: "gif"), let image = gif(contentsOf: URL(fileURLWithPath: path), scale: scale) {
             return image
         } else {
             guard let path = bundle.path(forResource: name, ofType: "gif") else { return nil }
