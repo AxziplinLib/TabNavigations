@@ -76,7 +76,7 @@ public extension UIImage {
         // Check pre-conditions.
         guard size.width >= 1.0 && size.height >= 1.0 else { return nil }
         guard let input = cgImage else { return nil }
-        if let _ = mask { guard let _ = mask?.cgImage else { return nil } }
+        if let _ = mask { guard let _ = mask?._makeCgImage() else { return nil } }
         
         let hasBlur = radius > .ulpOfOne
         let hasSaturationChange = fabs(saturationDeltaFactor - 1.0) > .ulpOfOne
@@ -200,7 +200,7 @@ public extension UIImage {
             }
             // draw effect image
             context.saveGState()
-            if let maskCGImage = mask?.cgImage {
+            if let maskCGImage = mask?._makeCgImage() {
                 context.clip(to: outputRectInPoints, mask: maskCGImage)
             }
             if let _cgImage = effectCGImage?.takeUnretainedValue() {
@@ -367,7 +367,8 @@ extension UIImage {
 extension UIImage {
     /// A boolean value indicates whether the image has alpha channel.
     public var hasAlpha: Bool {
-        guard let alp = self.cgImage?.alphaInfo, let colorSpace = self.cgImage?.colorSpace else { return false }
+        guard let cgImage = _makeCgImage(), let colorSpace = cgImage.colorSpace else { return false }
+        let alp = cgImage.alphaInfo
         let alp_ops: [CGImageAlphaInfo] = [.first, .last, .premultipliedFirst, .premultipliedLast]
         return (alp_ops.contains(alp) && colorSpace.model == .rgb) || (colorSpace.model == .monochrome && alp == .alphaOnly)
     }
@@ -379,7 +380,7 @@ extension UIImage {
         guard !animatable else { return UIImage.animatedImage(with: self.images!.flatMap({ _img in autoreleasepool{ _img.alpha } }), duration: duration) }
         
         guard !hasAlpha else { return self }
-        guard let cgImage = self.cgImage, let colorSpace = cgImage.colorSpace else { return nil }
+        guard let cgImage = _makeCgImage(), let colorSpace = cgImage.colorSpace else { return nil }
         // The bitsPerComponent and bitmapInfo values are hard-coded to prevent an "unsupported parameter combination" error
         guard let context = CGContext(data: nil, width: cgImage.width, height: cgImage.height, bitsPerComponent: 8, bytesPerRow: 0, space: colorSpace.model == .rgb ? colorSpace : CGColorSpaceCreateDeviceRGB(), bitmapInfo: (CGImageAlphaInfo.premultipliedFirst.rawValue | CGBitmapInfo(rawValue: (0 << 12)).rawValue)) else { return nil }
         // Draw the image into the context and retrieve the new image, which will now have an alpha layer
@@ -399,7 +400,7 @@ extension UIImage {
         // Scales points to pxiels.
         let scaledTransparentBorderWidth = transparentBorderWidth * scale
         // If the image does not have an alpha layer, add one.
-        guard let cgImage = self.alpha.cgImage, let colorSpace = cgImage.colorSpace else { return nil }
+        guard let cgImage = self.alpha._makeCgImage(), let colorSpace = cgImage.colorSpace else { return nil }
         let cgSize  = CGSize(width: CGFloat(cgImage.width), height: CGFloat(cgImage.height))
         let bitmap  = _correct(bitmapInfo: cgImage.bitmapInfo, for: colorSpace)
         var rect    = CGRect(origin: .zero, size: cgSize).insetBy(dx: -scaledTransparentBorderWidth, dy: -scaledTransparentBorderWidth)
@@ -469,7 +470,7 @@ extension UIImage {
         let scaledBorderWidth  = borderWidth  * scale
         
         // If the image does not have an alpha layer, add one
-        guard let cgImage = self.alpha.cgImage, let colorSpace = cgImage.colorSpace else { return nil }
+        guard let cgImage = self.alpha._makeCgImage(), let colorSpace = cgImage.colorSpace else { return nil }
         let cgSize  = CGSize(width: CGFloat(cgImage.width), height: CGFloat(cgImage.height))
         let bitmap  = _correct(bitmapInfo: cgImage.bitmapInfo, for: colorSpace)
         var rect    = CGRect(origin: .zero, size: cgSize).insetBy(dx: -scaledBorderWidth, dy: -scaledBorderWidth)
@@ -557,7 +558,7 @@ extension UIImage {
             
             return UIImage(cgImage: cgImage, scale: scale, orientation: imageOrientation)
         default:
-            guard let cgImage = self.cgImage?.cropping(to: croppingRect) else { return nil }
+            guard let cgImage = _makeCgImage()?.cropping(to: croppingRect) else { return nil }
             return UIImage(cgImage: cgImage, scale: scale, orientation: imageOrientation)
         }
     }
@@ -654,7 +655,7 @@ extension UIImage {
         let values: [CFTypeRef] = [kCFBooleanTrue, kCFBooleanTrue, thumbnailSize]
         let options = NSDictionary(objects: values, forKeys: keys as! [NSCopying]) as CFDictionary
         // Create an image source from CGDataProvider; no options.
-        if let dataProvider = self.cgImage?.dataProvider, let imageSource = CGImageSourceCreateWithDataProvider(dataProvider, nil), let thumbnail = CGImageSourceCreateThumbnailAtIndex(imageSource, 0, options) {
+        if let dataProvider = _makeCgImage()?.dataProvider, let imageSource = CGImageSourceCreateWithDataProvider(dataProvider, nil), let thumbnail = CGImageSourceCreateThumbnailAtIndex(imageSource, 0, options) {
             return UIImage(cgImage: thumbnail, scale: scale, orientation: imageOrientation)
         }
         // Create an image source from NSData; no options.
@@ -723,7 +724,7 @@ extension UIImage {
         // Scales points to pxiels.
         let newRect        = CGRect(origin: .zero, size: newSize).integral.scale(by: scale)
         let transposedRect = CGRect(origin: .zero, size: CGSize(width: newRect.height, height: newRect.width)).integral.scale(by: scale)
-        guard let cgImage = self.cgImage, let colorSpace = cgImage.colorSpace else { return nil }
+        guard let cgImage = _makeCgImage(), let colorSpace = cgImage.colorSpace else { return nil }
         // Build a context that's the same dimensions as the new size
         // FIXME: How to decide the right alpha info of the bitmap.
         let bitmap = _correct(bitmapInfo: cgImage.bitmapInfo, for: colorSpace)
@@ -1038,7 +1039,7 @@ extension UIImage {
     }
     
     private func _merge(with image: UIImage, size: CGSize, beginsRect: CGRect, endsRect: CGRect) -> UIImage! {
-        guard let cgImage = self.cgImage, let mergingCgImage = image.cgImage else { return nil }
+        guard let cgImage = _makeCgImage(), let mergingCgImage = image._makeCgImage() else { return nil }
         var mergedImage: UIImage! = self
         
         UIGraphicsBeginImageContextWithOptions(size, false, scale)
@@ -1159,7 +1160,7 @@ extension UIImage {
         defer { UIGraphicsEndImageContext() }
         guard let context = UIGraphicsGetCurrentContext() else { return nil }
         ligature.draw(at: .zero)
-        guard let cgImage = UIGraphicsGetImageFromCurrentImageContext()?.cgImage else { return nil }
+        guard let cgImage = UIGraphicsGetImageFromCurrentImageContext()?._makeCgImage() else { return nil }
         
         context.scaleBy(x: 1.0, y: -1.0)
         context.translateBy(x: 0.0, y: -imageSize.height)
@@ -1220,7 +1221,7 @@ extension UIImage {
             pageIndex += 1
         } }
         
-        if let tintColor = color, let cgImage = image.cgImage {
+        if let tintColor = color, let cgImage = image._makeCgImage() {
             UIGraphicsBeginImageContextWithOptions(image.size, false, UIScreen.main.scale)
             defer { UIGraphicsEndImageContext() }
             guard let context = UIGraphicsGetCurrentContext() else { return image }
@@ -1289,7 +1290,7 @@ extension UIImage {
         default: break
         }
         
-        guard let cgImage = self.cgImage, let colorSpace = cgImage.colorSpace, let context = CGContext(data: nil, width: cgImage.width, height: cgImage.height, bitsPerComponent: cgImage.bitsPerComponent, bytesPerRow: 0, space: colorSpace, bitmapInfo: cgImage.bitmapInfo.rawValue) else { return nil }
+        guard let cgImage = self._makeCgImage(), let colorSpace = cgImage.colorSpace, let context = CGContext(data: nil, width: cgImage.width, height: cgImage.height, bitsPerComponent: cgImage.bitsPerComponent, bytesPerRow: 0, space: colorSpace, bitmapInfo: cgImage.bitmapInfo.rawValue) else { return nil }
         context.concatenate(transform)
         
         switch imageOrientation {
@@ -1325,7 +1326,7 @@ extension UIImage {
         // Create the bitmap context.
         UIGraphicsBeginImageContextWithOptions(rotatedBox.size, false, scale)
         defer { UIGraphicsEndImageContext() }
-        guard let cgImage = self.cgImage, let context = UIGraphicsGetCurrentContext() else { return nil }
+        guard let cgImage = self._makeCgImage(), let context = UIGraphicsGetCurrentContext() else { return nil }
         // Move the origin to the middle of the image so we will rotate and scale around the center.
         context.translateBy(x: rotatedBox.width * 0.5, y: rotatedBox.height * 0.5)
         // Rotate the image context.
@@ -1343,7 +1344,7 @@ extension UIImage {
         let rect = CGRect(origin: .zero, size: scaledSize)
         UIGraphicsBeginImageContextWithOptions(rect.size, false, scale)
         defer { UIGraphicsEndImageContext() }
-        guard let cgImage = self.cgImage, let context = UIGraphicsGetCurrentContext() else { return nil }
+        guard let cgImage = self._makeCgImage(), let context = UIGraphicsGetCurrentContext() else { return nil }
         context.clip(to: rect)
         if horizontally {
             context.rotate(by: CGFloat.pi)
@@ -1359,7 +1360,7 @@ extension UIImage {
 extension UIImage {
     /// Creates and returns a copy of the receiver image by changing the color space to gray.
     public var grayed: UIImage! {
-        guard let cgImage = self.cgImage else { return nil }
+        guard let cgImage = self._makeCgImage() else { return nil }
         let colorSpace = CGColorSpaceCreateDeviceGray()
         guard let context = CGContext(data: nil, width: cgImage.width, height: cgImage.height, bitsPerComponent: 8, bytesPerRow: 0, space: colorSpace, bitmapInfo: CGImageAlphaInfo.none.rawValue) else { return nil }
         
@@ -1377,7 +1378,7 @@ extension UIImage {
     public func tint(with color: UIColor) -> UIImage! {
         UIGraphicsBeginImageContextWithOptions(size, false, scale)
         defer { UIGraphicsEndImageContext() }
-        guard let cgImage = self.cgImage, let context = UIGraphicsGetCurrentContext() else { return nil }
+        guard let cgImage = self._makeCgImage(), let context = UIGraphicsGetCurrentContext() else { return nil }
         context.translateBy(x: 0.0, y: scaledHeight)
         context.scaleBy(x: 1.0, y: -1.0)
         context.setBlendMode(.normal)
@@ -1410,7 +1411,7 @@ extension UIImage {
     /// - Returns: The color of the image at the specific point or pixel.
     public func color(at point: CGPoint, scale: CGFloat) -> UIColor! {
         let rect = CGRect(origin: .zero, size: size)
-        guard let cgImage = self.cgImage, rect.contains(point) else { return nil }
+        guard let cgImage = self._makeCgImage(), rect.contains(point) else { return nil }
         let colorSpace = CGColorSpaceCreateDeviceRGB()
         let bytesPerPixel = pow(scale, 2.0)
         let bytesPerRow   = Int(bytesPerPixel) * cgImage.width
@@ -1442,7 +1443,7 @@ extension UIImage {
         
         let bitmapInfo = CGBitmapInfo(rawValue: (0x0 << 0xc)|CGImageAlphaInfo.premultipliedLast.rawValue)
         guard let thumbnailed  = thumbnail(scalesToFit: length) else { return [] }
-        guard let thumbnailedCgImage = thumbnailed.cgImage else { return [] }
+        guard let thumbnailedCgImage = thumbnailed._makeCgImage() else { return [] }
         let colorSpace = CGColorSpaceCreateDeviceRGB()
         
         guard let context = CGContext(data: nil, width: thumbnailedCgImage.width, height: thumbnailedCgImage.height, bitsPerComponent: 8, bytesPerRow: thumbnailedCgImage.width*4, space: colorSpace, bitmapInfo: bitmapInfo.rawValue) else { return [] }
@@ -1667,5 +1668,22 @@ extension UIImage {
             ciImage = CIImage(data: data)
         }
         return ciImage
+    }
+    /// Returns the underlying cg-image if CoreGraphics-Based.
+    ///
+    /// Otherwise returns the cg-image rendered with the ci image.
+    /// 
+    /// Otherwise returns the cg-image initialized with the jpeg data.
+    fileprivate func _makeCgImage() -> CGImage! {
+        var cgImage: CGImage! = nil
+        if let underlyingCgImage = self.cgImage {
+            cgImage = underlyingCgImage
+        } else if let ciImage = self.ciImage, let context = _metalCIContext.context, let renderedCgImage = context.createCGImage(ciImage, from: ciImage.extent) {
+            cgImage = renderedCgImage
+        } else {
+            guard let data = UIImageJPEGRepresentation(self, 1.0) as CFData?, let dataProvider = CGDataProvider(data: data) else { return nil }
+            cgImage = CGImage(jpegDataProviderSource: dataProvider, decode: nil, shouldInterpolate: true, intent: .defaultIntent)
+        }
+        return cgImage
     }
 }
