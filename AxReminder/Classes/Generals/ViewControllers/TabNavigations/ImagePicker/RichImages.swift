@@ -343,6 +343,25 @@ fileprivate func _correct(bitmapInfo: CGBitmapInfo, `for` colorSpace: CGColorSpa
     return bitmap
 }
 
+extension UIImage {
+    /// A type representing the rendering destination of the image's cropping and other processing.
+    public enum RenderDestination {
+        /// A type representing the GPU-Based rendering.
+        public enum GPU {
+            /// Indicates the rendering is based on a `MTLDevice`.
+            case metal
+            /// Indicates the rendering is based on the api of `OpenGL ES`.
+            case openGLES
+        }
+        /// Indicates the rendering using the automatic context in `CoreImage`.
+        case auto
+        /// Indicates the rendering using the cg context in `CoreGraphics`.
+        case cpu
+        /// Indicates the rendering using the GPU-Based context in `CoreImage`.
+        case gpu(GPU)
+    }
+}
+
 // MARK: - Alpha.
 
 extension UIImage {
@@ -1574,12 +1593,29 @@ fileprivate extension UIColor {
 // MARK: - CoreImage.
 
 extension UIImage {
+    /// A type representing a core image context using automatic rendering by choosing the appropriate or best available CPU or GPU rendering technology based on the current device.
+    fileprivate struct _AutomaticCIContext {
+        lazy var context: CIContext! = { () -> CIContext! in
+            return CIContext()
+        }()
+    }
     /// A type representing a core image context using the real-time rendering with Metal.
-    fileprivate struct _MetalBasedCIContext { lazy var context: CIContext! = { () -> CIContext! in guard let device = MTLCreateSystemDefaultDevice() else { return nil }; return CIContext(mtlDevice: device) }() }
+    fileprivate struct _MetalBasedCIContext {
+        lazy var context: CIContext! = { () -> CIContext! in
+            guard let device = MTLCreateSystemDefaultDevice() else { return nil }
+            return CIContext(mtlDevice: device)
+        }()
+    }
     /// A type representing a core image context using the real-time rendering with OpenGL ES.
-    fileprivate struct _OpenGLESBasedCIContext { lazy var context: CIContext! = { () -> CIContext! in guard let eaglContext = EAGLContext(api: .openGLES3) else { return nil }; return CIContext(eaglContext: eaglContext) }() }
+    fileprivate struct _OpenGLESBasedCIContext {
+        lazy var context: CIContext! = { () -> CIContext! in
+            guard let eaglContext = EAGLContext(api: .openGLES3) else { return nil }
+            return CIContext(eaglContext: eaglContext)
+        }()
+    }
 }
 
+private var _autoCIContext    = UIImage._AutomaticCIContext()
 private var _metalCIContext   = UIImage._MetalBasedCIContext()
 private var _openGLESCIContex = UIImage._OpenGLESBasedCIContext()
 
