@@ -348,7 +348,8 @@ extension UIImage {
     public enum RenderDestination {
         /// A type representing the GPU-Based rendering.
         public enum GPU {
-            /// Indicates the rendering is based on a `MTLDevice`.
+            /// Indicates the rendering is based on a `MTLDevice`. The GPU-Based contex for this value
+            /// will automatic fallthrough to the OpenGL ES-Based if the Metal device is not available.
             case metal
             /// Indicates the rendering is based on the api of `OpenGL ES`.
             case openGLES
@@ -1617,7 +1618,7 @@ extension UIImage {
     /// A type representing a core image context using the real-time rendering with Metal.
     fileprivate struct _MetalBasedCIContext {
         lazy var context: CIContext! = { () -> CIContext! in
-            guard let device = MTLCreateSystemDefaultDevice() else { return nil }
+            guard let device = MTLCreateSystemDefaultDevice() else { return _openGLESCIContext.context }
             return CIContext(mtlDevice: device)
         }()
     }
@@ -1630,9 +1631,9 @@ extension UIImage {
     }
 }
 
-private var _autoCIContext    = UIImage._AutomaticCIContext()
-private var _metalCIContext   = UIImage._MetalBasedCIContext()
-private var _openGLESCIContex = UIImage._OpenGLESBasedCIContext()
+private var _autoCIContext     = UIImage._AutomaticCIContext()
+private var _metalCIContext    = UIImage._MetalBasedCIContext()
+private var _openGLESCIContext = UIImage._OpenGLESBasedCIContext()
 
 /// Get the context of core image with the given render destination.
 private func _ciContext(of dest: UIImage.RenderDestination) -> CIContext! {
@@ -1644,7 +1645,7 @@ private func _ciContext(of dest: UIImage.RenderDestination) -> CIContext! {
         case .metal:
             return _metalCIContext.context
         case .openGLES:
-            return _openGLESCIContex.context
+            return _openGLESCIContext.context
         }
     default: return nil
     }
