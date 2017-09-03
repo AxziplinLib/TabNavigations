@@ -1678,7 +1678,7 @@ extension UIImage {
         var cgImage: CGImage! = nil
         if let underlyingCgImage = self.cgImage {
             cgImage = underlyingCgImage
-        } else if let ciImage = self.ciImage, let context = _metalCIContext.context, let renderedCgImage = context.createCGImage(ciImage, from: ciImage.extent) {
+        } else if let ciImage = self.ciImage, let context = _autoCIContext.context, let renderedCgImage = context.createCGImage(ciImage, from: ciImage.extent) {
             cgImage = renderedCgImage
         } else {
             guard let data = UIImageJPEGRepresentation(self, 1.0) as CFData?, let dataProvider = CGDataProvider(data: data) else { return nil }
