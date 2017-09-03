@@ -39,6 +39,9 @@ extension UIImage {
     public var scaledSize  : CGSize  { return CGSize(width: scaledWidth, height: scaledHeight) }
 }
 
+extension CGRect { public func scale(by scale: CGFloat) -> CGRect {  return applying(CGAffineTransform(scaleX: scale, y: scale)) } }
+extension CGSize { public func scale(by scale: CGFloat) -> CGSize {  return applying(CGAffineTransform(scaleX: scale, y: scale)) } }
+
 // MARK: - Blur.
 
 public extension UIImage {
@@ -362,7 +365,7 @@ extension UIImage {
         guard let alp_img = context.makeImage() else { return nil }
         return UIImage(cgImage: alp_img, scale: scale, orientation: imageOrientation)
     }
-    /// Creates a copy of the image with a transparent border of the given size added around its edges in pixels.
+    /// Creates a copy of the image with a transparent border of the given size added around its edges in points.
     /// Animated image supported.
     ///
     /// If the image has no alpha layer, one will be added to it.
@@ -371,21 +374,22 @@ extension UIImage {
     /// - Returns: A copy of the image with a transparent border of the given size added around its edges.
     public func bordered(_ transparentBorderWidth: CGFloat) -> UIImage! {
         guard !animatable else { return UIImage.animatedImage(with: self.images!.flatMap({ _img in autoreleasepool{ _img.bordered(transparentBorderWidth) } }), duration: duration) }
-        
+        // Scales points to pxiels.
+        let scaledTransparentBorderWidth = transparentBorderWidth * scale
         // If the image does not have an alpha layer, add one.
         guard let cgImage = self.alpha.cgImage, let colorSpace = cgImage.colorSpace else { return nil }
         let cgSize  = CGSize(width: CGFloat(cgImage.width), height: CGFloat(cgImage.height))
         let bitmap  = _correct(bitmapInfo: cgImage.bitmapInfo, for: colorSpace)
-        var rect    = CGRect(origin: .zero, size: cgSize).insetBy(dx: -transparentBorderWidth, dy: -transparentBorderWidth)
+        var rect    = CGRect(origin: .zero, size: cgSize).insetBy(dx: -scaledTransparentBorderWidth, dy: -scaledTransparentBorderWidth)
         rect.origin = .zero
         // Build a context that's the same dimensions as the new size
         guard let context = CGContext(data: nil, width: cgImage.width, height: cgImage.height, bitsPerComponent: cgImage.bitsPerComponent, bytesPerRow: 0, space: colorSpace, bitmapInfo: bitmap.rawValue) else { return nil }
         // Draw the image in the center of the context, leaving a gap around the edges
-        let croppingRect = rect.insetBy(dx: transparentBorderWidth, dy: transparentBorderWidth)
+        let croppingRect = rect.insetBy(dx: scaledTransparentBorderWidth, dy: scaledTransparentBorderWidth)
         context.draw(cgImage, in: croppingRect)
         guard let centeredImg = context.makeImage() else { return nil }
         // Create a mask to make the border transparent, and combine it with the image
-        guard let mask = type(of: self)._borderedMask(rect.size, borderWidth: transparentBorderWidth) else { return nil }
+        guard let mask = type(of: self)._borderedMask(rect.size, borderWidth: scaledTransparentBorderWidth) else { return nil }
         
         guard let maskedCgImg = centeredImg.masking(mask) else { return nil }
         return UIImage(cgImage: maskedCgImg, scale: scale, orientation: imageOrientation)
@@ -423,7 +427,7 @@ extension UIImage {
 extension UIImage {
     /// Returns an copy of the receiver with critical rounding in pixels. Animated image supported.
     public var cornered: UIImage! { return round(min(scaledWidth, scaledHeight) * 0.5, border: 0.0) }
-    /// Creates a copy of this image with rounded corners in pixels. Animated image supported. Animated image supported.
+    /// Creates a copy of this image with rounded corners in points. Animated image supported. Animated image supported.
     ///
     /// If borderWidth is non-zero, a transparent border of the given size will also be added.
     ///
@@ -438,27 +442,30 @@ extension UIImage {
         
         // Early fatal checking.
         guard cornerRadius >= 0.0 && borderWidth >= 0.0 else { return nil }
+        // Scales points to pxiels.
+        let scaledCornerRadius = cornerRadius * scale
+        let scaledBorderWidth  = borderWidth  * scale
         
         // If the image does not have an alpha layer, add one
         guard let cgImage = self.alpha.cgImage, let colorSpace = cgImage.colorSpace else { return nil }
         let cgSize  = CGSize(width: CGFloat(cgImage.width), height: CGFloat(cgImage.height))
         let bitmap  = _correct(bitmapInfo: cgImage.bitmapInfo, for: colorSpace)
-        var rect    = CGRect(origin: .zero, size: cgSize).insetBy(dx: -borderWidth, dy: -borderWidth)
+        var rect    = CGRect(origin: .zero, size: cgSize).insetBy(dx: -scaledBorderWidth, dy: -scaledBorderWidth)
         rect.origin = .zero
         // Build a context that's the same dimensions as the new size
         guard let context = CGContext(data: nil, width: Int(rect.width), height: Int(rect.height), bitsPerComponent: cgImage.bitsPerComponent, bytesPerRow: 0, space: colorSpace, bitmapInfo: bitmap.rawValue) else { return nil }
         // Create a clipping path with rounded corners
         context.beginPath()
-        let roundedRect = rect.insetBy(dx: borderWidth, dy: borderWidth)
-        if cornerRadius == 0 {
+        let roundedRect = rect.insetBy(dx: scaledBorderWidth, dy: scaledBorderWidth)
+        if scaledCornerRadius == 0 {
             context.addRect(roundedRect)
         } else {
             context.saveGState()
             context.translateBy(x: roundedRect.minX, y: roundedRect.minY)
-            context.scaleBy(x: cornerRadius, y: cornerRadius)
+            context.scaleBy(x: scaledCornerRadius, y: scaledCornerRadius)
             
-            let wr = roundedRect.width  / cornerRadius
-            let hr = roundedRect.height / cornerRadius
+            let wr = roundedRect.width  / scaledCornerRadius
+            let hr = roundedRect.height / scaledCornerRadius
             
             context.move(to: CGPoint(x: wr, y: hr * 0.5))
             context.addArc(tangent1End: CGPoint(x: wr, y: hr), tangent2End: CGPoint(x: wr * 0.5, y: hr), radius: 1.0)
@@ -498,7 +505,7 @@ extension UIImage {
         case bottomLeft
         case bottomRight
     }
-    /// Creates a copy of the receiver that is cropped to the given rectangle in pixels. Animated image supported.
+    /// Creates a copy of the receiver that is cropped to the given rectangle in points. Animated image supported.
     ///
     /// The bounds will be adjusted using `CGRectIntegral`.
     ///
@@ -512,7 +519,8 @@ extension UIImage {
         guard !animatable else { return UIImage.animatedImage(with: self.images!.flatMap({ _img in autoreleasepool{ _img.crop(to: rect) } }), duration: duration) }
         // Early fatal checking.
         guard rect.width > 0.0 && rect.height > 0.0 else { return nil }
-        let croppingRect = CGRect(origin: rect.origin, size: rect.size)
+        // Scales points to pxiels.
+        let croppingRect = CGRect(origin: rect.origin, size: rect.size).scale(by: scale)
         
         guard let cgImage = self.cgImage?.cropping(to: croppingRect) else { return nil }
         return UIImage(cgImage: cgImage, scale: scale, orientation: imageOrientation)
@@ -530,7 +538,8 @@ extension UIImage {
     ///
     /// - Returns: An copy of the receiver cropped to the given size and resizing mode.
     public func crop(fits size: CGSize, using mode: ResizingMode = .center) -> UIImage! {
-        var croppingRect = CGRect(origin: .zero, size: size)
+        // Scales points to pxiels.
+        var croppingRect = CGRect(origin: .zero, size: size).scale(by: scale)
         switch mode {
         case .scaleToFill:
             return resize(fills: size, quality: .default)
@@ -560,9 +569,9 @@ extension UIImage {
             croppingRect.origin.y = (scaledHeight - croppingRect.height)
         }
         
-        return crop(to: croppingRect)
+        return crop(to: croppingRect.scale(by: 1.0 / scale))
     }
-    /// Creates a copy of this image that is squared to the thumbnail size using `QuartzCore` redrawing in pixels. Animated image supported.
+    /// Creates a copy of this image that is squared to the thumbnail size using `QuartzCore` redrawing in points. Animated image supported.
     ///
     /// If borderWidth is non-zero, a transparent border of the given size will
     /// be added around the edges of the thumbnail. (Adding a transparent border
@@ -584,14 +593,14 @@ extension UIImage {
         // Crop out any part of the image that's larger than the thumbnail size
         // The cropped rect must be centered on the resized image
         // Round the origin points so that the size isn't altered when CGRectIntegral is later invoked
-        let croppedRect = CGRect(x: ((resizedImage.scaledWidth - sizet) * 0.5).rounded(), y: ((resizedImage.scaledHeight - sizet) * 0.5).rounded(), width: sizet, height: sizet)
+        let croppedRect = CGRect(x: ((resizedImage.size.width - sizet) * 0.5).rounded(), y: ((resizedImage.size.width - sizet) * 0.5).rounded(), width: sizet, height: sizet)
         guard let croppedImage = resizedImage.crop(to: croppedRect) else { return nil }
         var borderedImage = croppedImage
         if borderWidth > 0.0 { borderedImage = croppedImage.bordered(borderWidth) }
         
         return borderedImage.round(cornerRadius, border: borderWidth)
     }
-    /// Creates a copy of this image that is scale-aspect-fit to the thumbnail size using `ImageIO`.
+    /// Creates a copy of this image that is scale-aspect-fit to the thumbnail size using `ImageIO` in points.
     /// Animated image supported.
     ///
     /// - Parameter size: A size of thumbnail to scale-aspect-fit to.
@@ -602,7 +611,7 @@ extension UIImage {
         
         // Package the integer as a  CFNumber object. Using CFTypes allows you
         // to more easily create the options dictionary later.
-        var intSize = Int(size)
+        var intSize = Int(size * scale)
         guard let thumbnailSize = CFNumberCreate(nil, .intType, &intSize) else { return nil }
         // Set up the thumbnail options.
         let keys  : [CFString]  = [kCGImageSourceCreateThumbnailWithTransform, kCGImageSourceCreateThumbnailFromImageIfAbsent, kCGImageSourceThumbnailMaxPixelSize]
@@ -629,8 +638,8 @@ extension UIImage {
     ///
     /// - Returns: A copy of the receiver resized to the given size.
     public func resize(fits size: CGSize, using resizingMode: ResizingMode, quality: CGInterpolationQuality = .default) -> UIImage! {
-        let horizontalRatio = size.width  / scaledWidth
-        let verticalRatio   = size.height / scaledHeight
+        let horizontalRatio = size.width  / self.size.width
+        let verticalRatio   = size.height / self.size.width
         var ratio: CGFloat
         
         switch resizingMode {
@@ -642,10 +651,10 @@ extension UIImage {
             return resize(fills: size, quality: quality)
         }
         
-        let newSize = CGSize(width: (scaledWidth * ratio).rounded(), height: (scaledHeight * ratio).rounded())
+        let newSize = CGSize(width: (self.size.width * ratio).rounded(), height: (self.size.width * ratio).rounded())
         return resize(fills: newSize, quality: quality)
     }
-    /// Creates a rescaled copy of the image, taking into account its orientation in pixels. Animated image supported.
+    /// Creates a rescaled copy of the image, taking into account its orientation in points. Animated image supported.
     ///
     /// The image will be scaled disproportionately if necessary to fit the bounds specified by the parameter.
     ///
@@ -665,9 +674,9 @@ extension UIImage {
         default: break
         }
         
-        return _resize(fills: size, applying: _transform(forOrientation: size), transposed: transposed, quality: quality)
+        return _resize(fills: size, applying: _transform(forOrientation: size.scale(by: scale)), transposed: transposed, quality: quality)
     }
-    /// Returns a copy of the image that has been transformed using the given affine transform and scaled to the new size in pixels.
+    /// Returns a copy of the image that has been transformed using the given affine transform and scaled to the new size in points.
     /// Animated image supported.
     ///
     /// The new image's orientation will be UIImageOrientationUp, regardless of the current image's orientation
@@ -675,9 +684,9 @@ extension UIImage {
     /// If the new size is not integral, it will be rounded up.
     private func _resize(fills newSize: CGSize, applying transform: CGAffineTransform, transposed: Bool, quality: CGInterpolationQuality) -> UIImage! {
         guard !animatable else { return UIImage.animatedImage(with: self.images!.flatMap({ _img in autoreleasepool{ _img._resize(fills: newSize, applying: transform, transposed: transposed, quality: quality) } }), duration: duration) }
-        
-        let newRect        = CGRect(origin: .zero, size: newSize).integral
-        let transposedRect = CGRect(origin: .zero, size: CGSize(width: newRect.height, height: newRect.width)).integral
+        // Scales points to pxiels.
+        let newRect        = CGRect(origin: .zero, size: newSize).integral.scale(by: scale)
+        let transposedRect = CGRect(origin: .zero, size: CGSize(width: newRect.height, height: newRect.width)).integral.scale(by: scale)
         guard let cgImage = self.cgImage, let colorSpace = cgImage.colorSpace else { return nil }
         // Build a context that's the same dimensions as the new size
         // FIXME: How to decide the right alpha info of the bitmap.
@@ -795,8 +804,8 @@ extension UIImage {
         
         var resultImage: UIImage = self
         images.forEach { (image) in autoreleasepool{
-            var resultRect = CGRect(origin: .zero, size: resultImage.scaledSize)
-            var pageRect   = CGRect(origin: .zero, size: image.scaledSize)
+            var resultRect = CGRect(origin: .zero, size: resultImage.size)
+            var pageRect   = CGRect(origin: .zero, size: image.size)
             var imageRect  : CGRect = .zero
             switch mode {
             case .overlay(let resizing):
@@ -1093,7 +1102,7 @@ extension UIImage {
 // MARK: - Vector.
 
 extension UIImage {
-    /// Creates an image from any instances of `String` with the specific font and tint color.
+    /// Creates an image from any instances of `String` with the specific font and tint color in points.
     /// The `String` contents' count should not be zero. If so, nil will be returned.
     ///
     /// - Parameter content: An instance of `String` to generate `UIImage` with.
@@ -1125,10 +1134,10 @@ extension UIImage {
         
         return UIGraphicsGetImageFromCurrentImageContext()
     }
-    /// Creates an image from any instances of `CGPDFDocument` with the specific size and tint color.
+    /// Creates an image from any instances of `CGPDFDocument` with the specific size and tint color in points.
     ///
     /// - Parameter pdf  : An instance of `CGPDFDocument` to generate `UIImage` with.
-    /// - Parameter size : The size used to draw image fitting with.
+    /// - Parameter size : The size used to draw image fitting with in points.
     /// - Parameter color: The color used to fill image with. Using nil by default.
     ///
     /// - Returns: A `CGPDFDocument` contents image created with specific size and color.
@@ -1330,13 +1339,13 @@ extension UIImage {
     ///
     /// - Returns: A new image with the given color filled.
     public func tint(with color: UIColor) -> UIImage! {
-        UIGraphicsBeginImageContextWithOptions(scaledSize, false, scale)
+        UIGraphicsBeginImageContextWithOptions(size, false, scale)
         defer { UIGraphicsEndImageContext() }
         guard let cgImage = self.cgImage, let context = UIGraphicsGetCurrentContext() else { return nil }
         context.translateBy(x: 0.0, y: scaledHeight)
         context.scaleBy(x: 1.0, y: -1.0)
         context.setBlendMode(.normal)
-        let rect = CGRect(origin: .zero, size: scaledSize)
+        let rect = CGRect(origin: .zero, size: size)
         context.clip(to: rect, mask: cgImage)
         color.setFill()
         context.fill(rect)
