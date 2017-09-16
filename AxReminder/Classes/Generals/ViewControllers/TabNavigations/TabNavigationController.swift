@@ -526,12 +526,14 @@ open class TabNavigationController: UIViewController {
             _contentScrollView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor).isActive = true
             _contentScrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
             _contentScrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
+            _contentScrollView.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor, multiplier: 1.0).isActive = true
+            _contentScrollView.heightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.heightAnchor, multiplier: 1.0).isActive = true
         } else {
             view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[_contentScrollView]|", options: [], metrics: nil, views: ["_contentScrollView":_contentScrollView]))
             view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[_contentScrollView]|", options: [], metrics: nil, views: ["_contentScrollView":_contentScrollView]))
+            _contentScrollView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
+            _contentScrollView.heightAnchor.constraint(equalTo: view.heightAnchor).isActive = true
         }
-        _contentScrollView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
-        _contentScrollView.heightAnchor.constraint(equalTo: view.heightAnchor).isActive = true
     }
     
     private func _setupKeyboardAlignmentView() {
