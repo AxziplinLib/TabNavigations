@@ -53,7 +53,7 @@ private class _TabNavigationItemView: UIView {
         let button = _TabNavigationItemButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.backgroundColor = UIColor.clear
-        button.titleLabel?.font = UIFont(name: "PingFangSC-Semibold", size: DefaultTabNavigationItemFontSize)
+        button.titleLabel?.font = /*UIFont(name: "PingFangSC-Semibold", size: DefaultTabNavigationItemFontSize)*/UIFont.boldSystemFont(ofSize: DefaultTabNavigationItemFontSize)
         return button
     }()
     
@@ -171,7 +171,7 @@ public class TabNavigationTitleItem: NSObject {
     }
     
     private var _selectionTitleColors: [Bool: UIColor] = [true: UIColor(hex: "4A4A4A"), false: UIColor(hex: "CCCCCC")]
-    private var _selectionTitleFonts: [Bool: UIFont] = [true: UIFont(name: "PingFangSC-Semibold", size: DefaultTitleFontSize)!, false: UIFont(name: "PingFangSC-Semibold", size: DefaultTitleUnselectedFontSize)!]
+    private var _selectionTitleFonts: [Bool: UIFont] = [true: /*UIFont(name: "PingFangSC-Semibold", size: DefaultTitleFontSize)!*/UIFont.boldSystemFont(ofSize: DefaultTitleFontSize), false: /*UIFont(name: "PingFangSC-Semibold", size: DefaultTitleUnselectedFontSize)!*/UIFont.boldSystemFont(ofSize: DefaultTabNavigationItemFontSize)]
     
     public func setTitleColor(_ titleColor: UIColor, whenSelected selected: Bool) {
         _selectionTitleColors[selected] = titleColor
@@ -351,7 +351,7 @@ private func _createGeneralAlignmentLabel<T>(font: UIFont? = nil) -> T where T: 
     let label = T()
     label.text = "AL"
     label.translatesAutoresizingMaskIntoConstraints = false
-    label.font = font ?? UIFont(name: "PingFangSC-Semibold", size: DefaultTitleFontSize)
+    label.font = font ?? /*UIFont(name: "PingFangSC-Semibold", size: DefaultTitleFontSize)*/UIFont.boldSystemFont(ofSize: DefaultTitleFontSize)
     label.textColor = .clear
     label.backgroundColor = .clear
     return label
