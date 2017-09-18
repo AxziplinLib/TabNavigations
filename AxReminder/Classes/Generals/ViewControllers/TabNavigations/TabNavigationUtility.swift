@@ -33,7 +33,7 @@ extension UIImage {
     /// - Parameter color  : The color used to fill image with. Using `.black` by default.
     ///
     /// - Returns: A `String` contents image created with specific font and color.
-    fileprivate class func _generateImage(from content: String, using font: UIFont = .systemFont(ofSize: 17), tint color: UIColor = .black) -> UIImage! {
+    internal class func _generateImage(from content: String, using font: UIFont = .systemFont(ofSize: 17), tint color: UIColor = .black) -> UIImage! {
         let ligature = NSMutableAttributedString(string: content)
         ligature.setAttributes([(kCTFontAttributeName as String): font], range: NSMakeRange(0, content.lengthOfBytes(using: .utf8)))
         
@@ -48,7 +48,7 @@ extension UIImage {
     /// - Parameter color            : The color used to fill image with. Using `.black` by default.
     ///
     /// - Returns: A `NSAttributedString` contents image created with specific font and color.
-    fileprivate class func _generateImage(from attributedContent: NSAttributedString, tint color: UIColor = .black) -> UIImage! {
+    internal class func _generateImage(from attributedContent: NSAttributedString, tint color: UIColor = .black) -> UIImage! {
         let ligature = NSMutableAttributedString(attributedString: attributedContent)
         ligature.addAttributes([(kCTLigatureAttributeName as String): 2], range: NSMakeRange(0, attributedContent.string.lengthOfBytes(using: .utf8)))
         
