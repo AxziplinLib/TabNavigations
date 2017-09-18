@@ -499,41 +499,17 @@ open class TabNavigationController: UIViewController {
     // MARK: - Private.
     private func _setupTabNavigationBar() {
         view.addSubview(_tabNavigationBar)
-        _setupConstraintsOfTabNavigationBar()
-    }
-    
-    private func _setupConstraintsOfTabNavigationBar() {
-        if #available(iOS 11.0, *) {
-            _tabNavigationBar.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor).isActive = true
-            _tabNavigationBar.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor).isActive = true
-            _tabNavigationBar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
-            _tabNavigationBar.heightAnchor.constraint(equalToConstant: DefaultTabNavigationBarHeight).isActive = true
-        } else {
-            view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[_tabNavigationBar(==height)]", options: [], metrics: ["height":DefaultTabNavigationBarHeight], views: ["_tabNavigationBar":_tabNavigationBar]))
-            view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[_tabNavigationBar]|", options: [], metrics: nil, views: ["_tabNavigationBar":_tabNavigationBar]))
-        }
+        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[_tabNavigationBar]|", options: [], metrics: nil, views: ["_tabNavigationBar":_tabNavigationBar]))
+        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[_tabNavigationBar]", options: [], metrics: ["height":DefaultTabNavigationBarHeight], views: ["_tabNavigationBar":_tabNavigationBar]))
     }
     
     private func _setupContentScrollView() {
         _contentScrollView.delegate = self
         view.insertSubview(_contentScrollView, at: 0)
-        _setupConstraintsOfContentScrollView()
-    }
-    
-    private func _setupConstraintsOfContentScrollView() {
-        if #available(iOS 11.0, *) {
-            _contentScrollView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor).isActive = true
-            _contentScrollView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor).isActive = true
-            _contentScrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
-            _contentScrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
-            _contentScrollView.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor, multiplier: 1.0).isActive = true
-            _contentScrollView.heightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.heightAnchor, multiplier: 1.0).isActive = true
-        } else {
-            view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[_contentScrollView]|", options: [], metrics: nil, views: ["_contentScrollView":_contentScrollView]))
-            view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[_contentScrollView]|", options: [], metrics: nil, views: ["_contentScrollView":_contentScrollView]))
-            _contentScrollView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
-            _contentScrollView.heightAnchor.constraint(equalTo: view.heightAnchor).isActive = true
-        }
+        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[_contentScrollView]|", options: [], metrics: nil, views: ["_contentScrollView":_contentScrollView]))
+        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[_contentScrollView]|", options: [], metrics: nil, views: ["_contentScrollView":_contentScrollView]))
+        _contentScrollView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
+        _contentScrollView.heightAnchor.constraint(equalTo: view.heightAnchor).isActive = true
     }
     
     private func _setupKeyboardAlignmentView() {
