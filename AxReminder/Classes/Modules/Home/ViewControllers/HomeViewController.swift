@@ -96,7 +96,11 @@ extension HomeViewController {
         
         view.addSubview(label)
         label.heightAnchor.constraint(equalToConstant: 20.0).isActive = true
-        view.leadingAnchor.constraint(equalTo: label.leadingAnchor, constant: -15.0).isActive = true
+        if #available(iOS 11.0, *) {
+            view.safeAreaLayoutGuide.leadingAnchor.constraint(equalTo: label.leadingAnchor, constant: -15.0).isActive = true
+        } else {
+            view.leadingAnchor.constraint(equalTo: label.leadingAnchor, constant: -15.0).isActive = true
+        }
         view.bottomAnchor.constraint(equalTo: label.bottomAnchor, constant: 20.0).isActive = true
         
         switch section {
