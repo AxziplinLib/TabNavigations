@@ -405,8 +405,23 @@ public class TabNavigationBar: UIView, UIBarPositioning {
             }
         }
     }
+    /// The height of the content area of the tab navigation bar ignoring the top edge of the safe area.
+    ///
+    /// You typically use this property to set the height of the tab navigation bar instead of the setting
+    /// the frame or constraint of the tab navigation bar.
+    ///
+    /// Default value: 64.0.
+    public var height: CGFloat = 64.0 {
+        didSet {
+            _heightConstraint?.constant = height
+            _heightConstraintOfContainerView?.constant = height
+            setNeedsLayout()
+        }
+    }
     // MARK: - Private Properties.
     fileprivate var _normalBackgroundColor: UIColor?
+    /// The container view contains the title-items and navigation-items views.
+    fileprivate lazy var _containerView: UIView = _createGeneralContainerView()
     fileprivate lazy var __titleAlignmentLabel: UILabel = _createGeneralAlignmentLabel()
     fileprivate lazy var _titleItemsContainerView: UIView = _createGeneralContainerView()
     fileprivate lazy var _itemsContainerView: UIView = _createGeneralContainerView()
@@ -437,6 +452,8 @@ public class TabNavigationBar: UIView, UIBarPositioning {
     
     fileprivate var _titleItemsScrollViewDelegate: _TabNavigationBarScrollViewHooks!
     
+    private weak var _heightConstraint: NSLayoutConstraint?
+    private weak var _heightConstraintOfContainerView: NSLayoutConstraint?
     private weak var _horizontalConstraintOfBackItem: NSLayoutConstraint?
     private weak var _leadingConstraintOfLastItemView: NSLayoutConstraint?
     private weak var _leadingConstraintOfLastTransitionItemView: NSLayoutConstraint?
@@ -472,6 +489,8 @@ public class TabNavigationBar: UIView, UIBarPositioning {
     
     // Initializer:
     private func _initializer() {
+        // Set up the height of the tab navigation bar.
+        _setupConstraintOfSelf()
         // Set up container views:
         _setupContainerViews()
         _setupPreviewGesture()
@@ -544,11 +563,38 @@ public class TabNavigationBar: UIView, UIBarPositioning {
         layoutIfNeeded()
     }
     
+    private func _setupConstraintOfSelf() {
+        var heightc: NSLayoutConstraint
+        if #available(iOS 11.0, *) {
+            heightc = heightAnchor.constraint(equalTo: topAnchor.anchorWithOffset(to: safeAreaLayoutGuide.topAnchor), multiplier: 1.0, constant: height)
+        } else {
+            heightc = heightAnchor.constraint(equalToConstant: height)
+        }
+        heightc.isActive = true
+        _heightConstraint = heightc
+    }
+    
     private func _setupContainerViews() {
         _navigationBackItem._view.isHidden = true
-        addSubview(_navigationBackItem._view)
-        _navigationBackItem._view.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
-        let _horizontal = _navigationBackItem._view.trailingAnchor.constraint(equalTo: leadingAnchor)
+        // Add the container view.
+        addSubview(_containerView)
+        let heightConstraint = _containerView.heightAnchor.constraint(equalToConstant: height)
+        heightConstraint.isActive = true
+        _heightConstraintOfContainerView = heightConstraint
+        if #available(iOS 11.0, *) {
+            _containerView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor).isActive = true
+            _containerView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor).isActive = true
+            _containerView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor).isActive = true
+        } else {
+            _containerView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
+            _containerView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
+            _containerView.topAnchor.constraint(equalTo: topAnchor).isActive = true
+        }
+        _containerView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
+        
+        _containerView.addSubview(_navigationBackItem._view)
+        _navigationBackItem._view.centerYAnchor.constraint(equalTo: _containerView.centerYAnchor).isActive = true
+        let _horizontal = _navigationBackItem._view.trailingAnchor.constraint(equalTo: _containerView.leadingAnchor)
         _horizontal.isActive = true
         _horizontalConstraintOfBackItem = _horizontal
         _setupTitleItemsContainerView(_titleItemsContainerView)
@@ -556,15 +602,15 @@ public class TabNavigationBar: UIView, UIBarPositioning {
     }
     
     private func _setupTitleItemsContainerView(_ itemsContainerView: UIView) {
-        addSubview(itemsContainerView)
+        _containerView.addSubview(itemsContainerView)
         
         _navigationBackItem._view.trailingAnchor.constraint(equalTo: itemsContainerView.leadingAnchor).isActive = true
-        self.topAnchor.constraint(equalTo: itemsContainerView.topAnchor).isActive = true
-        self.bottomAnchor.constraint(equalTo: itemsContainerView.bottomAnchor).isActive = true
+        _containerView.topAnchor.constraint(equalTo: itemsContainerView.topAnchor).isActive = true
+        _containerView.bottomAnchor.constraint(equalTo: itemsContainerView.bottomAnchor).isActive = true
     }
     
     private func _setupNavigationItemsContainerView(_ itemsContainerView: UIView, transition: Bool = false) {
-        addSubview(itemsContainerView)
+        _containerView.addSubview(itemsContainerView)
         
         let _constraint = _titleItemsContainerView.trailingAnchor.constraint(equalTo: itemsContainerView.leadingAnchor, constant: -DefaultTabNavigationItemEdgeMargin)
         _constraint.isActive = true
@@ -577,10 +623,10 @@ public class TabNavigationBar: UIView, UIBarPositioning {
             _constraintBetweenTitleContainerAndItemsContainer = _constraint
         }
         
-        self.trailingAnchor.constraint(equalTo: itemsContainerView.trailingAnchor).isActive = true
-        self.topAnchor.constraint(equalTo: itemsContainerView.topAnchor).isActive = true
-        self.bottomAnchor.constraint(equalTo: itemsContainerView.bottomAnchor).isActive = true
-        itemsContainerView.widthAnchor.constraint(lessThanOrEqualTo: self.widthAnchor, multiplier: 0.5, constant: 0.0).isActive = true
+        _containerView.trailingAnchor.constraint(equalTo: itemsContainerView.trailingAnchor).isActive = true
+        _containerView.topAnchor.constraint(equalTo: itemsContainerView.topAnchor).isActive = true
+        _containerView.bottomAnchor.constraint(equalTo: itemsContainerView.bottomAnchor).isActive = true
+        itemsContainerView.widthAnchor.constraint(lessThanOrEqualTo: _containerView.widthAnchor, multiplier: 0.5, constant: 0.0).isActive = true
     }
     
     private func _setupPreviewGesture() {
@@ -638,13 +684,13 @@ public class TabNavigationBar: UIView, UIBarPositioning {
     
     internal func _toggleShowingOfNavigationBackItem(shows: Bool, duration: TimeInterval = 0.5, animated: Bool) {
         if let _horizontal = _horizontalConstraintOfBackItem {
-            removeConstraint(_horizontal)
+            _containerView.removeConstraint(_horizontal)
         }
         var _horizontal: NSLayoutConstraint
         if shows {
-            _horizontal = _navigationBackItem._view.leadingAnchor.constraint(equalTo: leadingAnchor)
+            _horizontal = _navigationBackItem._view.leadingAnchor.constraint(equalTo: _containerView.leadingAnchor)
         } else {
-            _horizontal = _navigationBackItem._view.trailingAnchor.constraint(equalTo: leadingAnchor)
+            _horizontal = _navigationBackItem._view.trailingAnchor.constraint(equalTo: _containerView.leadingAnchor)
         }
         _horizontal.isActive = true
         _horizontalConstraintOfBackItem = _horizontal
