@@ -1,5 +1,5 @@
 //
-//  _TabNavigationBarScrollViewDelegates.swift
+//  _ScrollViewDelegates.swift
 //  AxReminder
 //
 //  Created by devedbox on 2017/9/19.
