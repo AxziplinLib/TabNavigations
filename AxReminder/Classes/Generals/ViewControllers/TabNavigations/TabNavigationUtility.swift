@@ -123,3 +123,21 @@ extension UIColor {
         return UIColor(red: _red, green: _green, blue: _blue, alpha: _alpha)
     }
 }
+
+extension UIFont {
+    /// Calculates the middle font size value between from and to fonts.
+    ///
+    /// - Parameter from   : The font to transit from.
+    /// - Parameter to     : The font to transit to.
+    /// - Parameter percent: The font trantision percent. The value is available in [0.0, 1.0].
+    ///                      If the value is 0.0, the receiver color will be returned. And the
+    ///                      to-color will be returned if the value is 1.0.
+    ///
+    /// - Returns: An UIColor between the receiver and the to-color by changing the percent.
+    internal class func font(from: UIFont, to: UIFont, percent: CGFloat) -> UIFont! {
+        guard from.fontName == to.fontName else { return nil }
+        
+        let sizeDelta = to.pointSize - from.pointSize
+        return UIFont(name: from.fontName, size: from.pointSize + sizeDelta * percent)
+    }
+}
