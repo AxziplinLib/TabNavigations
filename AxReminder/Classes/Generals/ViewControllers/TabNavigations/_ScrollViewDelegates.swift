@@ -81,10 +81,10 @@ extension _ScrollViewDelegatesQueue {
 extension _ScrollViewDelegatesQueue {
     /// Add a new UIScrollViewDelegate object to the managed queue.
     /// - Parameter delegate: A UIScrollViewDelegate to be added and managed.
-    func add(_ delegate: UIScrollViewDelegate)    { _hashTable.add(delegate)      }
+    func add(_ delegate: UIScrollViewDelegate?)    { _hashTable.add(delegate)      }
     /// Remove a existing UIScrollViewDelegate object from the managed queue.
     /// - Parameter delegate: The existing delegate the be removed.
-    func remove(_ delegate: UIScrollViewDelegate) { _hashTable.remove(delegate)   }
+    func remove(_ delegate: UIScrollViewDelegate?) { _hashTable.remove(delegate)   }
     /// Remove all the managed UIScrollViewDelegate objects.
     func removeAll()                              { _hashTable.removeAllObjects() }
 }
