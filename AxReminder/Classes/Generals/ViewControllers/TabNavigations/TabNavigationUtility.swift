@@ -136,7 +136,7 @@ extension UIFont {
     ///
     /// - Returns: An UIColor between the receiver and the to-color by changing the percent.
     internal class func font(from: UIFont, to: UIFont, percent: CGFloat) -> UIFont! {
-        guard from.fontName == to.fontName else { return nil }
+        // guard from.fontName == to.fontName else { return nil }
         
         let sizeDelta = to.pointSize - from.pointSize
         return UIFont(name: from.fontName, size: from.pointSize + sizeDelta * percent)
