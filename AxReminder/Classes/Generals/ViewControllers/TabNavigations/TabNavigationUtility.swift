@@ -95,30 +95,31 @@ extension UIColor {
     /// - Returns: The result of the two components.
     internal class func diff(from fromComponents: ColorComponents, to components: ColorComponents) -> ColorComponents {
         let _components = fromComponents
-        return (_components.red - components.red, _components.green - components.green, _components.blue - components.blue, _components.alpha - components.alpha)
+        return (components.red - _components.red, components.green - _components.green, components.blue - _components.blue, components.alpha - _components.alpha)
     }
 }
 
 extension UIColor {
     /// Calculates the middle color value between self to another color object.
     ///
-    /// - Parameter color  : The color to reach and be calculated with.
+    /// - Parameter from   : The color to transit from.
+    /// - Parameter to     : The color to transit to.
     /// - Parameter percent: The color changing percent. The value is available in [0.0, 1.0].
     ///                      If the value is 0.0, the receiver color will be returned. And the
     ///                      to-color will be returned if the value is 1.0.
     ///
     /// - Returns: An UIColor between the receiver and the to-color by changing the percent.
-    internal func to(_ color: UIColor, percent: CGFloat) -> UIColor {
-        let colorComponents   = self.components
-        let toColorComponents = color.components
-        let diffComponents    = UIColor.diff(from: colorComponents, to: toColorComponents)
+    internal class func color(from: UIColor, to: UIColor, percent: CGFloat) -> UIColor {
+        let fromColorComponents = from.components
+        let toColorComponents   = to.components
+        let diffComponents      = UIColor.diff(from: fromColorComponents, to: toColorComponents)
         
         let p = min(1.0, max(0.0, percent))
         
-        let _red   = colorComponents.red   + diffComponents.red   * p
-        let _green = colorComponents.green + diffComponents.green * p
-        let _blue  = colorComponents.blue  + diffComponents.blue  * p
-        let _alpha = colorComponents.alpha + diffComponents.alpha * p
+        let _red   = fromColorComponents.red   + diffComponents.red   * p
+        let _green = fromColorComponents.green + diffComponents.green * p
+        let _blue  = fromColorComponents.blue  + diffComponents.blue  * p
+        let _alpha = fromColorComponents.alpha + diffComponents.alpha * p
         
         return UIColor(red: _red, green: _green, blue: _blue, alpha: _alpha)
     }
