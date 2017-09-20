@@ -8,46 +8,66 @@
 
 import UIKit
 import Foundation
+import QuartzCore
 
-private class _TabNavigationItemButton: UIButton { /* Custom view hooks. */ }
-private class _TabNavigationTitleItemButton: UIButton { // Custom view hooks.
-    weak var _titleItem: TabNavigationTitleItem?
+/// The type defines the constants of the TabNavigationItems.
+internal struct _TabNavigationConfig {
+    /// The font size for the title item button.
+    let titleFontSize          : CGFloat
+    /// The font size for the title item button at unselected state.
+    let titleUnselectedFontSize: CGFloat
+    /// The font size for the navigation item button.
+    let itemFontSize           : CGFloat
+    /// The padding constant of the items.
+    let titleItemPadding       : CGFloat
+    /// The edge margin of the items.
+    let itemEdgeMargin         : CGFloat
+    /// The height for the item button.
+    let itemHeight             : CGFloat
+    /// The minimal width value for the item button.
+    let itemWidthThreshold     : CGFloat
+}
+extension _TabNavigationConfig {
+    /// Returns the default configuration contains all the static constant of font size, padding value and sizes.
+    static var `default` = _TabNavigationConfig(titleFontSize: 36.0, titleUnselectedFontSize: 16.0, itemFontSize: 14.0, titleItemPadding: 15.0, itemEdgeMargin: 8.0, itemHeight: 44.0, itemWidthThreshold: 30.0)
 }
 
-private class _TabNavigationItemView: UIView {
-    var title: String? {
-        didSet {
-            _button.setTitle(title, for: .normal)
-        }
-    }
-    var image: UIImage? {
-        didSet {
-            _button.setImage(image, for: .normal)
-        }
-    }
-    
-    
-    // Button item.
+extension _TabNavigationConfig {
+    /// The horizontal edge margin for the _TabNavigationItemView.
+    static var edgeMarginForItemView: CGFloat { return 6.0 }
+}
+
+/// A type subclassing the UIButton representing the button element of the tab navigation item.
+internal class _TabNavigationItemButton: UIButton { /* Custom view hooks. */ }
+/// A type subclassing the UIButton representing the button element of the tab navigation title item.
+internal class _TabNavigationTitleItemButton: UIButton { // Custom view hooks.
+    /// The refrence storage if the related title item.
+    weak var   _titleItem: TabNavigationTitleItem?
+}
+
+/// A subclassing of UIView representing the underlying container view of TabNavigationItem.
+internal class _TabNavigationItemView: UIView {
+    /// The title for the underlying button.
+    var title: String?  { didSet { _button.setTitle(title, for: .normal) } }
+    /// The image for the underlying button.
+    var image: UIImage? { didSet { _button.setImage(image, for: .normal) } }
+    /// The underlying UIButton object.
     lazy var _button: _TabNavigationItemButton = { () -> _TabNavigationItemButton in
         let button = _TabNavigationItemButton(type: .system)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.backgroundColor = UIColor.clear
-        button.titleLabel?.font = /*UIFont(name: "PingFangSC-Semibold", size: DefaultTabNavigationItemFontSize)*/UIFont.boldSystemFont(ofSize: DefaultTabNavigationItemFontSize)
+        button.translatesAutoresizingMaskIntoConstraints = false // Using auto-layout.
+        button.backgroundColor  = UIColor.clear
+        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: _TabNavigationConfig.default.itemFontSize)
         return button
     }()
     
-    // Initialzier:
+    // MARK: Initializer.
     
     override init(frame: CGRect) {
-        super.init(frame: frame)
-        
-        _initializer()
+        super.init(frame: frame);    _initializer()
     }
     
     required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-        
-        _initializer()
+        super.init(coder: aDecoder); _initializer()
     }
     
     private func _initializer() {
@@ -57,53 +77,61 @@ private class _TabNavigationItemView: UIView {
         _setupButton()
     }
     
-    // Private:
+    // MARK: Private.
     private func _setupButton() {
-        heightAnchor.constraint(equalToConstant: DefaultTabNavigationItemHeight).isActive = true
-        widthAnchor.constraint(greaterThanOrEqualToConstant: DefaultTabNavigationItemWidthThreshold).isActive = true
+        heightAnchor.constraint(equalToConstant: _TabNavigationConfig.default.itemHeight).isActive = true
+        widthAnchor.constraint(greaterThanOrEqualToConstant: _TabNavigationConfig.default.itemWidthThreshold).isActive = true
         
         addSubview(_button)
         addConstraint(NSLayoutConstraint(item: self, attribute: .centerX, relatedBy: .equal, toItem: _button, attribute: .centerX, multiplier: 1.0, constant: 0.0))
         addConstraint(NSLayoutConstraint(item: self, attribute: .centerY, relatedBy: .equal, toItem: _button, attribute: .centerY, multiplier: 1.0, constant: 0.0))
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-(==6)-[_button]-(==6)-|", options: [], metrics: nil, views: ["_button":_button]))
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-(margin)-[_button]-(margin)-|", options: [], metrics: ["margin": _TabNavigationConfig.edgeMarginForItemView], views: ["_button":_button]))
         addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-(>=0)-[_button]-(>=0)-|", options: [], metrics: nil, views: ["_button":_button]))
     }
 }
-
+/// A type representing the navigation item on the right top corner of TabNavigationBar.
+/// Same as the UINavigationItem to set up and use.
 public class TabNavigationItem: NSObject {
     // MARK: - Properties.
-    public var image: UIImage? {
-        return _view.image
-    }
     
-    public var title: String? {
-        return _view.title
-    }
-    
+    /// Returns the image of the underlying button.
+    public var image: UIImage? { return _view.image }
+    /// Returns the title of the underlying button.
+    public var title: String?  { return _view.title }
+    /// The tint color of the underlying button.
     public var tintColor: UIColor? {
         set { _view._button.tintColor = newValue }
         get { return _view._button.tintColor }
     }
-    
-    public var target: Any? {
-        return _view._button.allTargets.first
-    }
-    
+    /// The target in action-target mode of the underlying button.
+    public var target: Any? { return _view._button.allTargets.first }
+    /// Returns the first selector for the target of the underlying button.
     public var selector: Selector? {
-        guard let _selector = _view._button.actions(forTarget: target, forControlEvent: .touchUpInside)?.first else {
-            return nil
-        }
+        guard let _selector = _view._button.actions(forTarget: target, forControlEvent: .touchUpInside)?.first else { return nil }
         return Selector(_selector)
     }
-    
+    /// Returns the underlying view.
     internal var underlyingView: UIView { return _view }
-    fileprivate var _view: _TabNavigationItemView = _TabNavigationItemView()
+    /// The underlying item view to manage the underlying button.
+    internal var _view: _TabNavigationItemView = _TabNavigationItemView()
     
+    // MARK: Iniaializer.
+    
+    /// Creates a TabNavigationItem with a title for the underlying button.
+    ///
+    /// - Parameter title: The String value for the title of the underlying button at normal state.
+    /// - Returns: A new item with the given title.
     public init(title: String?) {
         super.init()
         _view.title = title
     }
-    
+    /// Creates a TabNavigationItem with an image, target and selector for the underlying button.
+    ///
+    /// - Parameter image   : An UIImage object for the image of the underlying button at normal state.
+    /// - Parameter target  : The target object for the action-target mode. Default: nil.
+    /// - Parameter selector: The Selector value for the action-target mode. Default: nil.
+    ///
+    /// - Returns: A new item with the given parameters.
     public convenience init(image: UIImage? = nil, target: Any? = nil, selector: Selector? = nil) {
         self.init(title: nil)
         _view.image = image
@@ -111,7 +139,13 @@ public class TabNavigationItem: NSObject {
             _view._button.addTarget(target, action: selector!, for: .touchUpInside)
         }
     }
-    
+    /// Creates a TabNavigationItem with a title, target and selector for the underlying button.
+    ///
+    /// - Parameter title   : A String value for the title of the underlying button at normal state.
+    /// - Parameter target  : The target object for the action-target mode. Default: nil.
+    /// - Parameter selector: The Selector value for the action-target mode. Default: nil.
+    ///
+    /// - Returns: A new item with the given parameters.
     public convenience init(title: String? = nil, target: Any? = nil, selector: Selector? = nil) {
         self.init(title: title)
         _view.title = title
@@ -120,16 +154,27 @@ public class TabNavigationItem: NSObject {
         }
     }
 }
-
-private class _TabNavigationBackItem: TabNavigationItem { /* Back navigation item*/ }
-
+/// A type reprensting the navigation back item of the TabNavigationBar.
+internal class _TabNavigationBackItem: TabNavigationItem { /* Back navigation item*/ }
+/// A type representing the navigation title item on the left top corner of TabNavigationBar.
 public class TabNavigationTitleItem: NSObject {
+    /// Indicates the selection state of the title item. The selected state will has a large font size
+    /// and heavy text color.
     public var selected: Bool {
         didSet {
-            setSelected(selected, animated: false)
+            if let range = selectedRange {
+                let attributedTitle = NSMutableAttributedString(attributedString: self._button.attributedTitle(for: .normal)!)
+                let _ns_range = NSMakeRange(range.lowerBound, range.upperBound - range.lowerBound)
+                attributedTitle.addAttributes([NSFontAttributeName: titleFont(whenSelected: selected), NSForegroundColorAttributeName: titleColor(whenSelected: selected)], range: _ns_range)
+                self._button.setAttributedTitle(attributedTitle, for: .normal)
+            } else {
+                self._button.titleLabel?.font = _selectionTitleFonts[selected]
+                self._button.tintColor        = _selectionTitleColors[selected]
+                self._button.setTitleColor(_selectionTitleColors[selected], for: .normal)
+            }
         }
     }
-    
+    /// A CountableRange<Int> value indicates the range of the title content to be selected.
     public var selectedRange: CountableRange<Int>? {
         didSet {
             if let _ = selectedRange {
@@ -140,74 +185,73 @@ public class TabNavigationTitleItem: NSObject {
             }
         }
     }
-    
-    public var currentTitleColor: UIColor {
-        return _selectionTitleColors[selected]!
-    }
-    
-    public var currentTitleFont: UIFont {
-        return _selectionTitleFonts[selected]!
-    }
-    
+    /// Returns the title color of current selection state.
+    public var currentTitleColor: UIColor { return _selectionTitleColors[selected]! }
+    /// Returns the title font of current selection state.
+    public var currentTitleFont: UIFont { return _selectionTitleFonts[selected]! }
+    /// The title colors configs for the selection states.
     private var _selectionTitleColors: [Bool: UIColor] = [true: UIColor(hex: "4A4A4A"), false: UIColor(hex: "CCCCCC")]
-    private var _selectionTitleFonts: [Bool: UIFont] = [true: /*UIFont(name: "PingFangSC-Semibold", size: DefaultTitleFontSize)!*/UIFont.boldSystemFont(ofSize: DefaultTitleFontSize), false: /*UIFont(name: "PingFangSC-Semibold", size: DefaultTitleUnselectedFontSize)!*/UIFont.boldSystemFont(ofSize: DefaultTabNavigationItemFontSize)]
-    
+    /// The title fonts configs for the selection states.
+    private var _selectionTitleFonts: [Bool: UIFont] = [true: UIFont.boldSystemFont(ofSize: _TabNavigationConfig.default.titleFontSize), false: UIFont.boldSystemFont(ofSize: _TabNavigationConfig.default.titleUnselectedFontSize)]
+    /// Sets and updates the color configs for the selection states of the item.
+    ///
+    /// - Parameter titleColor: A UIColor object to update the color config.
+    /// - Parameter selected  : The selection state, true for selected and false for unselected.
     public func setTitleColor(_ titleColor: UIColor, whenSelected selected: Bool) {
         _selectionTitleColors[selected] = titleColor
     }
+    /// Get the title color for the specific selection state.
+    ///
+    /// - Parameter selected: The selection state.
+    /// - Returns: The color for the selection state.
     public func titleColor(whenSelected selected: Bool) -> UIColor {
         return _selectionTitleColors[selected]!
     }
-    
+    /// Sets and updates the font configs for the selection states of the item.
+    ///
+    /// - Parameter titleFont: A UIFont object to update the font config.
+    /// - Parameter selected : The selection state, true for selected and false for unselected.
     public func setTitleFont(_ titleFont: UIFont, whenSelected selected: Bool) {
         _selectionTitleFonts[selected] = titleFont
         if _selectionTitleFonts[true]!.fontName != _selectionTitleFonts[false]!.fontName {
             fatalError("Font for selected state and font for unselected state must have the same font family and name.")
         }
     }
+    /// Get the title font for the specific selection state.
+    ///
+    /// - Parameter selected: The selection state.
+    /// - Returns: The font for the selection state.
     public func titleFont(whenSelected selected: Bool) -> UIFont {
         return _selectionTitleFonts[selected]!
     }
     
+    @available(iOS, unavailable, message: "Animating set selection state of `TabNavigationTitleItem` is not supported.")
     public func setSelected(_ selected: Bool, animated: Bool, completion: (() -> Void)? = nil) {
         if animated {
-            if let range = selectedRange {
-                let _ns_range = NSMakeRange(range.lowerBound, range.upperBound - range.lowerBound)
-                
-                let _fontSizeAnimation = POPSpringAnimation()
-                _fontSizeAnimation.property = POPAnimatableProperty.attributedButtonFontSize(named: _selectionTitleFonts[selected]!.fontName, range: _ns_range, state: .normal)
-                _fontSizeAnimation.toValue = titleFont(whenSelected: selected).pointSize
-                _fontSizeAnimation.removedOnCompletion = true
-                self._button.pop_add(_fontSizeAnimation, forKey: "ATTRIBUTEDFONT")
-                
-                let _titleColorAnimation = POPSpringAnimation()
-                _titleColorAnimation.property = POPAnimatableProperty.attributedButtonTextColor(for: _ns_range, state: .normal)
-                _titleColorAnimation.toValue = _selectionTitleColors[selected]
-                _titleColorAnimation.removedOnCompletion = true
-                _titleColorAnimation.completionBlock = { animation, finished in
-                    completion?()
+            let framesCount = 69.0
+            let duration = 0.4
+            UIView.animateKeyframes(withDuration: duration, delay: 0.0, options: [.layoutSubviews, .calculationModeDiscrete], animations: { [unowned self] in
+                for index in 0..<Int(framesCount) {
+                    let percent = Double(index) / framesCount
+                    UIView.addKeyframe(withRelativeStartTime: percent, relativeDuration: percent * duration, animations: {
+                        let delta = (self._selectionTitleFonts[true]!.pointSize - self._selectionTitleFonts[false]!.pointSize) * CGFloat(percent)
+                        let fontSize = self._selectionTitleFonts[!selected]!.pointSize + (delta * (selected ? 1.0 : -1.0))
+                        let tintColor = UIColor.color(from: self._selectionTitleColors[!selected]!, to: self._selectionTitleColors[selected]!, percent: CGFloat(percent))
+                        
+                        if let range = self.selectedRange {
+                            let _ns_range = NSMakeRange(range.lowerBound, range.upperBound - range.lowerBound)
+                            let attributedTitle = NSMutableAttributedString(string: self._titleStorage, attributes: [NSFontAttributeName: self._selectionTitleFonts[false]!, NSForegroundColorAttributeName: self._selectionTitleColors[false]!])
+                            attributedTitle.addAttributes([NSFontAttributeName: UIFont(name: self._selectionTitleFonts[true]!.fontName, size: fontSize)!, NSForegroundColorAttributeName: tintColor], range: _ns_range)
+                            self._button.setAttributedTitle(attributedTitle, for: .normal)
+                        } else {
+                            self._button.titleLabel?.font = UIFont(name: self._selectionTitleFonts[true]!.fontName, size: fontSize)!
+                            self._button.tintColor = tintColor
+                            self._button.setTitleColor(tintColor, for: .normal)
+                        }
+                    })
                 }
-                self._button.pop_add(_titleColorAnimation, forKey: "ATTRIBUTEDCOLOR")
-            } else {
-                let _fontSizeAnimation = POPSpringAnimation()
-                _fontSizeAnimation.property = POPAnimatableProperty.labelFontSize(named: _selectionTitleFonts[selected]!.fontName)
-                _fontSizeAnimation.toValue = selected ? DefaultTitleFontSize : DefaultTitleUnselectedFontSize
-                _fontSizeAnimation.removedOnCompletion = true
-                self._button.titleLabel?.pop_add(_fontSizeAnimation, forKey: "FONT")
-                
-                let _titleColorAnimation = POPSpringAnimation()
-                _titleColorAnimation.property = POPAnimatableProperty.buttonTitleColor(for: . normal)
-                _titleColorAnimation.toValue = _selectionTitleColors[selected]
-                _titleColorAnimation.removedOnCompletion = true
-                self._button.pop_add(_titleColorAnimation, forKey: "COLOR")
-                
-                let _tintColorAnimation = POPSpringAnimation(propertyNamed: kPOPViewTintColor)
-                _tintColorAnimation?.toValue = _selectionTitleColors[selected]
-                _tintColorAnimation?.removedOnCompletion = true
-                _tintColorAnimation?.completionBlock = { animation, finished in
-                    completion?()
-                }
-                self._button.pop_add(_tintColorAnimation, forKey: "TINTCOLOR")
+            }) { (_) in
+                completion?()
             }
         } else {
             if let range = selectedRange {
@@ -217,26 +261,36 @@ public class TabNavigationTitleItem: NSObject {
                 self._button.setAttributedTitle(attributedTitle, for: .normal)
             } else {
                 self._button.titleLabel?.font = _selectionTitleFonts[selected]
-                self._button.tintColor = _selectionTitleColors[selected]
+                self._button.tintColor        = _selectionTitleColors[selected]
                 self._button.setTitleColor(_selectionTitleColors[selected], for: .normal)
             }
         }
     }
-    
-    fileprivate lazy var _button: _TabNavigationTitleItemButton = { () -> _TabNavigationTitleItemButton in
+    /// The underlying UIButton object.
+    internal lazy var _button: _TabNavigationTitleItemButton = { () -> _TabNavigationTitleItemButton in
         let button = _TabNavigationTitleItemButton(type: .custom)
         button.titleLabel?.numberOfLines = 1
         button.adjustsImageWhenHighlighted = false
         return button
     }()
-    
+    /// The storage for the title item.
+    internal var _titleStorage: String!
+    /// Creates a TabNavigationTitleItem object with a given title content.
+    ///
+    /// - Parameter title: A String value for the underlying button title of the title item.
+    /// - Returns: A new TabNavigationTitleItem item.
     public init(title: String) {
+        // _titleStorage = title
         selected = false
         super.init()
         _button.setTitle(title, for: .normal)
         _button._titleItem = self
     }
-    
+    /// Creates a TabNavigationTitleItem object with a given title content and selection range.
+    ///
+    /// - Parameter title        : A String value for the underlying button title of the title item.
+    /// - Parameter selectedRange: A CountableRange<Int> value indicates the range of the selection of the button title.
+    /// - Returns: A new TabNavigationTitleItem item.
     public convenience init(title: String, selectedRange: CountableRange<Int>? = nil) {
         self.init(title: title)
         self.selectedRange = selectedRange
@@ -248,23 +302,21 @@ public class TabNavigationTitleItem: NSObject {
         }
     }
 }
-
+/// A subclassing of TabNavigationTitleItem representing the title action item.
+///
+/// A title action item lay on the right end of the title items, the action item
+/// cannot be selected like the title item, but the action item can perform like
+/// a navigation item on the right corner of the tab nagivation bar.
 public class TabNavigationTitleActionItem: TabNavigationTitleItem {
-    public override func setSelected(_ selected: Bool, animated: Bool, completion: (() -> Void)? = nil) {
-        super.setSelected(false, animated: false, completion: completion)
-    }
-    
-    public override func titleFont(whenSelected selected: Bool) -> UIFont {
-        return super.titleFont(whenSelected: false)
-    }
-    
-    public override func titleColor(whenSelected selected: Bool) -> UIColor {
-        return super.titleColor(whenSelected: false)
-    }
-    
-    fileprivate var _target: Any?
-    fileprivate var _action: Selector?
-    
+    /// Returns the unselected font for the action item.
+    public override func titleFont(whenSelected selected: Bool) -> UIFont   { return super.titleFont(whenSelected: false ) }
+    /// Returns the unselected color for the action item.
+    public override func titleColor(whenSelected selected: Bool) -> UIColor { return super.titleColor(whenSelected: false) }
+    /// The action target for the underlying UIButton item to trigger.
+    internal var _target: Any?
+    /// The action selector fot the target to perform.
+    internal var _action: Selector?
+    /// The tint color of the action button.
     public var tintColor: UIColor? {
         didSet {
             _button.tintColor = tintColor
@@ -273,56 +325,27 @@ public class TabNavigationTitleActionItem: TabNavigationTitleItem {
             }
         }
     }
-    
+    /// Creates a TabNavigationTitleActionItem object with a given title content.
+    ///
+    /// - Parameter title: A String value for the underlying button title of the title item.
+    /// - Returns: A new TabNavigationTitleActionItem item.
     public override init(title: String) {
         super.init(title: title)
         _button = _TabNavigationTitleItemButton(type: .system)
         _button.setTitle(title, for: .normal)
         _button._titleItem = self
     }
-    
+    /// Creates a TabNavigationTitleActionItem object with a given title content and target-action field.
+    ///
+    /// - Parameter title   : A String value for the underlying button title of the title item.
+    /// - Parameter target  : The target object for the action-target mode.
+    /// - Parameter selector: The Selector value for the action-target mode.
+    /// - Returns: A new TabNavigationTitleActionItem item.
     public convenience init(title: String, target: Any?, selector: Selector) {
         self.init(title: title)
         _target = target
         _action = selector
         
         _button.addTarget(target, action: selector, for: .touchUpInside)
-    }
-}
-
-extension UIImage {
-    /// Creates an image from any instances of `String` with the specific font and tint color in points.
-    /// The `String` contents' count should not be zero. If so, nil will be returned.
-    ///
-    /// More info and tools to generate images: [RichImages](https://github.com/AxziplinLib/RichImages)\/Generator.
-    ///
-    /// - Parameter content: An instance of `String` to generate `UIImage` with.
-    /// - Parameter font   : The font used to draw image with. Using `.systemFont(ofSize: 17)` by default.
-    /// - Parameter color  : The color used to fill image with. Using `.black` by default.
-    ///
-    /// - Returns: A `String` contents image created with specific font and color.
-    public class func _generateImage(from content: String, using font: UIFont = .systemFont(ofSize: 17), tint color: UIColor = .black) -> UIImage! {
-        let ligature = NSMutableAttributedString(string: content)
-        ligature.setAttributes([(kCTLigatureAttributeName as String): 2, (kCTFontAttributeName as String): font], range: NSMakeRange(0, content.lengthOfBytes(using: .utf8)))
-        
-        var imageSize    = ligature.size()
-        imageSize.width  = ceil(imageSize.width)
-        imageSize.height = ceil(imageSize.height)
-        guard !imageSize.equalTo(.zero) else { return nil }
-        
-        UIGraphicsBeginImageContextWithOptions(imageSize, false, UIScreen.main.scale)
-        defer { UIGraphicsEndImageContext() }
-        guard let context = UIGraphicsGetCurrentContext() else { return nil }
-        ligature.draw(at: .zero)
-        guard let cgImage = UIGraphicsGetImageFromCurrentImageContext()?.cgImage else { return nil }
-        
-        context.scaleBy(x: 1.0, y: -1.0)
-        context.translateBy(x: 0.0, y: -imageSize.height)
-        let rect = CGRect(origin: .zero, size: imageSize)
-        context.clip(to: rect, mask: cgImage)
-        color.setFill()
-        context.fill(rect)
-        
-        return UIGraphicsGetImageFromCurrentImageContext()
     }
 }
