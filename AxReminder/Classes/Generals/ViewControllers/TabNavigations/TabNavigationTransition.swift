@@ -42,7 +42,7 @@ extension TabNavigationTitleItemTransition: UIScrollViewDelegate {
         guard !scrollView.isDragging, !scrollView.isTracking, !scrollView.isDecelerating else { return }
         let offsetX = scrollView.contentOffset.x
         
-        _transitionQueue.async { autoreleasepool { [unowned self] in
+        autoreleasepool { _transitionQueue.async { autoreleasepool { [unowned self] in
             for (index, titleItem) in titleItems.enumerated() {
                 let offsetPosition      = _offsetPositionsUpToEndIndex[index]
                 let selected            = (offsetPosition >= offsetX)
@@ -56,7 +56,7 @@ extension TabNavigationTitleItemTransition: UIScrollViewDelegate {
                     : (_offsetPositionsUpToEndIndex[titleItems.index(after: index)] - offsetPosition)
                 
                 guard fabs(offsetPosition - offsetX) <= offsetPositionDelta else {
-                    titleItem.selected = false; continue
+                    DispatchQueue.main.async { titleItem.selected = false }; continue
                 }
                 
                 let relativeOffsetX = selected
@@ -91,6 +91,6 @@ extension TabNavigationTitleItemTransition: UIScrollViewDelegate {
                 
                 self.didUpdateSelectedIndex?(transitionPercent > 0.5 ? (selected ? index : titleItems.index(after: index)) : (selected ? titleItems.index(before: index) : index))
             }
-        } }
+        } } }
     }
 }
