@@ -83,10 +83,12 @@ internal class _TabNavigationItemView: UIView {
         widthAnchor.constraint(greaterThanOrEqualToConstant: _TabNavigationConfig.default.itemWidthThreshold).isActive = true
         
         addSubview(_button)
-        addConstraint(NSLayoutConstraint(item: self, attribute: .centerX, relatedBy: .equal, toItem: _button, attribute: .centerX, multiplier: 1.0, constant: 0.0))
-        addConstraint(NSLayoutConstraint(item: self, attribute: .centerY, relatedBy: .equal, toItem: _button, attribute: .centerY, multiplier: 1.0, constant: 0.0))
+        centerXAnchor.constraint(equalTo: _button.centerXAnchor).isActive = true
+        centerYAnchor.constraint(equalTo: _button.centerYAnchor).isActive = true
         addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-(margin)-[_button]-(margin)-|", options: [], metrics: ["margin": _TabNavigationConfig.edgeMarginForItemView], views: ["_button":_button]))
         addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-(>=0)-[_button]-(>=0)-|", options: [], metrics: nil, views: ["_button":_button]))
+        
+        _button.setContentHuggingPriority(999.0, for: .horizontal)
     }
 }
 /// A type representing the navigation item on the right top corner of TabNavigationBar.
