@@ -492,6 +492,8 @@ public class TabNavigationBar: UIView, UIBarPositioning {
         
         itemView._button.lastBaselineAnchor.constraint(equalTo: __titleAlignmentLabel.lastBaselineAnchor).isActive = true
         itemView.trailingAnchor.constraint(equalTo: navigationItems.last?._view.leadingAnchor ?? navigationItemView.trailingAnchor, constant: !navigationItems.isEmpty ? 0.0 : -DefaultTabNavigationItemEdgeMargin).isActive = true
+        itemView.topAnchor.constraint(equalTo: navigationItemView.topAnchor).isActive = true
+        itemView.bottomAnchor.constraint(equalTo: navigationItemView.bottomAnchor).isActive = true
         
         if let leading = _leadingConstraintOfLastItemView(transition) {
             navigationItemView.removeConstraint(leading)
