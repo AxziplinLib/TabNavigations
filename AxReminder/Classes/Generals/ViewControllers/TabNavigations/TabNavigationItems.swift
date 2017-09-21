@@ -79,14 +79,11 @@ internal class _TabNavigationItemView: UIView {
     
     // MARK: Private.
     private func _setupButton() {
-        heightAnchor.constraint(equalToConstant: _TabNavigationConfig.default.itemHeight).isActive = true
+        _button.heightAnchor.constraint(equalToConstant: _TabNavigationConfig.default.itemHeight).isActive = true
         widthAnchor.constraint(greaterThanOrEqualToConstant: _TabNavigationConfig.default.itemWidthThreshold).isActive = true
         
         addSubview(_button)
-        centerXAnchor.constraint(equalTo: _button.centerXAnchor).isActive = true
-        centerYAnchor.constraint(equalTo: _button.centerYAnchor).isActive = true
         addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-(margin)-[_button]-(margin)-|", options: [], metrics: ["margin": _TabNavigationConfig.edgeMarginForItemView], views: ["_button":_button]))
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-(>=0)-[_button]-(>=0)-|", options: [], metrics: nil, views: ["_button":_button]))
         
         _button.setContentHuggingPriority(999.0, for: .horizontal)
     }
