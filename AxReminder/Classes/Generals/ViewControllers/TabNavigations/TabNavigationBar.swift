@@ -147,7 +147,7 @@ public class TabNavigationBar: UIView, UIBarPositioning {
     
     fileprivate var _navigationBackItem: _TabNavigationBackItem = _TabNavigationBackItem(image:#imageLiteral(resourceName: "back_indicator"))
     fileprivate var _navigationItems: [TabNavigationItem] = []
-    fileprivate var _navigationTitleItems: [TabNavigationTitleItem] = [] { didSet { _offsetPositionsUpToEndIndex = _calculatedPositionsUptoTitleItemAtEndIndex() } }
+    fileprivate var _navigationTitleItems: [TabNavigationTitleItem] = [] { didSet { _offsetPositionsUpToEndIndex = _horizontalOffsetsUptoEachIndexs() } }
     fileprivate var _navigationTitleActionItems: [TabNavigationTitleActionItem] = []
     
     fileprivate var _selectedTitleItemIndex: Int = 0 {
@@ -168,13 +168,13 @@ public class TabNavigationBar: UIView, UIBarPositioning {
     private weak var _heightConstraint: NSLayoutConstraint?
     private weak var _heightConstraintOfContainerView: NSLayoutConstraint?
     private weak var _horizontalConstraintOfBackItem: NSLayoutConstraint?
-    private weak var _leadingConstraintOfLastItemView: NSLayoutConstraint?
-    private weak var _leadingConstraintOfLastTransitionItemView: NSLayoutConstraint?
+    fileprivate weak var _leadingConstraintOfLastItemView: NSLayoutConstraint?
+    fileprivate weak var _leadingConstraintOfLastTransitionItemView: NSLayoutConstraint?
     private weak var _trailingConstraintOfLastTitleItemLabel: NSLayoutConstraint?
     private weak var _trailingConstraintOfLastTransitionTitleItemLabel: NSLayoutConstraint?
     private weak var _trailingConstraintOfLastTitleActionItemLabel: NSLayoutConstraint?
     private weak var _trailingConstraintOfLastTransitionTitleActionItemLabel: NSLayoutConstraint?
-    private weak var _widthOfNavigationItemViewForZeroContent: NSLayoutConstraint?
+    fileprivate weak var _widthOfNavigationItemViewForZeroContent: NSLayoutConstraint?
     fileprivate weak var _widthOfTransitionNavigationItemViewForZeroContent: NSLayoutConstraint?
     fileprivate weak var _constraintBetweenTitleContainerAndItemsContainer: NSLayoutConstraint?
     fileprivate weak var _constraintBetweenTransitionTitleContainerAndItemsContainer: NSLayoutConstraint?
@@ -216,6 +216,7 @@ public class TabNavigationBar: UIView, UIBarPositioning {
     }
     
     // MARK: - Actions.
+    
     @objc
     private func _handleDidSelectTitleItem(_ sender: _TabNavigationTitleItemButton) {
         guard let _titleItem = sender._titleItem else { return }
@@ -225,11 +226,11 @@ public class TabNavigationBar: UIView, UIBarPositioning {
             
             NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(_scrollToSelectedTitleItemWithAnimation), object: nil)
             // Set up the animated transition delegate:
-            _delegatesQueue.remove(_interactiveTransition)
-            _delegatesQueue.add(_animatedTransition)
+            // _delegatesQueue.remove(_interactiveTransition)
+            // _delegatesQueue.add(_animatedTransition)
             // Set to the selected offset.
-            let _offsetX = _calculatedPositionUptoTitleItem(at: _selectedTitleItemIndex, in: _navigationTitleItems)
-            _titleItemsScrollView.setContentOffset(CGPoint(x: _offsetX, y: 0.0), animated: true)
+            // let _offsetX = _horizontalOffset(upto: _selectedTitleItemIndex, in: _navigationTitleItems)
+            // _titleItemsScrollView.setContentOffset(CGPoint(x: _offsetX, y: 0.0), animated: true)
         }
     }
     @objc
@@ -247,7 +248,7 @@ public class TabNavigationBar: UIView, UIBarPositioning {
                 // Begin preview animation.
                 /*
                 _titleItemsScrollView.delegate = _titleItemsScrollViewDelegate
-                _titleItemsScrollView.setContentOffset(CGPoint(x: _calculatedPositionUptoTitleItem(at: _navigationTitleItems.index(before: _selectedTitleItemIndex)), y: 0.0), animated: true)
+                _titleItemsScrollView.setContentOffset(CGPoint(x: _horizontalOffset(upto: _navigationTitleItems.index(before: _selectedTitleItemIndex)), y: 0.0), animated: true)
                 _titleItemsScrollView.isScrollEnabled = true
                 panGesture.isEnabled = false */
             }
@@ -479,36 +480,33 @@ public class TabNavigationBar: UIView, UIBarPositioning {
         let navigationItems = items ?? _navigationItems
         let navigationItemView = itemContainerView ?? _navigationItemView
         
-        let _itemView = item._view
-        _itemView.translatesAutoresizingMaskIntoConstraints = false
+        let itemView = item._view
+        itemView.translatesAutoresizingMaskIntoConstraints = false
 
-        if let _width = transition ? _widthOfTransitionNavigationItemViewForZeroContent : _widthOfNavigationItemViewForZeroContent {
+        if let _width = _widthOfNavigationItemViewForZeroContent(transition) {
             navigationItemView.removeConstraint(_width)
         }
         
-        _itemView.removeFromSuperview()
-        navigationItemView.addSubview(_itemView)
+        itemView.removeFromSuperview()
+        navigationItemView.addSubview(itemView)
         
-        _itemView._button.lastBaselineAnchor.constraint(equalTo: __titleAlignmentLabel.lastBaselineAnchor).isActive = true
+        itemView._button.lastBaselineAnchor.constraint(equalTo: __titleAlignmentLabel.lastBaselineAnchor).isActive = true
+        itemView.trailingAnchor.constraint(equalTo: navigationItems.last?._view.leadingAnchor ?? navigationItemView.trailingAnchor, constant: !navigationItems.isEmpty ? 0.0 : -DefaultTabNavigationItemEdgeMargin).isActive = true
         
-        _itemView.trailingAnchor.constraint(equalTo: navigationItems.last?._view.leadingAnchor ?? navigationItemView.trailingAnchor, constant: !navigationItems.isEmpty ? 0.0 : -DefaultTabNavigationItemEdgeMargin).isActive = true
-        
-        if let _leading = transition ? _leadingConstraintOfLastTransitionItemView : _leadingConstraintOfLastItemView {
-            navigationItemView.removeConstraint(_leading)
+        if let leading = _leadingConstraintOfLastItemView(transition) {
+            navigationItemView.removeConstraint(leading)
         }
         
-        let _leading = _itemView.leadingAnchor.constraint(equalTo: navigationItemView.leadingAnchor)
-        _leading.isActive = true
-        if transition {
-            _leadingConstraintOfLastTransitionItemView = _leading
-        } else {
-            _leadingConstraintOfLastItemView = _leading
+        let leading = itemView.leadingAnchor.constraint(equalTo: navigationItemView.leadingAnchor)
+            leading.isActive = true
+        if  transition { _leadingConstraintOfLastTransitionItemView = leading } else {
+            _leadingConstraintOfLastItemView = leading
         }
     }
     
     fileprivate func _createAndSetupNavigationItemViews() -> TabNavigationItemViews {
         let itemsContailerView = _createGeneralContainerView()
-        let itemsScrollView = _createGeneralScrollView(alwaysBounceHorizontal: false)
+        let itemsScrollView    = _createGeneralScrollView(alwaysBounceHorizontal: false)
         let navigationItemView = _createGeneralContainerView()
         
         _setupNavigationItemsContainerView(itemsContailerView, transition: true)
@@ -549,9 +547,7 @@ public class TabNavigationBar: UIView, UIBarPositioning {
     }
     
     fileprivate func _commitTransitionNavigationItemViews(_ navigationItemViews: TabNavigationItemViews, navigationItems: [TabNavigationItem]) {
-        guard navigationItemViews.itemsContainerView !== _itemsContainerView else {
-            return
-        }
+        guard navigationItemViews.itemsContainerView !== _itemsContainerView else { return }
         
         navigationItemViews.itemsView.alpha = 1.0
         
@@ -654,10 +650,10 @@ public class TabNavigationBar: UIView, UIBarPositioning {
                 setSelectedTitle(at: index, animated: animated)
                 // _scrollToSelectedTitleItem(animated: animated)
                 // Set up the animated transition delegate:
-                _delegatesQueue.remove(_interactiveTransition)
-                _delegatesQueue.add(_animatedTransition)
+                // _delegatesQueue.remove(_interactiveTransition)
+                // _delegatesQueue.add(_animatedTransition)
                 // Set to the selected offset.
-                let _offsetX = _calculatedPositionUptoTitleItem(at: _selectedTitleItemIndex, in: _navigationTitleItems)
+                let _offsetX = _horizontalOffset(upto: _selectedTitleItemIndex, in: _navigationTitleItems)
                 _titleItemsScrollView.setContentOffset(CGPoint(x: _offsetX, y: 0.0), animated: true)
             }
             return
@@ -698,7 +694,7 @@ public class TabNavigationBar: UIView, UIBarPositioning {
             _transitionItems.append(item)
         }
         
-        _calculateWidthConstantOfContentAlignmentView(in: items, possibleActions: navigationTitleActionItems, transition: true)
+        _updateWidthConstantOfContentAlignmentView(in: items, possibleActions: navigationTitleActionItems, transition: true)
         
         setNeedsLayout()
         layoutIfNeeded()
@@ -808,8 +804,8 @@ public class TabNavigationBar: UIView, UIBarPositioning {
             setSelectedTitle(at: _selectedTitleItemIndex, animated: true)
         }
         
-        _calculateWidthConstantOfContentAlignmentView()
-        _offsetPositionsUpToEndIndex = _calculatedPositionsUptoTitleItemAtEndIndex()
+        _updateWidthConstantOfContentAlignmentView()
+        _offsetPositionsUpToEndIndex = _horizontalOffsetsUptoEachIndexs()
         
         return (true, item)
     }
@@ -825,7 +821,7 @@ public class TabNavigationBar: UIView, UIBarPositioning {
         _formerTrailingAnchor.constraint(equalTo: _latterLeadingAnchor, constant: -DefaultTabNavigationTitleItemPadding).isActive = true
         
         _navigationTitleActionItems.remove(at: index)
-        _calculateWidthConstantOfContentAlignmentView()
+        _updateWidthConstantOfContentAlignmentView()
         
         return (true, item)
     }
@@ -852,20 +848,24 @@ public class TabNavigationBar: UIView, UIBarPositioning {
     
     @objc
     fileprivate func _scrollToSelectedTitleItem(items: [TabNavigationTitleItem]? = nil, `in` scrollView: UIScrollView? = nil, animated: Bool = true) {
-        let offsetx = _calculatedPositionUptoTitleItem(at: _selectedTitleItemIndex, in: items)
+        let offsetx = _horizontalOffset(upto: _selectedTitleItemIndex, in: items)
         let titleItemScrollView = scrollView ?? _titleItemsScrollView
         
-        guard titleItemScrollView.contentOffset.x != offsetx else { return }
+        // guard titleItemScrollView.contentOffset.x != offsetx else { return }
         
         if animated && titleItemScrollView === _titleItemsScrollView {
             // Remove the interactive transition delegate and animated transition delegate.
-            _delegatesQueue.remove(_interactiveTransition)
-            _delegatesQueue.remove(_animatedTransition)
+            // _delegatesQueue.remove(_interactiveTransition)
+            // _delegatesQueue.remove(_animatedTransition)
             // Add did end scrolling animation call back delegate.
-            _delegatesQueue.add(_didEndScrollingAnimation)
+            // _delegatesQueue.add(_didEndScrollingAnimation)
         }
         
-        titleItemScrollView.setContentOffset(CGPoint(x: offsetx, y: 0.0), animated: animated)
+        if titleItemScrollView.contentOffset.x == offsetx {
+            // Make sample offsets.
+            titleItemScrollView.setContentOffset(CGPoint(x: offsetx - 1.0, y: 0.0), animated: false)
+            // Move to the target content offset.
+        };  titleItemScrollView.setContentOffset(CGPoint(x: offsetx, y: 0.0), animated: animated)
     }
     @objc
     fileprivate func _scrollToSelectedTitleItemWithAnimation() {
@@ -875,126 +875,98 @@ public class TabNavigationBar: UIView, UIBarPositioning {
     
     // MARK: Calculation.
     
-    fileprivate func _calculateWidthConstantOfContentAlignmentView(`in` items: [TabNavigationTitleItem]? = nil, possibleActions actions: [TabNavigationTitleActionItem]? = nil, transition: Bool = false) {
-        let navigationTitleItems = items ?? _navigationTitleItems
-        let navigationTitleActionItems = actions ?? _navigationTitleActionItems
+    fileprivate func _updateWidthConstantOfContentAlignmentView(`in` titleItems: [TabNavigationTitleItem]? = nil, possibleActions actionItems: [TabNavigationTitleActionItem]? = nil, transition: Bool = false) {
+        let items   = titleItems  ?? _navigationTitleItems
+        let actions = actionItems ?? _navigationTitleActionItems
         
-        if navigationTitleActionItems.isEmpty && navigationTitleItems.isEmpty {
-            if transition {
-                _widthOfTransitionTitleItemContentAlignmentView?.constant = 0.0
-            } else {
-                _widthOfTitleItemContentAlignmentView?.constant = 0.0
-            }
+        guard !items.isEmpty && !actions.isEmpty else {
+            _widthOfTitleItemContentAlignmentView(transition)?.constant = 0.0; return
+        }
+        
+        if items.isEmpty {
+            _widthOfTitleItemContentAlignmentView(transition)?.constant = -_horizontalOffset(upto: actions.endIndex, in: actions)
+        } else if actions.isEmpty {
+            _widthOfTitleItemContentAlignmentView(transition)?.constant = -_horizontalSpace(for: items.last!)
         } else {
-            if navigationTitleItems.isEmpty {
-                if transition {
-                    _widthOfTransitionTitleItemContentAlignmentView?.constant = -_calculatedPositionsUptoTitleItemAtEndIndex(in: navigationTitleActionItems).last!
-                } else {
-                    _widthOfTitleItemContentAlignmentView?.constant = -_calculatedPositionsUptoTitleItemAtEndIndex(in: navigationTitleActionItems).last!
-                }
-            } else if navigationTitleActionItems.isEmpty {
-                if transition {
-                    _widthOfTransitionTitleItemContentAlignmentView?.constant = -_calculatedPositionWidthOfTitleItem(navigationTitleItems.last!)
-                } else {
-                    _widthOfTitleItemContentAlignmentView?.constant = -_calculatedPositionWidthOfTitleItem(navigationTitleItems.last!)
-                }
-            } else {
-                if transition {
-                    _widthOfTransitionTitleItemContentAlignmentView?.constant = -_calculatedPositionWidthOfTitleItem(navigationTitleItems.last!) - _calculatedPositionsUptoTitleItemAtEndIndex(in: navigationTitleActionItems).last!
-                } else {
-                    _widthOfTitleItemContentAlignmentView?.constant = -_calculatedPositionWidthOfTitleItem(navigationTitleItems.last!) - _calculatedPositionsUptoTitleItemAtEndIndex(in: navigationTitleActionItems).last!
-                }
-            }
+            _widthOfTitleItemContentAlignmentView(transition)?.constant = -_horizontalSpace(for: items.last!) - _horizontalOffset(upto: actions.endIndex, in: actions)
         }
     }
     
-    fileprivate func _calculatedPositionUptoTitleItem(at index: Int = 0, `in` items: [TabNavigationTitleItem]? = nil) -> CGFloat {
-        let    navigationTitleItems = items ?? _navigationTitleItems
-        guard !navigationTitleItems.isEmpty, index < navigationTitleItems.endIndex else { return 0.0 }
+    fileprivate func _horizontalOffset(upto index: Int = 0, `in` titleItems: [TabNavigationTitleItem]? = nil) -> CGFloat {
+        let    items = titleItems ?? _navigationTitleItems
+        guard !items.isEmpty, index <= items.endIndex else { return 0.0 }
         var    positionx: CGFloat = 0.0
         
         for index in 0...index {
-            guard index > navigationTitleItems.startIndex else { continue }
+            guard index > items.startIndex else { continue }
             
-            positionx += DefaultTabNavigationTitleItemPadding
-            let titleItem = navigationTitleItems[navigationTitleItems.index(before: index)]
-            //
-            // var titleString = _titleItem._button.currentTitle
-            // if let _ = _titleItem.selectedRange {
-            //     titleString = _titleItem._button.currentAttributedTitle?.string
-            // }
-            
-            // let size = (titleString as NSString?)?.boundingRect(with: CGSize(width: CGFloat.greatestFiniteMagnitude, height: self.bounds.height), options: [.usesLineFragmentOrigin, .usesFontLeading], attributes: [NSFontAttributeName:_titleItem.titleFont(whenSelected: false)], context: nil).size
-            // positionx += CGFloat(Double(size!.width))
-            // Replaced with intrinsicContentSize since using the auto-layout system.
-            //
-            positionx += titleItem._button.intrinsicContentSize.width
+            positionx += _TabNavigationConfig.default.titleItemPadding
+            positionx += ceil(_boundingSize(for: items[items.index(before: index)]).width)
         }
         
         return positionx
     }
     
-    fileprivate func _calculatedPositionsUptoTitleItemAtEndIndex(in titleItems: [TabNavigationTitleItem]? = nil) -> [CGFloat] {
+    fileprivate func _horizontalOffsetsUptoEachIndexs(in titleItems: [TabNavigationTitleItem]? = nil) -> [CGFloat] {
         let items = titleItems ?? _navigationTitleItems
         
         var positions: [CGFloat]         = []
         var accumulatedPosition: CGFloat = 0.0
         
-        let calculation: (Int) -> Void = { _index in
-            accumulatedPosition += DefaultTabNavigationTitleItemPadding
-            let formerItem = items[items.index(before: _index)]
-            //
-            // var titleString = formerItem._button.currentTitle
-            // if let _ = formerItem.selectedRange {
-            //    titleString = formerItem._button.currentAttributedTitle?.string
-            // }
-            //
-            // let sizeOfTitleItem = (titleString as NSString?)?.boundingRect(with: CGSize(width: CGFloat.greatestFiniteMagnitude, height: self.bounds.height), options: [.usesLineFragmentOrigin], attributes: [NSFontAttributeName:formerItem.titleFont(whenSelected: false) as Any], context: nil).size
-            // accumulatedPosition += sizeOfTitleItem!.width
-            // Replaced with intrinsicContentSize since using the auto-layout system.
-            //
-            accumulatedPosition += formerItem._button.intrinsicContentSize.width
-            
+        let calculate: (Int) -> Void = { [unowned self] _index in
+            accumulatedPosition += _TabNavigationConfig.default.titleItemPadding
+            accumulatedPosition += ceil(self._boundingSize(for: items[items.index(before: _index)]).width)
             positions.append(accumulatedPosition)
         }
         
         for (index, _) in items.enumerated() {
             // Handle start index.
-            if index == items.startIndex {
-                positions.append(0.0)
-            } else {
-                calculation(index)
+            if index == items.startIndex { positions.append(0.0) } else {
+                calculate(index)
             }
         }
-        if !items.isEmpty {
-            calculation(items.endIndex)
-        }
+        if !items.isEmpty { calculate(items.endIndex) }
         
         return positions
     }
-    
-    fileprivate func _calculatedPositionWidthOfTitleItem(_ lastItem: TabNavigationTitleItem) -> CGFloat {
-        //
-        // var accumulatedPosition: CGFloat = DefaultTabNavigationTitleItemPadding
-        //
-        // if let _ = lastItem.selectedRange, let attributedString = lastItem._button.currentAttributedTitle {
-        //     let sizeOfTitleItem = attributedString.boundingRect(with: CGSize(width: CGFloat.greatestFiniteMagnitude, height: self.bounds.height), options: [.usesLineFragmentOrigin], context: nil).size
-        //     accumulatedPosition += sizeOfTitleItem.width
-        // } else {
-        //     let titleString = lastItem._button.currentTitle
-        //     let sizeOfTitleItem = (titleString as NSString?)?.boundingRect(with: CGSize(width: CGFloat.greatestFiniteMagnitude, height: self.bounds.height), options: [.usesLineFragmentOrigin], attributes: [NSFontAttributeName:lastItem.titleFont(whenSelected: true) as Any], context: nil).size
-        //     accumulatedPosition += sizeOfTitleItem!.width
-        // }
-        //
-        // return accumulatedPosition
-        //
-        return lastItem._button.intrinsicContentSize.width + _TabNavigationConfig.default.titleItemPadding
+    /// Calculate the horizontal space consists of width and left margin of the underlying button of the title item.
+    fileprivate func _horizontalSpace(`for` lastItem: TabNavigationTitleItem, selected: Bool = true) -> CGFloat {
+        return ceil(_boundingSize(for: lastItem, selected: selected).width) + _TabNavigationConfig.default.titleItemPadding
+    }
+    /// Calculate the bounding size for the TabNavigationTitleItem by bounding the underlying title of the button
+    /// the button's bounds.
+    func _boundingSize(`for` item: TabNavigationTitleItem, selected: Bool = false) -> CGSize {
+        var titleString = item._button.currentTitle
+        if let _ = item.selectedRange {
+            titleString = item._button.currentAttributedTitle?.string
+        }
+        
+        let size = (titleString as NSString?)?.boundingRect(with: CGSize(width: CGFloat.greatestFiniteMagnitude, height: self.bounds.height), options: [.usesLineFragmentOrigin, .usesFontLeading], attributes: [NSFontAttributeName:item.titleFont(whenSelected: selected)], context: nil).size ?? .zero
+        
+        return size
+    }
+}
+
+// MARK: Transition Supportings.
+
+extension TabNavigationBar {
+    /// Returns the width constrait of the title item content alignment view.
+    fileprivate func _widthOfTitleItemContentAlignmentView(_ transition: Bool) -> NSLayoutConstraint? {
+        return transition ? _widthOfTransitionTitleItemContentAlignmentView : _widthOfTitleItemContentAlignmentView
+    }
+    /// Returns the width constraint of the navigation item view for zero content.
+    fileprivate func _widthOfNavigationItemViewForZeroContent(_ transition: Bool) -> NSLayoutConstraint? {
+        return transition ? _widthOfTransitionNavigationItemViewForZeroContent : _widthOfNavigationItemViewForZeroContent
+    }
+    /// Returns the leading constraint of the last navigation item view.s
+    fileprivate func _leadingConstraintOfLastItemView(_ transition: Bool) -> NSLayoutConstraint? {
+        return transition ? _leadingConstraintOfLastTransitionItemView : _leadingConstraintOfLastItemView
     }
 }
 
 extension TabNavigationBar: UIScrollViewDelegate {
     public func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        _offsetPositionsUpToEndIndex = _calculatedPositionsUptoTitleItemAtEndIndex()
+        _offsetPositionsUpToEndIndex = _horizontalOffsetsUptoEachIndexs()
         // Schedule the scroll animation:
         NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(_scrollToSelectedTitleItemWithAnimation), object: nil)
     }
@@ -1120,8 +1092,8 @@ extension TabNavigationBar {
             _navigationTitleItems.append(item)
         }
         
-        _calculateWidthConstantOfContentAlignmentView()
-        _offsetPositionsUpToEndIndex = _calculatedPositionsUptoTitleItemAtEndIndex()
+        _updateWidthConstantOfContentAlignmentView()
+        _offsetPositionsUpToEndIndex = _horizontalOffsetsUptoEachIndexs()
     }
     
     public func setNavigationTitleItems(_ items: [TabNavigationTitleItem], animated: Bool = false, selectedIndex index: Array<TabNavigationTitleItem>.Index = 0, actionsConfig: (() -> (ignore: Bool, actions: [TabNavigationTitleActionItem]?))? = nil, animation: ((TabNavigationTitleItemAnimationContext) -> Void)? = nil) {
@@ -1259,9 +1231,7 @@ extension TabNavigationBar {
         }
         // Get the container views.
         let navigationItemViews = itemViews ?? _createAndSetupNavigationItemViews()
-        for _itemView in navigationItemViews.itemsView.subviews {
-            _itemView.removeFromSuperview()
-        }
+        navigationItemViews.itemsView.subviews.forEach{ $0.removeFromSuperview() }
         if _widthOfTransitionNavigationItemViewForZeroContent == nil {
             let width = navigationItemViews.itemsView.widthAnchor.constraint(equalToConstant: 0.0)
             width.isActive = true
@@ -1281,9 +1251,7 @@ extension TabNavigationBar {
     }
     
     public func commitTransitionNavigatiomItemViews(_ itemViews: TabNavigationItemViews?, navigationItems: [TabNavigationItem], success: Bool = true) {
-        guard let navigationItemViews = itemViews else {
-            return
-        }
+        guard let navigationItemViews = itemViews else { return }
         
         if success {
             _commitTransitionNavigationItemViews(navigationItemViews, navigationItems: navigationItems)
@@ -1304,7 +1272,7 @@ extension TabNavigationBar {
     }
     
     public func setNestedScrollViewContentOffset(_ contentOffset: CGPoint, contentSize: CGSize, bounds: CGRect, transition itemViews: TabNavigationItemViews? = nil) {
-        let offsetPositions = _calculatedPositionsUptoTitleItemAtEndIndex()
+        let offsetPositions = _offsetPositionsUpToEndIndex
         
         let index = Int(contentOffset.x / bounds.width)
         let beginsOffsetPosition = offsetPositions[index]
@@ -1320,9 +1288,9 @@ extension TabNavigationBar {
         
         let signedPercent = contentOffset.x.truncatingRemainder(dividingBy: bounds.width) / bounds.width
         let offsetXDelta = transitionOffsetDelta * signedPercent
-        let offsetX = beginsOffsetPosition + offsetXDelta
-        
-        _titleItemsScrollView.setContentOffset(CGPoint(x: offsetX, y: 0.0), animated: false)
+        let offsetx = beginsOffsetPosition + offsetXDelta
+        print("Nested offset: \(offsetx)")
+        _titleItemsScrollView.setContentOffset(CGPoint(x: offsetx, y: 0.0), animated: false)
         
         if let navigationItemView = itemViews?.itemsView {
             if signedPercent >= navigationItemView.alpha {
