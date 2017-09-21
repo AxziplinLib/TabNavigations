@@ -150,3 +150,7 @@ extension UIFont {
         return UIFont(name: from.fontName, size: from.pointSize + sizeDelta * percent)
     }
 }
+
+extension Array {
+    var lastIndex: Int { return index(before: endIndex) }
+}
