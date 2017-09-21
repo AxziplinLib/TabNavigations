@@ -38,8 +38,8 @@ extension TabNavigationTitleItemTransition {
 
 extension TabNavigationTitleItemTransition: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        guard let titleItems = tabNavigationBar?.navigationTitleItems, let _offsetPositionsUpToEndIndex = tabNavigationBar?._offsetPositionsUpToEndIndex else { return }
         guard !scrollView.isDragging, !scrollView.isTracking, !scrollView.isDecelerating else { return }
+        guard let titleItems = tabNavigationBar?.navigationTitleItems, let _offsetPositionsUpToEndIndex = tabNavigationBar?._offsetPositionsUpToEndIndex else { return }
         let offsetX = scrollView.contentOffset.x
         
         autoreleasepool { _transitionQueue.async { autoreleasepool { [unowned self] in
