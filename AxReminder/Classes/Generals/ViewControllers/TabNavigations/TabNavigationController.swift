@@ -471,7 +471,7 @@ open class TabNavigationController: UIViewController {
             let transitionPercent = max(0.0, location.x - _panGestureBeginsLocation.x) / view.bounds.width
             
             let _formerViewController = _formerViewControllerForPop()!
-            let shouldCommitTransition = (transitionPercent >= 0.5 || velocity.x > translation.x * 5.0)
+            let shouldCommitTransition = (velocity.x > 0.0 && translation.x > 0.0 && (transitionPercent >= 0.5 || velocity.x > translation.x * 5.0))
             
             _commitTransitionOfNavigationTitleItems(_panGestureBeginsTitleItems, navigationItems: _formerViewController.tabNavigationItems, transition: _transitionNavigationBarViews, success: shouldCommitTransition)
             
