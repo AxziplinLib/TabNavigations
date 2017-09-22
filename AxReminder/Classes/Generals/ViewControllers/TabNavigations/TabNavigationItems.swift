@@ -84,8 +84,9 @@ internal class _TabNavigationItemView: UIView {
         
         addSubview(_button)
         addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-(margin)-[_button]-(margin)-|", options: [], metrics: ["margin": _TabNavigationConfig.edgeMarginForItemView], views: ["_button":_button]))
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-(>=0)-[_button]-(>=0)-|", options: [], metrics: nil, views: ["_button":_button]))
         
-        _button.setContentHuggingPriority(999.0, for: .horizontal)
+        _button.setContentHuggingPriority(1000.0, for: .horizontal)
     }
 }
 /// A type representing the navigation item on the right top corner of TabNavigationBar.
@@ -94,25 +95,40 @@ public class TabNavigationItem: NSObject {
     // MARK: - Properties.
     
     /// Returns the image of the underlying button.
-    public var image: UIImage? { return _view.image }
+    public var image: UIImage? { return _button.currentImage }
     /// Returns the title of the underlying button.
-    public var title: String?  { return _view.title }
+    public var title: String?  { return _button.currentTitle }
     /// The tint color of the underlying button.
     public var tintColor: UIColor? {
-        set { _view._button.tintColor = newValue }
-        get { return _view._button.tintColor }
+        set { _button.tintColor = newValue }
+        get { return _button.tintColor }
     }
     /// The target in action-target mode of the underlying button.
-    public var target: Any? { return _view._button.allTargets.first }
+    public var target: Any? { return _button.allTargets.first }
     /// Returns the first selector for the target of the underlying button.
     public var selector: Selector? {
-        guard let _selector = _view._button.actions(forTarget: target, forControlEvent: .touchUpInside)?.first else { return nil }
+        guard let _selector = _button.actions(forTarget: target, forControlEvent: .touchUpInside)?.first else { return nil }
         return Selector(_selector)
     }
     /// Returns the underlying view.
-    internal var underlyingView: UIView { return _view }
+    internal var underlyingView  : UIView   { return underlyingButton }
+    /// Returns the underlying button.
+    internal var underlyingButton: UIButton { return _button }
     /// The underlying item view to manage the underlying button.
-    internal var _view: _TabNavigationItemView = _TabNavigationItemView()
+    @available(*, unavailable)
+    private var _view: _TabNavigationItemView = _TabNavigationItemView()
+    /// The underlying item button of the navigation item.
+    private lazy var _button = { () -> _TabNavigationItemButton in
+        let button = _TabNavigationItemButton(type: .system)
+        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: _TabNavigationConfig.default.itemFontSize)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.widthAnchor.constraint(greaterThanOrEqualToConstant : _TabNavigationConfig.default.itemWidthThreshold).isActive = true
+        button.heightAnchor.constraint(greaterThanOrEqualToConstant: _TabNavigationConfig.default.itemHeight).isActive         = true
+        button.setContentHuggingPriority(1000.0, for: .horizontal)
+        button.setContentHuggingPriority(998.0,  for: .vertical)
+        button.contentEdgeInsets = UIEdgeInsets(width: 12.0)
+        return button
+    }()
     
     // MARK: Iniaializer.
     
@@ -122,7 +138,7 @@ public class TabNavigationItem: NSObject {
     /// - Returns: A new item with the given title.
     public init(title: String?) {
         super.init()
-        _view.title = title
+        _button.setTitle(title, for: .normal)
     }
     /// Creates a TabNavigationItem with an image, target and selector for the underlying button.
     ///
@@ -133,9 +149,9 @@ public class TabNavigationItem: NSObject {
     /// - Returns: A new item with the given parameters.
     public convenience init(image: UIImage? = nil, target: Any? = nil, selector: Selector? = nil) {
         self.init(title: nil)
-        _view.image = image
+        _button.setImage(image, for: .normal)
         if selector != nil {
-            _view._button.addTarget(target, action: selector!, for: .touchUpInside)
+            _button.addTarget(target, action: selector!, for: .touchUpInside)
         }
     }
     /// Creates a TabNavigationItem with a title, target and selector for the underlying button.
@@ -147,12 +163,22 @@ public class TabNavigationItem: NSObject {
     /// - Returns: A new item with the given parameters.
     public convenience init(title: String? = nil, target: Any? = nil, selector: Selector? = nil) {
         self.init(title: title)
-        _view.title = title
+        _button.setTitle(title, for: .normal)
         if selector != nil {
-            _view._button.addTarget(target, action: selector!, for: .touchUpInside)
+            _button.addTarget(target, action: selector!, for: .touchUpInside)
         }
     }
 }
+
+extension _TabNavigationItemButton {
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        // Force to center the position of the image view or title label.
+        imageView?.center  = CGPoint(x: bounds.width * 0.5, y: bounds.height * 0.5)
+        titleLabel?.center = CGPoint(x: bounds.width * 0.5, y: bounds.height * 0.5)
+    }
+}
+
 /// A type reprensting the navigation back item of the TabNavigationBar.
 internal class _TabNavigationBackItem: TabNavigationItem { /* Back navigation item*/ }
 /// A type representing the navigation title item on the left top corner of TabNavigationBar.
@@ -265,8 +291,10 @@ public class TabNavigationTitleItem: NSObject {
             }
         }
     }
+    /// The underlying button object.
+    internal var underlyingButton: UIButton { return _button }
     /// The underlying UIButton object.
-    internal lazy var _button: _TabNavigationTitleItemButton = { () -> _TabNavigationTitleItemButton in
+    fileprivate lazy var _button: _TabNavigationTitleItemButton = { () -> _TabNavigationTitleItemButton in
         let button = _TabNavigationTitleItemButton(type: .custom)
         button.titleLabel?.numberOfLines = 1
         button.adjustsImageWhenHighlighted = false
@@ -311,6 +339,8 @@ public class TabNavigationTitleActionItem: TabNavigationTitleItem {
     public override func titleFont(whenSelected selected: Bool) -> UIFont   { return super.titleFont(whenSelected: false ) }
     /// Returns the unselected color for the action item.
     public override func titleColor(whenSelected selected: Bool) -> UIColor { return super.titleColor(whenSelected: false) }
+    /// Using system type button.
+    override lazy var _button: _TabNavigationTitleItemButton = _TabNavigationTitleItemButton(type: .system)
     /// The action target for the underlying UIButton item to trigger.
     internal var _target: Any?
     /// The action selector fot the target to perform.
@@ -346,5 +376,20 @@ public class TabNavigationTitleActionItem: TabNavigationTitleItem {
         _action = selector
         
         _button.addTarget(target, action: selector, for: .touchUpInside)
+    }
+}
+
+extension _TabNavigationTitleItemButton {
+    // Overrides to force stylize the button.
+    override func setAttributedTitle(_ title: NSAttributedString?, for state: UIControlState) {
+        if buttonType == .system { if let text = title?.string { setTitle(text, for: state) } } else {
+            super.setAttributedTitle(title, for: state)
+        }
+    }
+    // Overrides to force stylize the button.
+    override func setTitleColor(_ color: UIColor?, for state: UIControlState) {
+        if buttonType == .system { if let tint = color { tintColor = tint } } else {
+            super.setTitleColor(color, for: state)
+        }
     }
 }
