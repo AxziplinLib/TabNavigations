@@ -527,7 +527,7 @@ open class TabNavigationController: UIViewController {
         let titleViews = transitionViews.titleViews
         let itemViews = transitionViews.itemViews
         // Get translation of the to item views.
-        let translation = min(titleViews.toItemViews.itemsView.bounds.width - titleViews.toItemViews.alignmentContentView.bounds.width, titleViews.containerView.bounds.width) - titleViews.toItemViews.itemsScrollView.contentOffset.x
+        let translation = min(titleViews.toItemViews.itemsView.bounds.width - titleViews.toItemViews.fixSpacing.layoutFrame.width, titleViews.containerView.bounds.width) - titleViews.toItemViews.itemsScrollView.contentOffset.x
         // Update the transform of items views.
         titleViews.toItemViews.itemsView.transform = CGAffineTransform(translationX: -translation * (1.0 - perecent), y: 0.0)
         titleViews.toItemViews.itemsView.alpha = perecent
@@ -552,7 +552,7 @@ open class TabNavigationController: UIViewController {
         let titleViews = transitionViews.titleViews
         let itemViews = transitionViews.itemViews
         
-        let translation = min(titleViews.toItemViews.itemsView.bounds.width - titleViews.toItemViews.alignmentContentView.bounds.width, titleViews.containerView.bounds.width) - titleViews.toItemViews.itemsScrollView.contentOffset.x
+        let translation = min(titleViews.toItemViews.itemsView.bounds.width - titleViews.toItemViews.fixSpacing.layoutFrame.width, titleViews.containerView.bounds.width) - titleViews.toItemViews.itemsScrollView.contentOffset.x
         
         if success {
             if _viewControllersStack.startIndex == _viewControllersStack.index(before: _viewControllersStack.endIndex) {
@@ -607,7 +607,7 @@ open class TabNavigationController: UIViewController {
         let fromTransform = context.fromItemViews.itemsView.transform
         let toTransform = context.toItemViews.itemsView.transform
         
-        let translation = min(context.fromItemViews.itemsView.bounds.width - context.fromItemViews.alignmentContentView.bounds.width, context.containerView.bounds.width) - context.fromItemViews.itemsScrollView.contentOffset.x - TabNavigationBar.paddingOfTitleItems
+        let translation = min(context.fromItemViews.itemsView.bounds.width - context.fromItemViews.fixSpacing.layoutFrame.width, context.containerView.bounds.width) - context.fromItemViews.itemsScrollView.contentOffset.x - TabNavigationBar.paddingOfTitleItems
 
         context.toItemViews.itemsView.transform = CGAffineTransform(translationX: translation, y: 0.0)
         context.toItemViews.itemsView.alpha = 0.0
@@ -636,7 +636,7 @@ open class TabNavigationController: UIViewController {
         let fromTransform = context.fromItemViews.itemsScrollView.transform
         let toTransform = context.toItemViews.itemsScrollView.transform
         
-        let translation = min(context.toItemViews.itemsView.bounds.width - context.toItemViews.alignmentContentView.bounds.width, context.containerView.bounds.width) - context.toItemViews.itemsScrollView.contentOffset.x + TabNavigationBar.paddingOfTitleItems
+        let translation = min(context.toItemViews.itemsView.bounds.width - context.toItemViews.fixSpacing.layoutFrame.width, context.containerView.bounds.width) - context.toItemViews.itemsScrollView.contentOffset.x + TabNavigationBar.paddingOfTitleItems
         
         context.toItemViews.itemsScrollView.transform = CGAffineTransform(translationX: -translation, y: 0.0)
         context.toItemViews.itemsScrollView.alpha = 0.0
@@ -1208,9 +1208,7 @@ extension TabNavigationController: UIScrollViewDelegate {
     }
     
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        guard _viewControllersStack.isEmpty else {
-            return
-        }
+        guard _viewControllersStack.isEmpty else { return }
         if scrollView.isDragging || scrollView.isDecelerating {
             let index = Int(scrollView.contentOffset.x / scrollView.bounds.width)
             
@@ -1219,13 +1217,15 @@ extension TabNavigationController: UIScrollViewDelegate {
             && scrollView.contentOffset.x.truncatingRemainder(dividingBy: scrollView.bounds.width) != 0.0
             && !isTabNavigationItemsUpdatingDisabledInRootViewControllers
             {
-                let showingIndex = _rootViewControllersContext.viewControllers.index(after: index)
-                let viewController = _rootViewControllersContext.viewControllers[showingIndex]
-                
-                let formerViewController = _rootViewControllersContext.viewControllers[index]
-                let transitionNavigationItemViews = tabNavigationBar.beginTransitionNavigationItems(viewController.tabNavigationItems, on: formerViewController.tabNavigationItems, in: _transitionNavigationItemViewsContext?.navigationItemViews)
-                
-                _transitionNavigationItemViewsContext = (showingIndex, transitionNavigationItemViews)
+                if _transitionNavigationItemViewsContext == nil {
+                    let showingIndex = _rootViewControllersContext.viewControllers.index(after: index)
+                    let viewController = _rootViewControllersContext.viewControllers[showingIndex]
+                    
+                    let formerViewController = _rootViewControllersContext.viewControllers[index]
+                    let transitionNavigationItemViews = tabNavigationBar.beginTransitionNavigationItems(viewController.tabNavigationItems, on: formerViewController.tabNavigationItems, in: _transitionNavigationItemViewsContext?.navigationItemViews)
+                    
+                    _transitionNavigationItemViewsContext = (showingIndex, transitionNavigationItemViews)
+                }
             }
             
             tabNavigationBar.setNestedScrollViewContentOffset(scrollView.contentOffset, contentSize: scrollView.contentSize, bounds: scrollView.bounds, transition: _transitionNavigationItemViewsContext?.navigationItemViews)

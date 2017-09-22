@@ -89,7 +89,7 @@ extension TabNavigationBar {
 extension TabNavigationBar {
     public typealias TabNavigationItemViews = (itemsContainerView: UIView, itemsScrollView: UIScrollView, itemsView: UIView)
     public typealias TabNavigationItemAnimationContext = (fromItemViews: TabNavigationItemViews, toItemViews: TabNavigationItemViews)
-    public typealias TabNavigationTitleItemViews = (itemsScrollView: UIScrollView, itemsView: UIView, alignmentContentView: UIView)
+    public typealias TabNavigationTitleItemViews = (itemsScrollView: UIScrollView, itemsView: UIView, fixSpacing: UILayoutGuide)
     public typealias TabNavigationTitleItemAnimationContext = (containerView: UIView, fromItemViews: TabNavigationTitleItemViews, toItemViews: TabNavigationTitleItemViews)
     public typealias TabNavigationTransitionContext = (backItem: TabNavigationItem, titleViews: TabNavigationTitleItemAnimationContext, itemViews: TabNavigationItemAnimationContext)
 }
@@ -178,7 +178,7 @@ public class TabNavigationBar: UIView, UIBarPositioning {
     fileprivate weak var _widthOfTransitionNavigationItemViewForZeroContent: NSLayoutConstraint?
     fileprivate weak var _constraintBetweenTitlesAndItems: NSLayoutConstraint?
     fileprivate weak var _constraintBetweenTransitionTitlesAndItems: NSLayoutConstraint?
-    
+    @available(*, unavailable)
     fileprivate lazy var _titleItemContentAlignmentView: _TabNavigaitonTitleContentAlignmentView = _createGeneralContainerView()
     fileprivate lazy var _titleItemFixSpacingLayoutGuide: UILayoutGuide = UILayoutGuide()
     fileprivate weak var _widthOfTitleItemContentAlignmentView: NSLayoutConstraint?
@@ -350,11 +350,11 @@ public class TabNavigationBar: UIView, UIBarPositioning {
         _titleItemsContainerView.addGestureRecognizer(_titleItemsPreviewPanGesture)
     }
     /// Constraint views of title items.
-    private func _constraintViewsOfTitleItems(_ itemsScrollView: UIScrollView? = nil, itemsView: UIView? = nil, alignmentContentView: _TabNavigaitonTitleContentAlignmentView? = nil, transition: Bool = false) {
-        let titleItemsScrollView          =   itemsScrollView      ?? _titleItemsScrollView
-        let navigationTitleItemView       =   itemsView            ?? _navigationTitleItemView
-        let titleAlignmentLabel           = __titleAlignmentLabel
-        let titleItemContentAlignmentView =   alignmentContentView ?? _titleItemContentAlignmentView
+    private func _constraintViewsOfTitleItems(_ itemsScrollView: UIScrollView? = nil, itemsView: UIView? = nil, fixSpacing: UILayoutGuide? = nil, transition: Bool = false) {
+        let titleItemsScrollView    =   itemsScrollView ?? _titleItemsScrollView
+        let navigationTitleItemView =   itemsView       ?? _navigationTitleItemView
+        let titleAlignmentLabel     = __titleAlignmentLabel
+        let fixSpacingLayoutGuide   =   fixSpacing      ?? _titleItemFixSpacingLayoutGuide
         
         _titleItemsContainerView.addSubview(titleItemsScrollView)
         titleItemsScrollView.delegate = _delegatesQueue
@@ -377,20 +377,20 @@ public class TabNavigationBar: UIView, UIBarPositioning {
         _titleItemsContainerView.leadingAnchor.constraint(equalTo: titleAlignmentLabel.leadingAnchor).isActive = true
         _titleItemsContainerView.centerYAnchor.constraint(equalTo: titleAlignmentLabel.centerYAnchor).isActive = true
         
-        navigationTitleItemView.addSubview(titleItemContentAlignmentView)
-        titleItemContentAlignmentView.trailingAnchor.constraint(equalTo: navigationTitleItemView.trailingAnchor).isActive = true
-        titleItemContentAlignmentView.heightAnchor.constraint(equalTo  : navigationTitleItemView.heightAnchor).isActive   = true
-        titleItemContentAlignmentView.topAnchor.constraint(equalTo     : navigationTitleItemView.topAnchor).isActive      = true
-        titleItemContentAlignmentView.bottomAnchor.constraint(equalTo  : navigationTitleItemView.bottomAnchor).isActive   = true
-        titleItemContentAlignmentView.widthAnchor.constraint(greaterThanOrEqualToConstant: 0).isActive                    = true
+        navigationTitleItemView.addLayoutGuide(fixSpacingLayoutGuide)
+        fixSpacingLayoutGuide.trailingAnchor.constraint(equalTo: navigationTitleItemView.trailingAnchor).isActive = true
+        fixSpacingLayoutGuide.heightAnchor.constraint(equalTo  : navigationTitleItemView.heightAnchor).isActive   = true
+        fixSpacingLayoutGuide.topAnchor.constraint(equalTo     : navigationTitleItemView.topAnchor).isActive      = true
+        fixSpacingLayoutGuide.bottomAnchor.constraint(equalTo  : navigationTitleItemView.bottomAnchor).isActive   = true
+        fixSpacingLayoutGuide.widthAnchor.constraint(greaterThanOrEqualToConstant: 0).isActive                    = true
         
-        let leading = navigationTitleItemView.leadingAnchor.constraint(equalTo: titleItemContentAlignmentView.leadingAnchor)
+        let leading = navigationTitleItemView.leadingAnchor.constraint(equalTo: fixSpacingLayoutGuide.leadingAnchor)
         leading.isActive = true
         if transition { _trailingConstraintOfLastTransitionTitleItemLabel = leading } else {
             _trailingConstraintOfLastTitleItemLabel = leading
         }
         
-        let width = titleItemContentAlignmentView.widthAnchor.constraint(equalTo: titleItemsScrollView.widthAnchor, constant: 0)
+        let width = fixSpacingLayoutGuide.widthAnchor.constraint(equalTo: titleItemsScrollView.widthAnchor, constant: 0)
         width.isActive = true
         if transition { _widthOfTransitionTitleItemContentAlignmentView = width } else {
             _widthOfTitleItemContentAlignmentView = width
@@ -577,12 +577,12 @@ public class TabNavigationBar: UIView, UIBarPositioning {
         _navigationItems = navigationItems
     }
     
-    fileprivate func _addNavigationTitleItemButton(_ item: TabNavigationTitleItem, `in` items: [TabNavigationTitleItem]? = nil, possibleActions actions: [TabNavigationTitleActionItem]? = nil, to itemContainerView: UIView? = nil, alignmentContentView: _TabNavigaitonTitleContentAlignmentView? = nil, transition: Bool = false) {
-        let navigationTitleItems = items ?? _navigationTitleItems
-        let navigationTitleActionItems = actions ?? _navigationTitleActionItems
-        let navigationTitleItemView = itemContainerView ?? _navigationTitleItemView
-        let titleAlignmentLabel = __titleAlignmentLabel
-        let titleItemContentAlignmentView = alignmentContentView ?? _titleItemContentAlignmentView
+    fileprivate func _addNavigationTitleItemButton(_ item: TabNavigationTitleItem, `in` items: [TabNavigationTitleItem]? = nil, possibleActions actions: [TabNavigationTitleActionItem]? = nil, to itemContainerView: UIView? = nil, fixSpacing: UILayoutGuide? = nil, transition: Bool = false) {
+        let navigationTitleItems       =   items ?? _navigationTitleItems
+        let navigationTitleActionItems =   actions ?? _navigationTitleActionItems
+        let navigationTitleItemView    =   itemContainerView ?? _navigationTitleItemView
+        let titleAlignmentLabel        = __titleAlignmentLabel
+        let fixSpacingLayoutGudie      =   fixSpacing ?? _titleItemFixSpacingLayoutGuide
         
         let _itemButton = item.underlyingButton
         if !(item is TabNavigationTitleActionItem) {
@@ -616,7 +616,7 @@ public class TabNavigationBar: UIView, UIBarPositioning {
                 navigationTitleItemView.removeConstraint(_trailingOfTitleActionItems)
             }
             
-            let _trailingOfTitleActionItems = _itemButton.trailingAnchor.constraint(equalTo: titleItemContentAlignmentView.leadingAnchor, constant: -DefaultTabNavigationTitleItemPadding)
+            let _trailingOfTitleActionItems = _itemButton.trailingAnchor.constraint(equalTo: fixSpacingLayoutGudie.leadingAnchor, constant: -DefaultTabNavigationTitleItemPadding)
             _trailingOfTitleActionItems.isActive = true
             if transition {
                 _trailingConstraintOfLastTransitionTitleActionItemLabel = _trailingOfTitleActionItems
@@ -631,7 +631,7 @@ public class TabNavigationBar: UIView, UIBarPositioning {
                 navigationTitleItemView.removeConstraint(_trailing)
             }
             
-            let _trailing = NSLayoutConstraint(item: navigationTitleActionItems.first?.underlyingButton ?? titleItemContentAlignmentView, attribute: .leading, relatedBy: .equal, toItem: _itemButton, attribute: .trailing, multiplier: 1.0, constant: DefaultTabNavigationTitleItemPadding)
+            let _trailing = NSLayoutConstraint(item: navigationTitleActionItems.first?.underlyingButton ?? fixSpacingLayoutGudie, attribute: .leading, relatedBy: .equal, toItem: _itemButton, attribute: .trailing, multiplier: 1.0, constant: DefaultTabNavigationTitleItemPadding)
             navigationTitleItemView.addConstraint(_trailing)
             if transition {
                 _trailingConstraintOfLastTransitionTitleItemLabel = _trailing
@@ -644,11 +644,11 @@ public class TabNavigationBar: UIView, UIBarPositioning {
     fileprivate func _createAndSetupTitleItemViews() -> TabNavigationTitleItemViews {
         let itemsScrollView = _createGeneralScrollView()
         let itemsView = _createGeneralContainerView()
-        let alignmentContentView: _TabNavigaitonTitleContentAlignmentView = _createGeneralContainerView()
+        let fixSpacing = UILayoutGuide()
         
-        _constraintViewsOfTitleItems(itemsScrollView, itemsView: itemsView, alignmentContentView: alignmentContentView, transition: true)
+        _constraintViewsOfTitleItems(itemsScrollView, itemsView: itemsView, fixSpacing: fixSpacing, transition: true)
         
-        return (itemsScrollView, itemsView, alignmentContentView)
+        return (itemsScrollView, itemsView, fixSpacing)
     }
     
     fileprivate func _setNavigationTitleItems(_ items: [TabNavigationTitleItem], animated: Bool = false, selectedIndex index: Array<TabNavigationTitleItem>.Index = 0, actionConfig: (ignore: Bool, actions: [TabNavigationTitleActionItem]?) = (false, nil), animation: ((TabNavigationTitleItemAnimationContext) -> Void)? = nil) {
@@ -696,14 +696,14 @@ public class TabNavigationBar: UIView, UIBarPositioning {
             // Add title action item first.
             var _transitionActionItems: [TabNavigationTitleActionItem] = []
             for item in navigationTitleActionItems {
-                _addNavigationTitleItemButton(item, in: _transitionActionItems, possibleActions: _transitionActionItems, to: titleItemViews.itemsView, alignmentContentView: (titleItemViews.alignmentContentView as! TabNavigationBar._TabNavigaitonTitleContentAlignmentView), transition: true)
+                _addNavigationTitleItemButton(item, in: _transitionActionItems, possibleActions: _transitionActionItems, to: titleItemViews.itemsView, fixSpacing: titleItemViews.fixSpacing, transition: true)
                 _transitionActionItems.append(item)
             }
         }
         // Add item to the navigatiom item view.
         var _transitionItems: [TabNavigationTitleItem] = []
         for item in items {
-            _addNavigationTitleItemButton(item, in: _transitionItems, possibleActions: navigationTitleActionItems, to: titleItemViews.itemsView, alignmentContentView: (titleItemViews.alignmentContentView as! TabNavigationBar._TabNavigaitonTitleContentAlignmentView), transition: true)
+            _addNavigationTitleItemButton(item, in: _transitionItems, possibleActions: navigationTitleActionItems, to: titleItemViews.itemsView, fixSpacing: titleItemViews.fixSpacing, transition: true)
             _transitionItems.append(item)
         }
         
@@ -717,7 +717,7 @@ public class TabNavigationBar: UIView, UIBarPositioning {
         }
         
         if let animationBlock = animation {
-            let itemViews: TabNavigationTitleItemViews = (_titleItemsScrollView, _navigationTitleItemView, _titleItemContentAlignmentView as UIView)
+            let itemViews: TabNavigationTitleItemViews = (_titleItemsScrollView, _navigationTitleItemView, _titleItemFixSpacingLayoutGuide)
             let parameters = (_titleItemsContainerView, itemViews, titleItemViews)
             animationBlock(parameters)
         } else {
@@ -749,7 +749,7 @@ public class TabNavigationBar: UIView, UIBarPositioning {
         
         _titleItemsScrollView = itemViews.itemsScrollView
         _navigationTitleItemView = itemViews.itemsView
-        _titleItemContentAlignmentView = itemViews.alignmentContentView as! _TabNavigaitonTitleContentAlignmentView
+        _titleItemFixSpacingLayoutGuide = itemViews.fixSpacing
         
         _navigationTitleItems = titleItems
     }
@@ -797,7 +797,7 @@ public class TabNavigationBar: UIView, UIBarPositioning {
                 let _latterLeadingAnchor = _firstTitleActionItem.underlyingButton.leadingAnchor
                 _formerTrailingAnchor.constraint(equalTo: _latterLeadingAnchor, constant: -DefaultTabNavigationTitleItemPadding).isActive = true
             } else {
-                let _latterLeadingAnchor = _titleItemContentAlignmentView.leadingAnchor
+                let _latterLeadingAnchor = _titleItemFixSpacingLayoutGuide.leadingAnchor
                 
                 let trailing = _formerTrailingAnchor.constraint(equalTo: _latterLeadingAnchor, constant: -DefaultTabNavigationTitleItemPadding)
                 trailing.isActive = true
@@ -830,7 +830,7 @@ public class TabNavigationBar: UIView, UIBarPositioning {
         item.underlyingButton.removeFromSuperview()
         
         let _formerTrailingAnchor = index == _navigationTitleActionItems.startIndex ? (_navigationTitleItems.isEmpty ? _navigationTitleItemView.leadingAnchor : _navigationTitleItems.last!.underlyingButton.trailingAnchor) : _navigationTitleActionItems[_navigationTitleActionItems.index(before: index)].underlyingButton.trailingAnchor
-        let _latterLeadingAnchor = index == _navigationTitleActionItems.index(before: _navigationTitleActionItems.endIndex) ? _titleItemContentAlignmentView.leadingAnchor : _navigationTitleActionItems[_navigationTitleActionItems.index(after: index)].underlyingButton.leadingAnchor
+        let _latterLeadingAnchor = index == _navigationTitleActionItems.index(before: _navigationTitleActionItems.endIndex) ? _titleItemFixSpacingLayoutGuide.leadingAnchor : _navigationTitleActionItems[_navigationTitleActionItems.index(after: index)].underlyingButton.leadingAnchor
         _formerTrailingAnchor.constraint(equalTo: _latterLeadingAnchor, constant: -DefaultTabNavigationTitleItemPadding).isActive = true
         
         _navigationTitleActionItems.remove(at: index)
@@ -1188,7 +1188,7 @@ extension TabNavigationBar {
     public func beginTransitionNavigationTitleItems(_ items: [TabNavigationTitleItem], selectedIndex index: Array<TabNavigationTitleItem>.Index = 0, actionsConfig: (() -> (ignore: Bool, actions: [TabNavigationTitleActionItem]?))? = nil, navigationItems: [TabNavigationItem]) -> TabNavigationTransitionContext {
         // Create views.
         let itemViews = _createAndSetupTitleItemViews()
-        let _itemViews: TabNavigationTitleItemViews = (_titleItemsScrollView, _navigationTitleItemView, _titleItemContentAlignmentView as UIView)
+        let _itemViews: TabNavigationTitleItemViews = (_titleItemsScrollView, _navigationTitleItemView, _titleItemFixSpacingLayoutGuide)
         let animationParameters = (_titleItemsContainerView, _itemViews, itemViews)
         
         var navigationTitleActionItems: [TabNavigationTitleActionItem] = []
@@ -1213,14 +1213,14 @@ extension TabNavigationBar {
             // Add title action item first.
             var _transitionActionItems: [TabNavigationTitleActionItem] = []
             for item in navigationTitleActionItems {
-                _addNavigationTitleItemButton(item, in: _transitionActionItems, possibleActions: _transitionActionItems, to: itemViews.itemsView, alignmentContentView: (itemViews.alignmentContentView as! TabNavigationBar._TabNavigaitonTitleContentAlignmentView), transition: true)
+                _addNavigationTitleItemButton(item, in: _transitionActionItems, possibleActions: _transitionActionItems, to: itemViews.itemsView, fixSpacing: itemViews.fixSpacing, transition: true)
                 _transitionActionItems.append(item)
             }
         }
         // Add title items.
         var transitionItems: [TabNavigationTitleItem] = []
         for item in items {
-            _addNavigationTitleItemButton(item, in: transitionItems, possibleActions: navigationTitleActionItems, to: itemViews.itemsView, alignmentContentView: itemViews.alignmentContentView as? _TabNavigaitonTitleContentAlignmentView, transition: true)
+            _addNavigationTitleItemButton(item, in: transitionItems, possibleActions: navigationTitleActionItems, to: itemViews.itemsView, fixSpacing: itemViews.fixSpacing, transition: true)
             transitionItems.append(item)
         }
         
