@@ -1228,7 +1228,7 @@ extension TabNavigationController: UIScrollViewDelegate {
                 }
             }
             
-            tabNavigationBar.setNestedScrollViewContentOffset(scrollView.contentOffset, contentSize: scrollView.contentSize, bounds: scrollView.bounds, transition: _transitionNavigationItemViewsContext?.navigationItemViews)
+            tabNavigationBar.setNestedScrollViewContentOffset(scrollView.contentOffset, contentSize: scrollView.contentSize, bounds: scrollView.bounds, transition: _transitionNavigationItemViewsContext?.navigationItemViews, updatingNavigationItems: !isTabNavigationItemsUpdatingDisabledInRootViewControllers)
         }
     }
     
