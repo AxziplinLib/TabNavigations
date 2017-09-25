@@ -1284,7 +1284,7 @@ extension TabNavigationBar {
         _commitTransitionTitleItemViews(itemViews, titleItems: titleItems)
     }
     
-    public func setNestedScrollViewContentOffset(_ contentOffset: CGPoint, contentSize: CGSize, bounds: CGRect, transition itemViews: TabNavigationItemViews? = nil) {
+    public func setNestedScrollViewContentOffset(_ contentOffset: CGPoint, contentSize: CGSize, bounds: CGRect, transition itemViews: TabNavigationItemViews? = nil, updatingNavigationItems: Bool = true) {
         let offsetPositions = _offsetPositionsUpToEndIndex
         
         let index = Int(contentOffset.x / bounds.width)
@@ -1306,7 +1306,7 @@ extension TabNavigationBar {
         _titleItemsScrollView.setContentOffset(CGPoint(x: offsetx, y: 0.0), animated: false)
         
         //FIXME: Ignoring the edge.
-        if signedPercent == 0.0 { return }// Begins from or ends to the edge of the screen, ignoring.
+        if signedPercent == 0.0 || !updatingNavigationItems { return }// Begins from or ends to the edge of the screen, ignoring.
         itemViews?.itemsView.alpha = signedPercent
         _navigationItemView.alpha  = 1 - signedPercent
     }
