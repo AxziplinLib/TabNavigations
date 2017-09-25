@@ -223,15 +223,16 @@ public class TabNavigationBar: UIView, UIBarPositioning {
         guard let _titleItem = sender._titleItem else { return }
         
         if let index = _navigationTitleItems.index(of: _titleItem), index != _selectedTitleItemIndex {
-            setSelectedTitle(at: index, animated: true)
+            // setSelectedTitle(at: index, animated: true)
+            _setSelectedTitle(at: index, in: _navigationTitleItems, animated: true)
             
             NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(_scrollToSelectedTitleItemWithAnimation), object: nil)
             // Set up the animated transition delegate:
-            // _delegatesQueue.remove(_interactiveTransition)
-            // _delegatesQueue.add(_animatedTransition)
+            _delegatesQueue.remove(_interactiveTransition)
+            _delegatesQueue.add(_animatedTransition)
             // Set to the selected offset.
-            // let _offsetX = _horizontalOffset(upto: _selectedTitleItemIndex, in: _navigationTitleItems)
-            // _titleItemsScrollView.setContentOffset(CGPoint(x: _offsetX, y: 0.0), animated: true)
+            let _offsetX = _horizontalOffset(upto: _selectedTitleItemIndex, in: _navigationTitleItems)
+            _titleItemsScrollView.setContentOffset(CGPoint(x: _offsetX, y: 0.0), animated: true)
         }
     }
     @objc
@@ -660,11 +661,12 @@ public class TabNavigationBar: UIView, UIBarPositioning {
             // Set new items to the view.
             navigationTitleItems = items
             if !_navigationTitleItems.isEmpty {
-                setSelectedTitle(at: index, animated: animated)
+                // setSelectedTitle(at: index, animated: animated)
+                _setSelectedTitle(at: index, in: _navigationTitleItems, animated: true)
                 // _scrollToSelectedTitleItem(animated: animated)
                 // Set up the animated transition delegate:
-                // _delegatesQueue.remove(_interactiveTransition)
-                // _delegatesQueue.add(_animatedTransition)
+                _delegatesQueue.remove(_interactiveTransition)
+                _delegatesQueue.add(_animatedTransition)
                 // Set to the selected offset.
                 let _offsetX = _horizontalOffset(upto: _selectedTitleItemIndex, in: _navigationTitleItems)
                 _titleItemsScrollView.setContentOffset(CGPoint(x: _offsetX, y: 0.0), animated: true)
@@ -868,10 +870,10 @@ public class TabNavigationBar: UIView, UIBarPositioning {
         
         if animated && titleItemScrollView === _titleItemsScrollView {
             // Remove the interactive transition delegate and animated transition delegate.
-            // _delegatesQueue.remove(_interactiveTransition)
-            // _delegatesQueue.remove(_animatedTransition)
+            _delegatesQueue.remove(_interactiveTransition)
+            _delegatesQueue.remove(_animatedTransition)
             // Add did end scrolling animation call back delegate.
-            // _delegatesQueue.add(_didEndScrollingAnimation)
+            _delegatesQueue.add(_didEndScrollingAnimation)
         }
         
         if titleItemScrollView.contentOffset.x == offsetx {
