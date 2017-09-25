@@ -1300,17 +1300,15 @@ extension TabNavigationBar {
         }
         
         let signedPercent = contentOffset.x.truncatingRemainder(dividingBy: bounds.width) / bounds.width
-        let offsetXDelta = transitionOffsetDelta * signedPercent
-        let offsetx = beginsOffsetPosition + offsetXDelta
-        print("Nested offset: \(offsetx)")
+        let offsetXDelta  = transitionOffsetDelta * signedPercent
+        let offsetx       = beginsOffsetPosition + offsetXDelta
+        
         _titleItemsScrollView.setContentOffset(CGPoint(x: offsetx, y: 0.0), animated: false)
         
-        if let navigationItemView = itemViews?.itemsView {
-            if signedPercent >= navigationItemView.alpha {
-                navigationItemView.alpha = signedPercent
-            }
-            _navigationItemView.alpha = 1-navigationItemView.alpha
-        }
+        //FIXME: Ignoring the edge.
+        if signedPercent == 0.0 { return }// Begins from or ends to the edge of the screen, ignoring.
+        itemViews?.itemsView.alpha = signedPercent
+        _navigationItemView.alpha  = 1 - signedPercent
     }
 }
 
