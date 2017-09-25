@@ -330,7 +330,7 @@ public class TabNavigationBar: UIView, UIBarPositioning {
         let constraint = _titleItemsContainerView.trailingAnchor.constraint(equalTo : itemsContainerView.leadingAnchor,
                                                                             constant: -_TabNavigationConfig.default.itemEdgeMargin)
         if transition {
-            if let c = _constraintBetweenTitlesAndItems { removeConstraint(c) }
+            if let c = _constraintBetweenTitlesAndItems { _containerView.removeConstraint(c) }
             _constraintBetweenTransitionTitlesAndItems = constraint
         } else {
             _constraintBetweenTitlesAndItems = constraint
