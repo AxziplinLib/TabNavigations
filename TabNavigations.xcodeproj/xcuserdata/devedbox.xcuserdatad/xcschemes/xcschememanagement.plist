@@ -4,7 +4,7 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
-		<key>AxReminder.xcscheme</key>
+		<key>TabNavigations.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>0</integer>
@@ -13,21 +13,6 @@
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
 		<key>DC2D37811F1C8FB600DFA819</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>DC8DD7AE1F00D6C9006D9706</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>DC8DD7C51F00D6C9006D9706</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>DC8DD7D01F00D6C9006D9706</key>
 		<dict>
 			<key>primary</key>
 			<true/>

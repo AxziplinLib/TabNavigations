@@ -16,6 +16,7 @@
 		DC2B71811F79F99900184BCC /* TabNavigationTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC2B717A1F79F93000184BCC /* TabNavigationTransition.swift */; };
 		DC2B71821F79F99900184BCC /* TabNavigationUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC2B717B1F79F93000184BCC /* TabNavigationUtility.swift */; };
 		DC2B71841F79FAC200184BCC /* Colours-5.14.0.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC2B71831F79FAC200184BCC /* Colours-5.14.0.swift */; };
+		DC2B71861F7A27A800184BCC /* Resources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = DC2B71851F79FFAC00184BCC /* Resources.bundle */; };
 		DC3374001F274AB900C27923 /* CollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC3373FF1F274AB900C27923 /* CollectionViewCell.swift */; };
 		DC3374041F274BEA00C27923 /* CollectionReusableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC3374031F274BEA00C27923 /* CollectionReusableView.swift */; };
 		DC65E1991F274773009F0312 /* CollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC65E1981F274773009F0312 /* CollectionViewController.swift */; };
@@ -59,23 +60,23 @@
 		DC0466101F6F6A2000B932F7 /* SafeAreaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafeAreaView.swift; sourceTree = "<group>"; };
 		DC1782F91F0A4DB9000738E9 /* ApplicationColor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApplicationColor.swift; sourceTree = "<group>"; };
 		DC2B71751F79F93000184BCC /* _ScrollViewDelegates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = _ScrollViewDelegates.swift; sourceTree = "<group>"; };
-		DC2B71761F79F93000184BCC /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		DC2B71771F79F93000184BCC /* TabNavigationBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabNavigationBar.swift; sourceTree = "<group>"; };
 		DC2B71781F79F93000184BCC /* TabNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabNavigationController.swift; sourceTree = "<group>"; };
 		DC2B71791F79F93000184BCC /* TabNavigationItems.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabNavigationItems.swift; sourceTree = "<group>"; };
 		DC2B717A1F79F93000184BCC /* TabNavigationTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabNavigationTransition.swift; sourceTree = "<group>"; };
 		DC2B717B1F79F93000184BCC /* TabNavigationUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabNavigationUtility.swift; sourceTree = "<group>"; };
 		DC2B71831F79FAC200184BCC /* Colours-5.14.0.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Colours-5.14.0.swift"; sourceTree = "<group>"; };
+		DC2B71851F79FFAC00184BCC /* Resources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Resources.bundle; sourceTree = "<group>"; };
 		DC3373FF1F274AB900C27923 /* CollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionViewCell.swift; sourceTree = "<group>"; };
 		DC3374031F274BEA00C27923 /* CollectionReusableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionReusableView.swift; sourceTree = "<group>"; };
 		DC65E1981F274773009F0312 /* CollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionViewController.swift; sourceTree = "<group>"; };
 		DC6A9ACD1F1898BD00F63525 /* Colors.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Colors.plist; sourceTree = "<group>"; };
-		DC8DD7AF1F00D6C9006D9706 /* AxReminder.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AxReminder.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		DC8DD7AF1F00D6C9006D9706 /* TabNavigations.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TabNavigations.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DC8DD7BC1F00D6C9006D9706 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		DC8DD7C61F00D6C9006D9706 /* AxReminderTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AxReminderTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		DC8DD7C61F00D6C9006D9706 /* TabNavigationsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TabNavigationsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		DC8DD7CA1F00D6C9006D9706 /* AxReminderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AxReminderTests.swift; sourceTree = "<group>"; };
 		DC8DD7CC1F00D6C9006D9706 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		DC8DD7D11F00D6C9006D9706 /* AxReminderUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AxReminderUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		DC8DD7D11F00D6C9006D9706 /* TabNavigationsUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TabNavigationsUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		DC8DD7D51F00D6C9006D9706 /* AxReminderUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AxReminderUITests.swift; sourceTree = "<group>"; };
 		DC8DD7D71F00D6C9006D9706 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DC8DD7E51F00DE7B006D9706 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -143,7 +144,7 @@
 		DC2B71741F79F93000184BCC /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				DC2B71761F79F93000184BCC /* LICENSE */,
+				DC2B71851F79FFAC00184BCC /* Resources.bundle */,
 				DC2B71771F79F93000184BCC /* TabNavigationBar.swift */,
 				DC2B71791F79F93000184BCC /* TabNavigationItems.swift */,
 				DC2B71751F79F93000184BCC /* _ScrollViewDelegates.swift */,
@@ -169,9 +170,9 @@
 		DC8DD7B01F00D6C9006D9706 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				DC8DD7AF1F00D6C9006D9706 /* AxReminder.app */,
-				DC8DD7C61F00D6C9006D9706 /* AxReminderTests.xctest */,
-				DC8DD7D11F00D6C9006D9706 /* AxReminderUITests.xctest */,
+				DC8DD7AF1F00D6C9006D9706 /* TabNavigations.app */,
+				DC8DD7C61F00D6C9006D9706 /* TabNavigationsTests.xctest */,
+				DC8DD7D11F00D6C9006D9706 /* TabNavigationsUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -298,9 +299,9 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		DC8DD7AE1F00D6C9006D9706 /* AxReminder */ = {
+		DC8DD7AE1F00D6C9006D9706 /* TabNavigations */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = DC8DD7DA1F00D6C9006D9706 /* Build configuration list for PBXNativeTarget "AxReminder" */;
+			buildConfigurationList = DC8DD7DA1F00D6C9006D9706 /* Build configuration list for PBXNativeTarget "TabNavigations" */;
 			buildPhases = (
 				DC8DD7AB1F00D6C9006D9706 /* Sources */,
 				DC8DD7AC1F00D6C9006D9706 /* Frameworks */,
@@ -311,14 +312,14 @@
 			);
 			dependencies = (
 			);
-			name = AxReminder;
+			name = TabNavigations;
 			productName = AxReminder;
-			productReference = DC8DD7AF1F00D6C9006D9706 /* AxReminder.app */;
+			productReference = DC8DD7AF1F00D6C9006D9706 /* TabNavigations.app */;
 			productType = "com.apple.product-type.application";
 		};
-		DC8DD7C51F00D6C9006D9706 /* AxReminderTests */ = {
+		DC8DD7C51F00D6C9006D9706 /* TabNavigationsTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = DC8DD7DD1F00D6C9006D9706 /* Build configuration list for PBXNativeTarget "AxReminderTests" */;
+			buildConfigurationList = DC8DD7DD1F00D6C9006D9706 /* Build configuration list for PBXNativeTarget "TabNavigationsTests" */;
 			buildPhases = (
 				DC8DD7C21F00D6C9006D9706 /* Sources */,
 				DC8DD7C31F00D6C9006D9706 /* Frameworks */,
@@ -329,14 +330,14 @@
 			dependencies = (
 				DC8DD7C81F00D6C9006D9706 /* PBXTargetDependency */,
 			);
-			name = AxReminderTests;
+			name = TabNavigationsTests;
 			productName = AxReminderTests;
-			productReference = DC8DD7C61F00D6C9006D9706 /* AxReminderTests.xctest */;
+			productReference = DC8DD7C61F00D6C9006D9706 /* TabNavigationsTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		DC8DD7D01F00D6C9006D9706 /* AxReminderUITests */ = {
+		DC8DD7D01F00D6C9006D9706 /* TabNavigationsUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = DC8DD7E01F00D6C9006D9706 /* Build configuration list for PBXNativeTarget "AxReminderUITests" */;
+			buildConfigurationList = DC8DD7E01F00D6C9006D9706 /* Build configuration list for PBXNativeTarget "TabNavigationsUITests" */;
 			buildPhases = (
 				DC8DD7CD1F00D6C9006D9706 /* Sources */,
 				DC8DD7CE1F00D6C9006D9706 /* Frameworks */,
@@ -347,9 +348,9 @@
 			dependencies = (
 				DC8DD7D31F00D6C9006D9706 /* PBXTargetDependency */,
 			);
-			name = AxReminderUITests;
+			name = TabNavigationsUITests;
 			productName = AxReminderUITests;
-			productReference = DC8DD7D11F00D6C9006D9706 /* AxReminderUITests.xctest */;
+			productReference = DC8DD7D11F00D6C9006D9706 /* TabNavigationsUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -377,7 +378,7 @@
 					};
 				};
 			};
-			buildConfigurationList = DC8DD7AA1F00D6C9006D9706 /* Build configuration list for PBXProject "AxReminder" */;
+			buildConfigurationList = DC8DD7AA1F00D6C9006D9706 /* Build configuration list for PBXProject "TabNavigations" */;
 			compatibilityVersion = "Xcode 8.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -391,9 +392,9 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				DC8DD7AE1F00D6C9006D9706 /* AxReminder */,
-				DC8DD7C51F00D6C9006D9706 /* AxReminderTests */,
-				DC8DD7D01F00D6C9006D9706 /* AxReminderUITests */,
+				DC8DD7AE1F00D6C9006D9706 /* TabNavigations */,
+				DC8DD7C51F00D6C9006D9706 /* TabNavigationsTests */,
+				DC8DD7D01F00D6C9006D9706 /* TabNavigationsUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -403,6 +404,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DC2B71861F7A27A800184BCC /* Resources.bundle in Resources */,
 				DC6A9ACE1F1898BD00F63525 /* Colors.plist in Resources */,
 				DCB25A061F039707001EFC1C /* Localizable.strings in Resources */,
 				DC8DD7F81F00E291006D9706 /* LaunchScreen.storyboard in Resources */,
@@ -477,12 +479,12 @@
 /* Begin PBXTargetDependency section */
 		DC8DD7C81F00D6C9006D9706 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = DC8DD7AE1F00D6C9006D9706 /* AxReminder */;
+			target = DC8DD7AE1F00D6C9006D9706 /* TabNavigations */;
 			targetProxy = DC8DD7C71F00D6C9006D9706 /* PBXContainerItemProxy */;
 		};
 		DC8DD7D31F00D6C9006D9706 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = DC8DD7AE1F00D6C9006D9706 /* AxReminder */;
+			target = DC8DD7AE1F00D6C9006D9706 /* TabNavigations */;
 			targetProxy = DC8DD7D21F00D6C9006D9706 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -690,7 +692,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AxReminder.app/AxReminder";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TabNavigations.app/TabNavigations";
 			};
 			name = Debug;
 		};
@@ -707,7 +709,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AxReminder.app/AxReminder";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TabNavigations.app/TabNavigations";
 			};
 			name = Release;
 		};
@@ -746,7 +748,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		DC8DD7AA1F00D6C9006D9706 /* Build configuration list for PBXProject "AxReminder" */ = {
+		DC8DD7AA1F00D6C9006D9706 /* Build configuration list for PBXProject "TabNavigations" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				DC8DD7D81F00D6C9006D9706 /* Debug */,
@@ -755,7 +757,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		DC8DD7DA1F00D6C9006D9706 /* Build configuration list for PBXNativeTarget "AxReminder" */ = {
+		DC8DD7DA1F00D6C9006D9706 /* Build configuration list for PBXNativeTarget "TabNavigations" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				DC8DD7DB1F00D6C9006D9706 /* Debug */,
@@ -764,7 +766,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		DC8DD7DD1F00D6C9006D9706 /* Build configuration list for PBXNativeTarget "AxReminderTests" */ = {
+		DC8DD7DD1F00D6C9006D9706 /* Build configuration list for PBXNativeTarget "TabNavigationsTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				DC8DD7DE1F00D6C9006D9706 /* Debug */,
@@ -773,7 +775,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		DC8DD7E01F00D6C9006D9706 /* Build configuration list for PBXNativeTarget "AxReminderUITests" */ = {
+		DC8DD7E01F00D6C9006D9706 /* Build configuration list for PBXNativeTarget "TabNavigationsUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				DC8DD7E11F00D6C9006D9706 /* Debug */,
