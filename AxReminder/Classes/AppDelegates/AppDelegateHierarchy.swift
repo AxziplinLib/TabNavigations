@@ -15,8 +15,15 @@ extension AppDelegate {
     }
     
     public func loadViewControllers() {
-        // tabNavigationController?.addViewController(HomeViewController.instance(from: UIStoryboard(name: "Home", bundle: .main))!)
-        // tabNavigationController?.addViewController(CategoryViewController.instance(from: UIStoryboard(name: "Category", bundle: .main))!)
+        tabNavigationController?.tabNavigationBar.isTranslucent = false
+        tabNavigationController?.isTabNavigationItemsUpdatingDisabledInRootViewControllers = true
+        tabNavigationController?.tabNavigationBar.navigationItems = [TabNavigationItem(title: "item")]
+        
+        for i in 0..<12 {
+            let viewController = ViewController()
+            viewController.setTabNavigationTitle(TabNavigationController.TabNavigationTitle(title: "H\(i)"))
+            tabNavigationController?.addViewController(viewController)
+        }
         
         let settingsItem = TabNavigationTitleActionItem(title: "设置", target: self, selector: #selector(_handleShowingSettingsViewController(_:)))
         settingsItem.tintColor = UIColor.application.blue
@@ -27,11 +34,8 @@ extension AppDelegate {
     
     @objc
     private func _handleShowingSettingsViewController(_ sender: UIButton) {
-//        let settings = { () -> SettingsViewController in
-//            let settings = SettingsViewController.instance(from: UIStoryboard(name: "Settings", bundle: .main))!
-//            settings.title = "设置"
-//            return settings
-//        }()
-//        tabNavigationController?.push(settings, animated: true)
+        let settings = ViewController()
+        settings.setTabNavigationTitle(TabNavigationController.TabNavigationTitle(title: "设置"))
+        tabNavigationController?.push(settings, animated: true)
     }
 }
