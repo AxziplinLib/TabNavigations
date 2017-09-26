@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12121" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="6tU-aW-qH7">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13196" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="6tU-aW-qH7">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12089"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13173"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <customFonts key="customFonts">
@@ -149,7 +149,7 @@
                         <sections>
                             <tableViewSection id="Cwn-b3-hCb">
                                 <cells>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="_ItemAddingTextViewTableViewCell" id="BYt-Tc-DvG" customClass="ItemAddingTextViewTableViewCell" customModule="AxReminder" customModuleProvider="target">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="_ItemAddingTextViewTableViewCell" rowHeight="44" id="BYt-Tc-DvG" customClass="ItemAddingTextViewTableViewCell" customModule="AxReminder" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="35" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="BYt-Tc-DvG" id="Gdg-Qd-RLj">
@@ -179,7 +179,7 @@
                                             <outlet property="textView" destination="BJ9-Mg-xfy" id="Jpd-To-klb"/>
                                         </connections>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="_ItemAddingTextViewTableViewCell" id="WNc-5b-GBm" customClass="ItemAddingTextViewTableViewCell" customModule="AxReminder" customModuleProvider="target">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="_ItemAddingTextViewTableViewCell" rowHeight="44" id="WNc-5b-GBm" customClass="ItemAddingTextViewTableViewCell" customModule="AxReminder" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="79" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="WNc-5b-GBm" id="Imq-7k-Jid">
@@ -373,19 +373,19 @@
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="216"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" showsUserLocation="YES" translatesAutoresizingMaskIntoConstraints="NO" id="8OC-7v-YGU">
+                                                <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" ambiguous="YES" mapType="standard" showsUserLocation="YES" translatesAutoresizingMaskIntoConstraints="NO" id="8OC-7v-YGU">
                                                     <rect key="frame" x="15" y="10" width="345" height="206"/>
                                                     <connections>
                                                         <outlet property="delegate" destination="4ad-jh-by4" id="whl-y3-Kyf"/>
                                                     </connections>
                                                 </mapView>
-                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="g8G-rm-53l" customClass="ItemAddingMapFilterView" customModule="AxReminder" customModuleProvider="target">
+                                                <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="g8G-rm-53l" customClass="ItemAddingMapFilterView" customModule="AxReminder" customModuleProvider="target">
                                                     <rect key="frame" x="15" y="10" width="345" height="206"/>
                                                     <subviews>
-                                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="location_center" translatesAutoresizingMaskIntoConstraints="NO" id="HlP-NI-vFm">
+                                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" image="location_center" translatesAutoresizingMaskIntoConstraints="NO" id="HlP-NI-vFm">
                                                             <rect key="frame" x="138.5" y="24" width="72" height="82"/>
                                                         </imageView>
-                                                        <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="100米" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="C5p-IP-zcB">
+                                                        <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="100米" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="C5p-IP-zcB">
                                                             <rect key="frame" x="178.5" y="93" width="26" height="11"/>
                                                             <constraints>
                                                                 <constraint firstAttribute="width" constant="26" id="DuC-Wf-kgy"/>
@@ -462,6 +462,7 @@
                                                 <constraint firstAttribute="bottom" secondItem="glX-ni-JUb" secondAttribute="bottom" constant="5" id="CDq-VP-cCK"/>
                                                 <constraint firstAttribute="trailing" secondItem="0yw-y4-Nsk" secondAttribute="trailing" id="Cuw-Yk-g0C"/>
                                                 <constraint firstItem="glX-ni-JUb" firstAttribute="leading" secondItem="Og4-Tj-3bb" secondAttribute="leading" constant="15" id="GjB-I1-tQE"/>
+                                                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="glX-ni-JUb" secondAttribute="trailing" constant="20" symbolic="YES" id="Tgl-dJ-cdZ"/>
                                                 <constraint firstItem="glX-ni-JUb" firstAttribute="top" secondItem="Og4-Tj-3bb" secondAttribute="top" id="fKh-5h-T5N"/>
                                                 <constraint firstItem="0yw-y4-Nsk" firstAttribute="top" secondItem="Og4-Tj-3bb" secondAttribute="top" id="wV7-ZP-eHb"/>
                                             </constraints>

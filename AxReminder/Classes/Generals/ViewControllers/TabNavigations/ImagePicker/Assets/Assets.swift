@@ -271,7 +271,7 @@ extension AssetsViewController {
         guard indexPath.item != 0 else {
             collectionView.deselectItem(at: indexPath, animated: true)
             // Handle camera actions.
-            if let cameraViewController = CameraViewController(previewView: imagePickerController._captureVideoPreviewView, input: imagePickerController._captureDeviceInput) {
+            if let cameraViewController = imagePickerController._camera {
                 cameraViewController.delegate = self
                 cameraViewController.transitioningDelegate = self
                 
@@ -309,7 +309,7 @@ extension AssetsViewController {
     
     override open func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         if cell is AssetsCaptureVideoPreviewCollectionCell && _isViewDidAppear {
-            imagePickerController._captureDisplayQueue.async { [weak self] in
+            imagePickerController._camera.captureDisplayQueue.async { [weak self] in
                 guard let wself = self else { return }
                 // wself._captureDisplayView.isDrawingEnabled = true
                 wself.imagePickerController._captureDisplayViews.update(with: wself._captureDisplayView)
@@ -319,7 +319,7 @@ extension AssetsViewController {
     
     override open func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         if cell is AssetsCaptureVideoPreviewCollectionCell {
-            imagePickerController._captureDisplayQueue.async { [weak self] in
+            imagePickerController._camera.captureDisplayQueue.async { [weak self] in
                 guard let wself = self else { return }
                 // wself._captureDisplayView.isDrawingEnabled = false
                 wself.imagePickerController._captureDisplayViews.remove(wself._captureDisplayView)

@@ -22,3 +22,7 @@ class AxTabNavigationController: TabNavigationController {
         // Dispose of any resources that can be recreated.
     }
 }
+
+extension AxTabNavigationController {
+    override var prefersStatusBarHidden: Bool { return false }
+}

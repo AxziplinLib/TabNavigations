@@ -87,37 +87,6 @@ strip_invalid_archs() {
   fi
 }
 
-
-if [[ "$CONFIGURATION" == "Debug" ]]; then
-  install_framework "$BUILT_PRODUCTS_DIR/AGGeometryKit/AGGeometryKit.framework"
-  install_framework "$BUILT_PRODUCTS_DIR/AGGeometryKit+POP/AGGeometryKit_POP.framework"
-  install_framework "$BUILT_PRODUCTS_DIR/AXAnimationChain-Swift/AXAnimationChain_Swift.framework"
-  install_framework "$BUILT_PRODUCTS_DIR/AXAnimationChainSwift/AXAnimationChainSwift.framework"
-  install_framework "$BUILT_PRODUCTS_DIR/AXAttributedLabel/AXAttributedLabel.framework"
-  install_framework "$BUILT_PRODUCTS_DIR/AXIndicatorView/AXIndicatorView.framework"
-  install_framework "$BUILT_PRODUCTS_DIR/AXPopoverView/AXPopoverView.framework"
-  install_framework "$BUILT_PRODUCTS_DIR/AXPracticalHUD/AXPracticalHUD.framework"
-  install_framework "$BUILT_PRODUCTS_DIR/AXResponderSchemaKit/AXResponderSchemaKit.framework"
-  install_framework "$BUILT_PRODUCTS_DIR/Realm/Realm.framework"
-  install_framework "$BUILT_PRODUCTS_DIR/RealmSwift/RealmSwift.framework"
-  install_framework "$BUILT_PRODUCTS_DIR/YYText/YYText.framework"
-  install_framework "$BUILT_PRODUCTS_DIR/pop/pop.framework"
-fi
-if [[ "$CONFIGURATION" == "Release" ]]; then
-  install_framework "$BUILT_PRODUCTS_DIR/AGGeometryKit/AGGeometryKit.framework"
-  install_framework "$BUILT_PRODUCTS_DIR/AGGeometryKit+POP/AGGeometryKit_POP.framework"
-  install_framework "$BUILT_PRODUCTS_DIR/AXAnimationChain-Swift/AXAnimationChain_Swift.framework"
-  install_framework "$BUILT_PRODUCTS_DIR/AXAnimationChainSwift/AXAnimationChainSwift.framework"
-  install_framework "$BUILT_PRODUCTS_DIR/AXAttributedLabel/AXAttributedLabel.framework"
-  install_framework "$BUILT_PRODUCTS_DIR/AXIndicatorView/AXIndicatorView.framework"
-  install_framework "$BUILT_PRODUCTS_DIR/AXPopoverView/AXPopoverView.framework"
-  install_framework "$BUILT_PRODUCTS_DIR/AXPracticalHUD/AXPracticalHUD.framework"
-  install_framework "$BUILT_PRODUCTS_DIR/AXResponderSchemaKit/AXResponderSchemaKit.framework"
-  install_framework "$BUILT_PRODUCTS_DIR/Realm/Realm.framework"
-  install_framework "$BUILT_PRODUCTS_DIR/RealmSwift/RealmSwift.framework"
-  install_framework "$BUILT_PRODUCTS_DIR/YYText/YYText.framework"
-  install_framework "$BUILT_PRODUCTS_DIR/pop/pop.framework"
-fi
 if [ "${COCOAPODS_PARALLEL_CODE_SIGN}" == "true" ]; then
   wait
 fi

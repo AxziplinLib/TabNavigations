@@ -1,6 +1,0 @@
-framework module AXPopoverView {
-  umbrella header "AXPopoverView-umbrella.h"
-
-  export *
-  module * { export * }
-}

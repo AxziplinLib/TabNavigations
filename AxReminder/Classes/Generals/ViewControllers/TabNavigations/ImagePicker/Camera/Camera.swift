@@ -56,12 +56,12 @@ open class CameraViewController: UIViewController {
     @available(iOS 10.0, *)
     public      var  capturePhotoOutput     : AVCapturePhotoOutput!    { return _photoOutput as! AVCapturePhotoOutput  }
     /// The storage of the capture photo output.
-    fileprivate var  _photoOutput           : Any! = { if #available(iOS 10.0, *) { return AVCapturePhotoOutput() } else { return nil }}()
+    fileprivate var _photoOutput            : Any! = { if #available(iOS 10.0, *) { return AVCapturePhotoOutput() } else { return nil }}()
     /// The still image output of the session to general still photo image data.
     @available(iOS, introduced: 9.0, deprecated: 10.0, message: "Use capturePhotoOutput instead")
     public      var  captureStillImageOutput: AVCaptureStillImageOutput! { return _stillImageOutput as! AVCaptureStillImageOutput }
     /// The storage of the capture still image output.
-    fileprivate var _stillImageOutput       : Any! = { if #available(iOS 10.0, *) { return nil } else { return AVCaptureStillImageOutput() }}()
+    fileprivate var _stillImageOutput       : Any! = { /*if #available(iOS 10.0, *) { return nil } else {*/ return AVCaptureStillImageOutput() /*}*/}()
     /// The dispatch queue of the configuration of the display view and handlers of the output sample buffer.
     public      var  captureDisplayQueue    : DispatchQueue            { return _displayQueue          }
     /// The storage of capture display queue.
@@ -298,15 +298,16 @@ open class CameraViewController: UIViewController {
         }
         _initPreviewView() // Call the initialzer of preview view obviously.
         // Configure session.
+        /*
         if #available(iOS 10.0, *) {
             if  _session.canAddOutput(capturePhotoOutput) {
                 _session.addOutput   (capturePhotoOutput)
             } else { throw CameraError.initializing(.sessionCannotAddOutput) }
-        } else {
+        } else {*/
             if  _session.canAddOutput(captureStillImageOutput) {
                 _session.addOutput   (captureStillImageOutput)
             } else { throw CameraError.initializing(.sessionCannotAddOutput) }
-        }
+        // }
         if  _session.canAddOutput(_displayOutput) {
             _session.addOutput   (_displayOutput)
         } else { throw CameraError.initializing(.sessionCannotAddOutput) }
@@ -368,7 +369,17 @@ extension CameraViewController {
 extension CameraViewController {
     @objc
     fileprivate func _handleShot(_ sender: UIButton) {
-        
+        captureStillImageOutput.outputSettings = [AVVideoCodecKey: AVVideoCodecJPEG]
+        guard let videoConnection = captureStillImageOutput.connection(withMediaType: AVMediaTypeVideo) else { return }
+        captureStillImageOutput.captureStillImageAsynchronously(from: videoConnection) { (sampleBuffer, error) in
+            if let er = error {
+                print("Capture still image failed with: \(er)")
+            } else if let buffer = sampleBuffer {
+                guard let imageData = AVCaptureStillImageOutput.jpegStillImageNSDataRepresentation(buffer) else { return }
+                let image = UIImage(data: imageData)
+                print(image)
+            }
+        }
     }
     
     @objc fileprivate func _handleToggleFace(_ sender: UIButton) {
