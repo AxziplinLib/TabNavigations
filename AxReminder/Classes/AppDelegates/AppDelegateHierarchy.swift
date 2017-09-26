@@ -15,8 +15,8 @@ extension AppDelegate {
     }
     
     public func loadViewControllers() {
-        tabNavigationController?.addViewController(HomeViewController.instance(from: UIStoryboard(name: "Home", bundle: .main))!)
-        tabNavigationController?.addViewController(CategoryViewController.instance(from: UIStoryboard(name: "Category", bundle: .main))!)
+        // tabNavigationController?.addViewController(HomeViewController.instance(from: UIStoryboard(name: "Home", bundle: .main))!)
+        // tabNavigationController?.addViewController(CategoryViewController.instance(from: UIStoryboard(name: "Category", bundle: .main))!)
         
         let settingsItem = TabNavigationTitleActionItem(title: "设置", target: self, selector: #selector(_handleShowingSettingsViewController(_:)))
         settingsItem.tintColor = UIColor.application.blue
@@ -27,11 +27,11 @@ extension AppDelegate {
     
     @objc
     private func _handleShowingSettingsViewController(_ sender: UIButton) {
-        let settings = { () -> SettingsViewController in
-            let settings = SettingsViewController.instance(from: UIStoryboard(name: "Settings", bundle: .main))!
-            settings.title = "设置"
-            return settings
-        }()
-        tabNavigationController?.push(settings, animated: true)
+//        let settings = { () -> SettingsViewController in
+//            let settings = SettingsViewController.instance(from: UIStoryboard(name: "Settings", bundle: .main))!
+//            settings.title = "设置"
+//            return settings
+//        }()
+//        tabNavigationController?.push(settings, animated: true)
     }
 }

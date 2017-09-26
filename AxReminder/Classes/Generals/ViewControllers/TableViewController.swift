@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import AXResponderSchemaKit
 
 class TableViewController: UITableViewController {
     fileprivate lazy var _backgroundFilterView: UIView = UIView()
