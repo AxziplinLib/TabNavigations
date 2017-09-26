@@ -175,7 +175,7 @@
 			isa = PBXGroup;
 			children = (
 				DC2B71741F79F93000184BCC /* Source */,
-				DC8DD7B11F00D6C9006D9706 /* AxReminder */,
+				DC8DD7B11F00D6C9006D9706 /* TabNavigations */,
 				DC2B71871F7A29C800184BCC /* TabNavigationsTests */,
 				DC2B718A1F7A29C800184BCC /* TabNavigationsUITests */,
 				DC8DD7B01F00D6C9006D9706 /* Products */,
@@ -193,7 +193,7 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		DC8DD7B11F00D6C9006D9706 /* AxReminder */ = {
+		DC8DD7B11F00D6C9006D9706 /* TabNavigations */ = {
 			isa = PBXGroup;
 			children = (
 				DC8DD7E31F00DE7B006D9706 /* Classes */,
@@ -201,7 +201,7 @@
 				DC8DD7E91F00DE8B006D9706 /* Storyboards */,
 				DC8DD7EF1F00DED2006D9706 /* Surpporting Files */,
 			);
-			path = AxReminder;
+			path = TabNavigations;
 			sourceTree = "<group>";
 		};
 		DC8DD7E31F00DE7B006D9706 /* Classes */ = {
