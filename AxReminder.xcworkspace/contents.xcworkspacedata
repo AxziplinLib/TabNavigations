@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:AxReminder.xcodeproj">
+      location = "group:/Users/devedbox/Desktop/TabNavigations/TabNavigations.xcodeproj">
    </FileRef>
 </Workspace>

@@ -144,7 +144,7 @@ public class TabNavigationBar: UIView, UIBarPositioning {
     
     private var _titleItemsPreviewPanGesture: UIPanGestureRecognizer!
     
-    fileprivate var _navigationBackItem: _TabNavigationBackItem = _TabNavigationBackItem(image:#imageLiteral(resourceName: "back_indicator"))
+    fileprivate var _navigationBackItem: _TabNavigationBackItem = _TabNavigationBackItem(image:UIImage(named: "Resources.bundle/navigation_back", in: Bundle(for: TabNavigationBar.self), compatibleWith: nil))
     fileprivate var _navigationItems: [TabNavigationItem] = []
     fileprivate var _navigationTitleItems: [TabNavigationTitleItem] = [] { didSet { _offsetPositionsUpToEndIndex = _horizontalOffsetsUptoEachIndexs() } }
     fileprivate var _navigationTitleActionItems: [TabNavigationTitleActionItem] = []
