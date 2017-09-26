@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import YYText
 
 extension HomeTableViewCell {
     override public class var reusedIdentifier: String { return "_HomeTableViweCell" }

@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import AXResponderSchemaKit
 
 protocol StoryboardLoadable: class {
     static func instance(from storyboard: UIStoryboard) -> Self?
