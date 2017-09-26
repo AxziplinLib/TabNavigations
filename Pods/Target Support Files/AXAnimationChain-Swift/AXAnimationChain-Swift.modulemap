@@ -1,6 +1,0 @@
-framework module AXAnimationChain_Swift {
-  umbrella header "AXAnimationChain-Swift-umbrella.h"
-
-  export *
-  module * { export * }
-}

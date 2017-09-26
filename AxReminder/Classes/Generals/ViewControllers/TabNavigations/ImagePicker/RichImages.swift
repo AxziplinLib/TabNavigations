@@ -1612,20 +1612,27 @@ extension UIImage {
     /// A type representing a core image context using automatic rendering by choosing the appropriate or best available CPU or GPU rendering technology based on the current device.
     fileprivate struct _AutomaticCIContext {
         lazy var context: CIContext! = { () -> CIContext! in
+            let date = Date()
+            let context = CIContext()
+            print("Context creating cost timing: \(Date().timeIntervalSince(date))")
             return CIContext()
         }()
     }
     /// A type representing a core image context using the real-time rendering with Metal.
     fileprivate struct _MetalBasedCIContext {
         lazy var context: CIContext! = { () -> CIContext! in
+            let date = Date()
             guard let device = MTLCreateSystemDefaultDevice() else { return _openGLESCIContext.context }
+            print("Context creating cost timing: \(Date().timeIntervalSince(date))")
             return CIContext(mtlDevice: device)
         }()
     }
     /// A type representing a core image context using the real-time rendering with OpenGL ES.
     fileprivate struct _OpenGLESBasedCIContext {
         lazy var context: CIContext! = { () -> CIContext! in
+            let date = Date()
             guard let eaglContext = EAGLContext(api: .openGLES3) else { return nil }
+            print("Context creating cost timing: \(Date().timeIntervalSince(date))")
             return CIContext(eaglContext: eaglContext)
         }()
     }

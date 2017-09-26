@@ -1,6 +1,0 @@
-framework module AXResponderSchemaKit {
-  umbrella header "AXResponderSchemaKit-umbrella.h"
-
-  export *
-  module * { export * }
-}

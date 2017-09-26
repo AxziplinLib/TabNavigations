@@ -1,2 +1,0 @@
-# AXPracticalHUD
-HUD view
