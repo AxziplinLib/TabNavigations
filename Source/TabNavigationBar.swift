@@ -220,12 +220,14 @@ public class TabNavigationBar: UIView, UIBarPositioning {
     @objc
     private func _handleDidSelectTitleItem(_ sender: _TabNavigationTitleItemButton) {
         guard let _titleItem = sender._titleItem else { return }
-        
+        // Cancel the scheduled scrolling animation if exists.
+        NSObject.cancelPreviousPerformRequests(withTarget: self,
+                                               selector  : #selector(_scrollToSelectedTitleItemWithAnimation),
+                                               object    : nil)
         if let index = _navigationTitleItems.index(of: _titleItem), index != _selectedTitleItemIndex {
             // setSelectedTitle(at: index, animated: true)
             _setSelectedTitle(at: index, in: _navigationTitleItems, animated: true)
             
-            NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(_scrollToSelectedTitleItemWithAnimation), object: nil)
             // Set up the animated transition delegate:
             _delegatesQueue.remove(_interactiveTransition)
             _delegatesQueue.add(_animatedTransition)
@@ -234,6 +236,15 @@ public class TabNavigationBar: UIView, UIBarPositioning {
             _titleItemsScrollView.setContentOffset(CGPoint(x: _offsetX, y: 0.0), animated: true)
         }
     }
+    
+    @objc
+    private func _handleTitleActionItemDidTouchDown(_ sender: _TabNavigationTitleItemButton) {
+        // Cancel the scheduled scrolling animation if exists.
+        NSObject.cancelPreviousPerformRequests(withTarget: self,
+                                               selector  : #selector(_scrollToSelectedTitleItemWithAnimation),
+                                               object    : nil)
+    }
+    
     @objc
     private func _handleTitleItemsPreview(_ panGesture: UIPanGestureRecognizer) {
         var position: CGPoint = .zero
@@ -584,19 +595,21 @@ public class TabNavigationBar: UIView, UIBarPositioning {
         let titleAlignmentLabel        = __titleAlignmentLabel
         let fixSpacingLayoutGudie      =   fixSpacing ?? _titleItemFixSpacingLayoutGuide
         
-        let _itemButton = item.underlyingButton
-        if !(item is TabNavigationTitleActionItem) {
-            _itemButton.addTarget(self, action: #selector(_handleDidSelectTitleItem(_:)), for: .touchUpInside)
+        let itemButton = item.underlyingButton
+        if item is TabNavigationTitleActionItem {
+            itemButton.addTarget(self, action: #selector(_handleTitleActionItemDidTouchDown(_:)), for: .touchDown)
+        } else {
+            itemButton.addTarget(self, action: #selector(_handleDidSelectTitleItem(_:)),          for: .touchUpInside)
         }
-        _itemButton.translatesAutoresizingMaskIntoConstraints = false
+        itemButton.translatesAutoresizingMaskIntoConstraints = false
         
-        _itemButton.removeFromSuperview()
-        navigationTitleItemView.addSubview(_itemButton)
+        itemButton.removeFromSuperview()
+        navigationTitleItemView.addSubview(itemButton)
         
-        _itemButton.lastBaselineAnchor.constraint(equalTo: titleAlignmentLabel.lastBaselineAnchor).isActive = true
+        itemButton.lastBaselineAnchor.constraint(equalTo: titleAlignmentLabel.lastBaselineAnchor).isActive = true
         if item is TabNavigationTitleActionItem {
             let _trailingAnchor = navigationTitleActionItems.last?.underlyingButton.trailingAnchor ?? (navigationTitleItems.last?.underlyingButton.trailingAnchor ?? navigationTitleItemView.leadingAnchor)
-            let _trailing = _itemButton.leadingAnchor.constraint(equalTo: _trailingAnchor, constant: DefaultTabNavigationTitleItemPadding)
+            let _trailing = itemButton.leadingAnchor.constraint(equalTo: _trailingAnchor, constant: DefaultTabNavigationTitleItemPadding)
             
             if navigationTitleActionItems.isEmpty {
                 if let _trailingOfTitleItems = transition ? _trailingConstraintOfLastTransitionTitleItemLabel : _trailingConstraintOfLastTitleItemLabel {
@@ -616,7 +629,7 @@ public class TabNavigationBar: UIView, UIBarPositioning {
                 navigationTitleItemView.removeConstraint(_trailingOfTitleActionItems)
             }
             
-            let _trailingOfTitleActionItems = _itemButton.trailingAnchor.constraint(equalTo: fixSpacingLayoutGudie.leadingAnchor, constant: -DefaultTabNavigationTitleItemPadding)
+            let _trailingOfTitleActionItems = itemButton.trailingAnchor.constraint(equalTo: fixSpacingLayoutGudie.leadingAnchor, constant: -DefaultTabNavigationTitleItemPadding)
             _trailingOfTitleActionItems.isActive = true
             if transition {
                 _trailingConstraintOfLastTransitionTitleActionItemLabel = _trailingOfTitleActionItems
@@ -625,13 +638,13 @@ public class TabNavigationBar: UIView, UIBarPositioning {
             }
         } else {
             let _trailingAnchor = navigationTitleItems.last?.underlyingButton.trailingAnchor ?? navigationTitleItemView.leadingAnchor
-            _itemButton.leadingAnchor.constraint(equalTo: _trailingAnchor, constant: DefaultTabNavigationTitleItemPadding).isActive = true
+            itemButton.leadingAnchor.constraint(equalTo: _trailingAnchor, constant: DefaultTabNavigationTitleItemPadding).isActive = true
             
             if let _trailing = transition ? _trailingConstraintOfLastTransitionTitleItemLabel : _trailingConstraintOfLastTitleItemLabel {
                 navigationTitleItemView.removeConstraint(_trailing)
             }
             
-            let _trailing = NSLayoutConstraint(item: navigationTitleActionItems.first?.underlyingButton ?? fixSpacingLayoutGudie, attribute: .leading, relatedBy: .equal, toItem: _itemButton, attribute: .trailing, multiplier: 1.0, constant: DefaultTabNavigationTitleItemPadding)
+            let _trailing = NSLayoutConstraint(item: navigationTitleActionItems.first?.underlyingButton ?? fixSpacingLayoutGudie, attribute: .leading, relatedBy: .equal, toItem: itemButton, attribute: .trailing, multiplier: 1.0, constant: DefaultTabNavigationTitleItemPadding)
             navigationTitleItemView.addConstraint(_trailing)
             if transition {
                 _trailingConstraintOfLastTransitionTitleItemLabel = _trailing
