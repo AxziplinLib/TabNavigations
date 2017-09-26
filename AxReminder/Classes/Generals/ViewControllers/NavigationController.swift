@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import AXResponderSchemaKit
 
 class NavigationController: UINavigationController {
 
