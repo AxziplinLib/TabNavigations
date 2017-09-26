@@ -93,6 +93,7 @@
 		DCCFDD031F1CB77F007CC8A0 /* AxTabNavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AxTabNavigationController.swift; sourceTree = "<group>"; };
 		DCCFDD0B1F1DA2DD007CC8A0 /* TextView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextView.swift; sourceTree = "<group>"; };
 		DCCFDD0F1F1DE3EB007CC8A0 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
+		DCDAC6BD1F7A41B9005DC24E /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
 		DCF9D8701F170D270058B19C /* ImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -174,6 +175,7 @@
 		DC8DD7A61F00D6C9006D9706 = {
 			isa = PBXGroup;
 			children = (
+				DCDAC6BD1F7A41B9005DC24E /* Package.swift */,
 				DC2B71741F79F93000184BCC /* Source */,
 				DC8DD7B11F00D6C9006D9706 /* TabNavigations */,
 				DC2B71871F7A29C800184BCC /* TabNavigationsTests */,
