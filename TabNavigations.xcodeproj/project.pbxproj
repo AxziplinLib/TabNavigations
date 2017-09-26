@@ -140,7 +140,7 @@
 			path = Others;
 			sourceTree = "<group>";
 		};
-		DC2B71741F79F93000184BCC /* Source */ = {
+		DC2B71741F79F93000184BCC /* Sources */ = {
 			isa = PBXGroup;
 			children = (
 				DC2B71851F79FFAC00184BCC /* Resources.bundle */,
@@ -151,7 +151,7 @@
 				DC2B717A1F79F93000184BCC /* TabNavigationTransition.swift */,
 				DC2B717B1F79F93000184BCC /* TabNavigationUtility.swift */,
 			);
-			path = Source;
+			path = Sources;
 			sourceTree = "<group>";
 		};
 		DC2B71871F7A29C800184BCC /* TabNavigationsTests */ = {
@@ -176,7 +176,7 @@
 			isa = PBXGroup;
 			children = (
 				DCDAC6BD1F7A41B9005DC24E /* Package.swift */,
-				DC2B71741F79F93000184BCC /* Source */,
+				DC2B71741F79F93000184BCC /* Sources */,
 				DC8DD7B11F00D6C9006D9706 /* TabNavigations */,
 				DC2B71871F7A29C800184BCC /* TabNavigationsTests */,
 				DC2B718A1F7A29C800184BCC /* TabNavigationsUITests */,

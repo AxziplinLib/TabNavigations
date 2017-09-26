@@ -8,4 +8,4 @@
 
 import PackageDescription
 
-let package = Package(name: "TabNavigations", dependencies : [], exclude: [])
+let package = Package(name: "TabNavigations", dependencies : [], exclude: ["Sources/Resources.bundle"])
