@@ -18,14 +18,14 @@ extension AppDelegate {
         tabNavigationController?.tabNavigationBar.isTranslucent = false
         tabNavigationController?.isTabNavigationItemsUpdatingDisabledInRootViewControllers = true
         tabNavigationController?.tabNavigationBar.navigationItems = [TabNavigationItem(title: "item")]
-        
+        let cities: [String] = ["BeiJing", "ShangHai", "ShenZhen", "GuangZhou", "ChengDu", "HongKong", "TaiWan", "LaSa", "KunMing", "GuiZhou", "HeFei", "ShiJiaZhuang"]
         for i in 0..<12 {
             let viewController = ViewController()
-            viewController.setTabNavigationTitle(TabNavigationController.TabNavigationTitle(title: "H\(i)"))
+            viewController.setTabNavigationTitle(TabNavigationController.TabNavigationTitle(title: cities[i], selectedRange: 0..<2))
             tabNavigationController?.addViewController(viewController)
         }
         
-        let settingsItem = TabNavigationTitleActionItem(title: "设置", target: self, selector: #selector(_handleShowingSettingsViewController(_:)))
+        let settingsItem = TabNavigationTitleActionItem(title: "Settings", target: self, selector: #selector(_handleShowingSettingsViewController(_:)))
         settingsItem.tintColor = UIColor.application.blue
         tabNavigationController?.tabNavigationTitleActionItemsWhenPushed = [settingsItem]
         
@@ -35,7 +35,7 @@ extension AppDelegate {
     @objc
     private func _handleShowingSettingsViewController(_ sender: UIButton) {
         let settings = ViewController()
-        settings.setTabNavigationTitle(TabNavigationController.TabNavigationTitle(title: "设置"))
+        settings.setTabNavigationTitle(TabNavigationController.TabNavigationTitle(title: "Settings"))
         tabNavigationController?.push(settings, animated: true)
     }
 }
