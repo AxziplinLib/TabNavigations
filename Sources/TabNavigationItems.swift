@@ -215,7 +215,8 @@ public class TabNavigationTitleItem: NSObject {
     /// Returns the title font of current selection state.
     public var currentTitleFont: UIFont { return _selectionTitleFonts[selected]! }
     /// The title colors configs for the selection states.
-    private var _selectionTitleColors: [Bool: UIColor] = [true: UIColor(hex: "4A4A4A"), false: UIColor(hex: "CCCCCC")]
+    private var _selectionTitleColors: [Bool: UIColor] = [true : UIColor(red: 0.29, green: 0.29, blue: 0.29, alpha: 1.0),
+                                                          false: UIColor(red: 0.8,  green: 0.8,  blue: 0.8,  alpha: 1.0)]
     /// The title fonts configs for the selection states.
     private var _selectionTitleFonts: [Bool: UIFont] = [true: UIFont.boldSystemFont(ofSize: _TabNavigationConfig.default.titleFontSize), false: UIFont.boldSystemFont(ofSize: _TabNavigationConfig.default.titleUnselectedFontSize)]
     /// Sets and updates the color configs for the selection states of the item.
