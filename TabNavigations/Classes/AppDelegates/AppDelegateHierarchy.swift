@@ -21,7 +21,7 @@ extension AppDelegate {
         let cities: [String] = ["BeiJing", "ShangHai", "ShenZhen", "GuangZhou", "ChengDu", "HongKong", "TaiWan", "LaSa", "KunMing", "GuiZhou", "HeFei", "ShiJiaZhuang"]
         for i in 0..<12 {
             let viewController = ViewController()
-            viewController.setTabNavigationTitle(TabNavigationController.TabNavigationTitle(title: cities[i], selectedRange: 0..<2))
+            viewController.setTabNavigationTitle(TabNavigationController.TabNavigationTitle(title: cities[i], selectedRange: 0..<3))
             tabNavigationController?.addViewController(viewController)
         }
         
