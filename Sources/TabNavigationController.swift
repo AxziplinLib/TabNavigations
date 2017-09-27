@@ -222,19 +222,19 @@ extension UIViewController {
     open func makeViewScrollToTopIfNecessary(at location: CGPoint) {}
 }
 
-extension ViewController {
-    override func removeFromParentViewController() {
-        super.removeFromParentViewController()
-        _tabNavigationController = nil
-    }
-}
+// extension ViewController {
+//     override func removeFromParentViewController() {
+//         super.removeFromParentViewController()
+//         _tabNavigationController = nil
+//     }
+// }
 
-extension TableViewController {
-    override func removeFromParentViewController() {
-        super.removeFromParentViewController()
-        _tabNavigationController = nil
-    }
-}
+// extension TableViewController {
+//     override func removeFromParentViewController() {
+//         super.removeFromParentViewController()
+//         _tabNavigationController = nil
+//     }
+// }
 
 extension TabNavigationController {
     fileprivate typealias TabNavigationRootViewControllersContext = (selectedIndex: Array<UIViewController>.Index, viewControllers: [UIViewController])
