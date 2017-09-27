@@ -220,20 +220,20 @@ public class TabNavigationBar: UIView, UIBarPositioning {
     @objc
     private func _handleDidSelectTitleItem(_ sender: _TabNavigationTitleItemButton) {
         guard let _titleItem = sender._titleItem else { return }
-        // Cancel the scheduled scrolling animation if exists.
-        NSObject.cancelPreviousPerformRequests(withTarget: self,
-                                               selector  : #selector(_scrollToSelectedTitleItemWithAnimation),
-                                               object    : nil)
+        
         if let index = _navigationTitleItems.index(of: _titleItem), index != _selectedTitleItemIndex {
             // setSelectedTitle(at: index, animated: true)
             _setSelectedTitle(at: index, in: _navigationTitleItems, animated: true)
-            
+            // Cancel the scheduled scrolling animation if exists.
+            NSObject.cancelPreviousPerformRequests(withTarget: self,
+                                                   selector  : #selector(_scrollToSelectedTitleItemWithAnimation),
+                                                   object    : nil)
             // Set up the animated transition delegate:
             _delegatesQueue.remove(_interactiveTransition)
             _delegatesQueue.add(_animatedTransition)
             // Set to the selected offset.
-            let _offsetX = _horizontalOffset(upto: _selectedTitleItemIndex, in: _navigationTitleItems)
-            _titleItemsScrollView.setContentOffset(CGPoint(x: _offsetX, y: 0.0), animated: true)
+            let offsetx = _horizontalOffset(upto: _selectedTitleItemIndex, in: _navigationTitleItems)
+            _titleItemsScrollView.setContentOffset(CGPoint(x: offsetx, y: 0.0), animated: true)
         }
     }
     
@@ -903,10 +903,16 @@ public class TabNavigationBar: UIView, UIBarPositioning {
     // MARK: Calculation.
     
     fileprivate func _updateWidthConstantOfContentAlignmentView(`in` titleItems: [TabNavigationTitleItem]? = nil, possibleActions actionItems: [TabNavigationTitleActionItem]? = nil, transition: Bool = false) {
-        let items   = titleItems  ?? _navigationTitleItems
+        let items = titleItems  ?? _navigationTitleItems
+        /*
+        guard !items.isEmpty else {
+            _widthOfTitleItemContentAlignmentView(transition)?.constant = 0.0; return
+        } */
+        
+        // _widthOfTitleItemContentAlignmentView(transition)?.constant = -_horizontalSpace(for: items.last!)
         let actions = actionItems ?? _navigationTitleActionItems
         
-        guard !items.isEmpty && !actions.isEmpty else {
+        guard !items.isEmpty || !actions.isEmpty else {
             _widthOfTitleItemContentAlignmentView(transition)?.constant = 0.0; return
         }
         
@@ -963,12 +969,23 @@ public class TabNavigationBar: UIView, UIBarPositioning {
     /// Calculate the bounding size for the TabNavigationTitleItem by bounding the underlying title of the button
     /// the button's bounds.
     func _boundingSize(`for` item: TabNavigationTitleItem, selected: Bool = false) -> CGSize {
-        var titleString = item.underlyingButton.currentTitle
-        if let _ = item.selectedRange {
-            titleString = item.underlyingButton.currentAttributedTitle?.string
-        }
-        
-        let size = (titleString as NSString?)?.boundingRect(with: CGSize(width: CGFloat.greatestFiniteMagnitude, height: self.bounds.height), options: [.usesLineFragmentOrigin, .usesFontLeading], attributes: [NSFontAttributeName:item.titleFont(whenSelected: selected)], context: nil).size ?? .zero
+        let size = { () -> CGSize in
+            var s: CGSize = .zero
+            // Using the attributed string to bounding size if the selected range is not nil and the title item is selected.
+            if selected && item.selectedRange != nil && item.underlyingButton.currentAttributedTitle != nil {
+                let range = item.selectedRange!
+                let attributedString = NSMutableAttributedString(string: item.underlyingButton.currentAttributedTitle!.string, attributes: [NSFontAttributeName: item.titleFont(whenSelected: false)])
+                attributedString.addAttributes([NSFontAttributeName: item.titleFont(whenSelected: true)], range: NSMakeRange(range.lowerBound, range.upperBound - range.lowerBound))
+                s = attributedString.boundingRect(with: CGSize(width: CGFloat.greatestFiniteMagnitude, height: self.bounds.height), options: [.usesLineFragmentOrigin, .usesFontLeading], context: nil).size
+            } else {
+                var titleString = item.underlyingButton.currentTitle
+                if  item.selectedRange != nil {
+                    titleString = item.underlyingButton.currentAttributedTitle?.string
+                }
+                s = (titleString as NSString?)?.boundingRect(with: CGSize(width: CGFloat.greatestFiniteMagnitude, height: self.bounds.height), options: [.usesLineFragmentOrigin, .usesFontLeading], attributes: [NSFontAttributeName:item.titleFont(whenSelected: false)], context: nil).size ?? .zero
+            }
+            return s
+        }()
         
         return size
     }
