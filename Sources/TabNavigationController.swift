@@ -207,7 +207,7 @@ extension UIViewController {
 }
 
 extension UIViewController {
-    public var layoutInsets: UIEdgeInsets {
+    open var layoutInsets: UIEdgeInsets {
         if self.view is UIScrollView {
             return .zero
         } else {
