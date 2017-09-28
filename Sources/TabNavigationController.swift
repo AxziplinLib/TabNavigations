@@ -336,7 +336,7 @@ open class TabNavigationController: UIViewController {
     fileprivate var _backupedTabNavigationItems: [TabNavigationItem] = []
     
     // MARK: - Overrides.
-    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+    public override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
         _initializer()
     }
