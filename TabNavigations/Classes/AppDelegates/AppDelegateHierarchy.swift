@@ -21,7 +21,7 @@ extension AppDelegate {
         let cities: [String] = ["BeiJing", "ShangHai", "ShenZhen", "GuangZhou", "ChengDu", "HongKong", "TaiWan", "LaSa", "KunMing", "GuiZhou", "HeFei", "ShiJiaZhuang"]
         for i in 0..<12 {
             let viewController = ViewController()
-            viewController.setTabNavigationTitle(TabNavigationController.TabNavigationTitle(title: cities[i], selectedRange: 0..<3))
+            viewController.setTabNavigationTitle(TabNavigationController.NavigationTitle(title: cities[i], selectedRange: 0..<3))
             tabNavigationController?.addViewController(viewController)
         }
         
@@ -35,7 +35,7 @@ extension AppDelegate {
     @objc
     private func _handleShowingSettingsViewController(_ sender: UIButton) {
         let settings = ViewController()
-        settings.setTabNavigationTitle(TabNavigationController.TabNavigationTitle(title: "Settings"))
+        settings.setTabNavigationTitle(TabNavigationController.NavigationTitle(title: "Settings"))
         tabNavigationController?.push(settings, animated: true)
     }
 }

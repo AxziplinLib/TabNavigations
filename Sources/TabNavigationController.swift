@@ -11,7 +11,7 @@ import UIKit
 private let DefaultTabNavigationBarHeight: CGFloat = 64.0
 
 public extension TabNavigationController {
-    public struct TabNavigationTitle {
+    public struct NavigationTitle {
         let title: String
         let range: CountableRange<Int>?
         
@@ -22,25 +22,25 @@ public extension TabNavigationController {
     }
 }
 
-extension TabNavigationController.TabNavigationTitle: ExpressibleByStringLiteral {
+extension TabNavigationController.NavigationTitle: ExpressibleByStringLiteral {
     public typealias ExtendedGraphemeClusterLiteralType = Character
     public typealias UnicodeScalarLiteralType = UnicodeScalar
     public typealias StringLiteralType = String
     
-    public init(stringLiteral value: TabNavigationController.TabNavigationTitle.StringLiteralType) {
+    public init(stringLiteral value: TabNavigationController.NavigationTitle.StringLiteralType) {
         self.init(title: value)
     }
     
-    public init(extendedGraphemeClusterLiteral value: TabNavigationController.TabNavigationTitle.ExtendedGraphemeClusterLiteralType) {
+    public init(extendedGraphemeClusterLiteral value: TabNavigationController.NavigationTitle.ExtendedGraphemeClusterLiteralType) {
         self.init(stringLiteral: String(value))
     }
     
-    public init(unicodeScalarLiteral value: TabNavigationController.TabNavigationTitle.UnicodeScalarLiteralType) {
+    public init(unicodeScalarLiteral value: TabNavigationController.NavigationTitle.UnicodeScalarLiteralType) {
         self.init(extendedGraphemeClusterLiteral: Character(value))
     }
 }
 
-extension TabNavigationController.TabNavigationTitle: ExpressibleByDictionaryLiteral {
+extension TabNavigationController.NavigationTitle: ExpressibleByDictionaryLiteral {
     public typealias Key = String
     public typealias Value = Any
     
@@ -64,7 +64,7 @@ extension TabNavigationController.TabNavigationTitle: ExpressibleByDictionaryLit
 public protocol TabNavigationReadable: class {
     var tabNavigationController: TabNavigationController? { get }
     var tabNavigationItems: [TabNavigationItem] { get }
-    var tabNavigationTitle: TabNavigationController.TabNavigationTitle? { get }
+    var tabNavigationTitle: TabNavigationController.NavigationTitle? { get }
     var tabNavigationTitleActionItemsWhenPushed: [TabNavigationTitleActionItem] { get }
 }
 
@@ -130,18 +130,18 @@ extension UIViewController {
         return titleItem
     }
     
-    public var tabNavigationTitle: TabNavigationController.TabNavigationTitle? {
+    public var tabNavigationTitle: TabNavigationController.NavigationTitle? {
         get {
             if let _title = objc_getAssociatedObject(self, &_TabNavigationTitleObjectKey.key) {
-                return _title as? TabNavigationController.TabNavigationTitle
+                return _title as? TabNavigationController.NavigationTitle
             }
             objc_setAssociatedObject(self, &_TabNavigationTitleObjectKey.key, nil, .OBJC_ASSOCIATION_COPY_NONATOMIC)
-            return objc_getAssociatedObject(self, &_TabNavigationTitleObjectKey.key) as? TabNavigationController.TabNavigationTitle
+            return objc_getAssociatedObject(self, &_TabNavigationTitleObjectKey.key) as? TabNavigationController.NavigationTitle
         }
         set { objc_setAssociatedObject(self, &_TabNavigationTitleObjectKey.key, newValue, .OBJC_ASSOCIATION_COPY_NONATOMIC) }
     }
     
-    public func setTabNavigationTitle(_ title: TabNavigationController.TabNavigationTitle?, animated: Bool = false) {
+    public func setTabNavigationTitle(_ title: TabNavigationController.NavigationTitle?, animated: Bool = false) {
         tabNavigationTitle = title
         
         if let tabNavigationController = _tabNavigationController {
