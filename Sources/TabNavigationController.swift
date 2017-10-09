@@ -8,7 +8,10 @@
 
 import UIKit
 
-private let DefaultTabNavigationBarHeight: CGFloat = 64.0
+internal extension _TabNavigationConfig {
+    /// The default height of the tab navigation bar.
+    var tabNavigationBarHeight: CGFloat { return 64.0 }
+}
 
 public extension TabNavigationController {
     /// A type indicates the selected tab title item storage.
@@ -219,7 +222,7 @@ extension UIViewController {
         if self.view is UIScrollView {
             return .zero
         } else {
-            return UIEdgeInsets(top: DefaultTabNavigationBarHeight, left: 0.0, bottom: 0.0, right: 0.0)
+            return UIEdgeInsets(top: _TabNavigationConfig.default.tabNavigationBarHeight, left: 0.0, bottom: 0.0, right: 0.0)
         }
     }
 }
@@ -507,7 +510,7 @@ open class TabNavigationController: UIViewController {
     private func _setupTabNavigationBar() {
         view.addSubview(_tabNavigationBar)
         view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[_tabNavigationBar]|", options: [], metrics: nil, views: ["_tabNavigationBar":_tabNavigationBar]))
-        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[_tabNavigationBar]", options: [], metrics: ["height":DefaultTabNavigationBarHeight], views: ["_tabNavigationBar":_tabNavigationBar]))
+        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[_tabNavigationBar]", options: [], metrics: ["height":_TabNavigationConfig.default.tabNavigationBarHeight], views: ["_tabNavigationBar":_tabNavigationBar]))
     }
     
     private func _setupContentScrollView() {
@@ -694,10 +697,10 @@ open class TabNavigationController: UIViewController {
             view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[view]|", options: [], metrics: nil, views: ["view": viewController.view]))
             viewController.view.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
             viewController.view.heightAnchor.constraint(equalTo: view.heightAnchor).isActive = true
-            (viewController.view as! UIScrollView).contentInset = UIEdgeInsets(top: DefaultTabNavigationBarHeight, left: 0.0, bottom: 0.0, right: 0.0)
+            (viewController.view as! UIScrollView).contentInset = UIEdgeInsets(top: _TabNavigationConfig.default.tabNavigationBarHeight, left: 0.0, bottom: 0.0, right: 0.0)
         } else {
             view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view]|", options: [], metrics: nil, views: ["view": viewController.view]))
-            view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-height-[view]|", options: [], metrics: ["height": DefaultTabNavigationBarHeight], views: ["view": viewController.view]))
+            view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-height-[view]|", options: [], metrics: ["height": _TabNavigationConfig.default.tabNavigationBarHeight], views: ["view": viewController.view]))
         }
         // Layout view.
         view.setNeedsLayout()
@@ -882,7 +885,7 @@ open class TabNavigationController: UIViewController {
             _contentScrollView.addSubview(viewController.view)
             _contentScrollView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-top-[view]-bottom-|", options: [], metrics: ["top": viewController.layoutInsets.top, "bottom": viewController.layoutInsets.bottom], views: ["view":viewController.view]))
             if viewController.automaticallyAdjustsScrollViewInsets {
-                (viewController.view as! UIScrollView).contentInset = UIEdgeInsets(top: DefaultTabNavigationBarHeight, left: 0.0, bottom: 0.0, right: 0.0)
+                (viewController.view as! UIScrollView).contentInset = UIEdgeInsets(top: _TabNavigationConfig.default.tabNavigationBarHeight, left: 0.0, bottom: 0.0, right: 0.0)
             }
         } else {
             _contentScrollView.addSubview(viewController.view)
@@ -921,10 +924,10 @@ open class TabNavigationController: UIViewController {
             view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[view]|", options: [], metrics: nil, views: ["view": viewController.view]))
             viewController.view.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
             viewController.view.heightAnchor.constraint(equalTo: view.heightAnchor).isActive = true
-            (viewController.view as! UIScrollView).contentInset = UIEdgeInsets(top: DefaultTabNavigationBarHeight, left: 0.0, bottom: 0.0, right: 0.0)
+            (viewController.view as! UIScrollView).contentInset = UIEdgeInsets(top: _TabNavigationConfig.default.tabNavigationBarHeight, left: 0.0, bottom: 0.0, right: 0.0)
         } else {
             view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view]|", options: [], metrics: nil, views: ["view": viewController.view]))
-            view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-height-[view]|", options: [], metrics: ["height": DefaultTabNavigationBarHeight], views: ["view": viewController.view]))
+            view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-height-[view]|", options: [], metrics: ["height": _TabNavigationConfig.default.tabNavigationBarHeight], views: ["view": viewController.view]))
         }
         viewController.didMove(toParentViewController: self)
     }
