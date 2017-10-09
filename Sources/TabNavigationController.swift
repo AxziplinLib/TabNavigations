@@ -614,7 +614,7 @@ open class TabNavigationController: UIViewController {
         let fromTransform = context.fromItemViews.itemsView.transform
         let toTransform = context.toItemViews.itemsView.transform
         
-        let translation = min(context.fromItemViews.itemsView.bounds.width - context.fromItemViews.fixSpacing.layoutFrame.width, context.containerView.bounds.width) - context.fromItemViews.itemsScrollView.contentOffset.x - TabNavigationBar.paddingOfTitleItems
+        let translation = min(context.fromItemViews.itemsView.bounds.width - context.fromItemViews.fixSpacing.layoutFrame.width, context.containerView.bounds.width) - context.fromItemViews.itemsScrollView.contentOffset.x - _TabNavigationConfig.default.titleItemPadding
 
         context.toItemViews.itemsView.transform = CGAffineTransform(translationX: translation, y: 0.0)
         context.toItemViews.itemsView.alpha = 0.0
@@ -643,7 +643,7 @@ open class TabNavigationController: UIViewController {
         let fromTransform = context.fromItemViews.itemsScrollView.transform
         let toTransform = context.toItemViews.itemsScrollView.transform
         
-        let translation = min(context.toItemViews.itemsView.bounds.width - context.toItemViews.fixSpacing.layoutFrame.width, context.containerView.bounds.width) - context.toItemViews.itemsScrollView.contentOffset.x + TabNavigationBar.paddingOfTitleItems
+        let translation = min(context.toItemViews.itemsView.bounds.width - context.toItemViews.fixSpacing.layoutFrame.width, context.containerView.bounds.width) - context.toItemViews.itemsScrollView.contentOffset.x + _TabNavigationConfig.default.titleItemPadding
         
         context.toItemViews.itemsScrollView.transform = CGAffineTransform(translationX: -translation, y: 0.0)
         context.toItemViews.itemsScrollView.alpha = 0.0

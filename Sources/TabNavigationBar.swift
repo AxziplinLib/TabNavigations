@@ -8,18 +8,6 @@
 
 import UIKit
 
-private let DefaultTitleFontSize: CGFloat = 36.0
-private let DefaultTitleUnselectedFontSize: CGFloat = 16.0
-private let DefaultTabNavigationItemFontSize: CGFloat = 14.0
-private let DefaultTabNavigationTitleItemPadding: CGFloat = 15.0
-private let DefaultTabNavigationItemEdgeMargin: CGFloat = 8.0
-private let DefaultTabNavigationItemHeight: CGFloat = 44.0
-private let DefaultTabNavigationItemWidthThreshold: CGFloat = 30.0
-
-extension TabNavigationBar {
-    public class var paddingOfTitleItems: CGFloat { return DefaultTabNavigationTitleItemPadding }
-}
-
 extension TabNavigationBar {
     fileprivate class _TabNavigaitonTitleContentAlignmentView: UIView {}
 }
@@ -60,7 +48,7 @@ private func _createGeneralAlignmentLabel<T>(font: UIFont? = nil) -> T where T: 
     let label = T()
     label.text = "AL"
     label.translatesAutoresizingMaskIntoConstraints = false
-    label.font = font ?? /*UIFont(name: "PingFangSC-Semibold", size: DefaultTitleFontSize)*/UIFont.boldSystemFont(ofSize: DefaultTitleFontSize)
+    label.font = font ?? UIFont.boldSystemFont(ofSize: _TabNavigationConfig.default.titleFontSize)
     label.textColor = .clear
     label.backgroundColor = .clear
     return label
@@ -510,7 +498,7 @@ public class TabNavigationBar: UIView, UIBarPositioning {
             :  navigationItems.last?.underlyingView.leadingAnchor
             ?? navigationItemView.trailingAnchor, constant: !navigationItems.isEmpty
                 ? 0.0
-                : -DefaultTabNavigationItemEdgeMargin).isActive
+                : -_TabNavigationConfig.default.itemEdgeMargin).isActive
         = true
         itemView.topAnchor.constraint(greaterThanOrEqualTo: navigationItemView.topAnchor).isActive    = true
         itemView.bottomAnchor.constraint(lessThanOrEqualTo: navigationItemView.bottomAnchor).isActive = true
@@ -609,7 +597,7 @@ public class TabNavigationBar: UIView, UIBarPositioning {
         itemButton.lastBaselineAnchor.constraint(equalTo: titleAlignmentLabel.lastBaselineAnchor).isActive = true
         if item is TabNavigationTitleActionItem {
             let _trailingAnchor = navigationTitleActionItems.last?.underlyingButton.trailingAnchor ?? (navigationTitleItems.last?.underlyingButton.trailingAnchor ?? navigationTitleItemView.leadingAnchor)
-            let _trailing = itemButton.leadingAnchor.constraint(equalTo: _trailingAnchor, constant: DefaultTabNavigationTitleItemPadding)
+            let _trailing = itemButton.leadingAnchor.constraint(equalTo: _trailingAnchor, constant: _TabNavigationConfig.default.titleItemPadding)
             
             if navigationTitleActionItems.isEmpty {
                 if let _trailingOfTitleItems = transition ? _trailingConstraintOfLastTransitionTitleItemLabel : _trailingConstraintOfLastTitleItemLabel {
@@ -629,7 +617,7 @@ public class TabNavigationBar: UIView, UIBarPositioning {
                 navigationTitleItemView.removeConstraint(_trailingOfTitleActionItems)
             }
             
-            let _trailingOfTitleActionItems = itemButton.trailingAnchor.constraint(equalTo: fixSpacingLayoutGudie.leadingAnchor, constant: -DefaultTabNavigationTitleItemPadding)
+            let _trailingOfTitleActionItems = itemButton.trailingAnchor.constraint(equalTo: fixSpacingLayoutGudie.leadingAnchor, constant: -_TabNavigationConfig.default.titleItemPadding)
             _trailingOfTitleActionItems.isActive = true
             if transition {
                 _trailingConstraintOfLastTransitionTitleActionItemLabel = _trailingOfTitleActionItems
@@ -638,13 +626,13 @@ public class TabNavigationBar: UIView, UIBarPositioning {
             }
         } else {
             let _trailingAnchor = navigationTitleItems.last?.underlyingButton.trailingAnchor ?? navigationTitleItemView.leadingAnchor
-            itemButton.leadingAnchor.constraint(equalTo: _trailingAnchor, constant: DefaultTabNavigationTitleItemPadding).isActive = true
+            itemButton.leadingAnchor.constraint(equalTo: _trailingAnchor, constant: _TabNavigationConfig.default.titleItemPadding).isActive = true
             
             if let _trailing = transition ? _trailingConstraintOfLastTransitionTitleItemLabel : _trailingConstraintOfLastTitleItemLabel {
                 navigationTitleItemView.removeConstraint(_trailing)
             }
             
-            let _trailing = NSLayoutConstraint(item: navigationTitleActionItems.first?.underlyingButton ?? fixSpacingLayoutGudie, attribute: .leading, relatedBy: .equal, toItem: itemButton, attribute: .trailing, multiplier: 1.0, constant: DefaultTabNavigationTitleItemPadding)
+            let _trailing = NSLayoutConstraint(item: navigationTitleActionItems.first?.underlyingButton ?? fixSpacingLayoutGudie, attribute: .leading, relatedBy: .equal, toItem: itemButton, attribute: .trailing, multiplier: 1.0, constant: _TabNavigationConfig.default.titleItemPadding)
             navigationTitleItemView.addConstraint(_trailing)
             if transition {
                 _trailingConstraintOfLastTransitionTitleItemLabel = _trailing
@@ -784,7 +772,7 @@ public class TabNavigationBar: UIView, UIBarPositioning {
             
             let leading = _formerTrailingAnchor.constraint(equalTo: _latterLeadingAnchor)
             if index == _navigationItems.startIndex {
-                leading.constant = -DefaultTabNavigationItemEdgeMargin
+                leading.constant = -_TabNavigationConfig.default.itemEdgeMargin
             }
             leading.isActive = true
             if index == _navigationItems.index(before: _navigationItems.endIndex) {
@@ -809,17 +797,17 @@ public class TabNavigationBar: UIView, UIBarPositioning {
         if index == _navigationTitleItems.index(before: _navigationTitleItems.endIndex) {
             if let _firstTitleActionItem = _navigationTitleActionItems.first {
                 let _latterLeadingAnchor = _firstTitleActionItem.underlyingButton.leadingAnchor
-                _formerTrailingAnchor.constraint(equalTo: _latterLeadingAnchor, constant: -DefaultTabNavigationTitleItemPadding).isActive = true
+                _formerTrailingAnchor.constraint(equalTo: _latterLeadingAnchor, constant: -_TabNavigationConfig.default.titleItemPadding).isActive = true
             } else {
                 let _latterLeadingAnchor = _titleItemFixSpacingLayoutGuide.leadingAnchor
                 
-                let trailing = _formerTrailingAnchor.constraint(equalTo: _latterLeadingAnchor, constant: -DefaultTabNavigationTitleItemPadding)
+                let trailing = _formerTrailingAnchor.constraint(equalTo: _latterLeadingAnchor, constant: -_TabNavigationConfig.default.titleItemPadding)
                 trailing.isActive = true
                 _trailingConstraintOfLastTitleItemLabel = trailing
             }
         } else {
             let _latterLeadingAnchor = _navigationTitleItems[_navigationTitleItems.index(after: index)].underlyingButton.leadingAnchor
-            _formerTrailingAnchor.constraint(equalTo: _latterLeadingAnchor, constant: -DefaultTabNavigationTitleItemPadding).isActive = true
+            _formerTrailingAnchor.constraint(equalTo: _latterLeadingAnchor, constant: -_TabNavigationConfig.default.titleItemPadding).isActive = true
         }
         
         _navigationTitleItems.remove(at: index)
@@ -845,7 +833,7 @@ public class TabNavigationBar: UIView, UIBarPositioning {
         
         let _formerTrailingAnchor = index == _navigationTitleActionItems.startIndex ? (_navigationTitleItems.isEmpty ? _navigationTitleItemView.leadingAnchor : _navigationTitleItems.last!.underlyingButton.trailingAnchor) : _navigationTitleActionItems[_navigationTitleActionItems.index(before: index)].underlyingButton.trailingAnchor
         let _latterLeadingAnchor = index == _navigationTitleActionItems.index(before: _navigationTitleActionItems.endIndex) ? _titleItemFixSpacingLayoutGuide.leadingAnchor : _navigationTitleActionItems[_navigationTitleActionItems.index(after: index)].underlyingButton.leadingAnchor
-        _formerTrailingAnchor.constraint(equalTo: _latterLeadingAnchor, constant: -DefaultTabNavigationTitleItemPadding).isActive = true
+        _formerTrailingAnchor.constraint(equalTo: _latterLeadingAnchor, constant: -_TabNavigationConfig.default.titleItemPadding).isActive = true
         
         _navigationTitleActionItems.remove(at: index)
         _updateWidthConstantOfContentAlignmentView()
@@ -1304,7 +1292,7 @@ extension TabNavigationBar {
             if let _constraint = _constraintBetweenTransitionTitlesAndItems  {
                 removeConstraint(_constraint)
             }
-            let _constraint = _titleItemsContainerView.trailingAnchor.constraint(equalTo: _itemsContainerView.leadingAnchor, constant: -DefaultTabNavigationItemEdgeMargin)
+            let _constraint = _titleItemsContainerView.trailingAnchor.constraint(equalTo: _itemsContainerView.leadingAnchor, constant: -_TabNavigationConfig.default.itemEdgeMargin)
             _constraint.isActive = true
             _constraintBetweenTitlesAndItems = _constraint
             navigationItemViews.itemsContainerView.removeFromSuperview()
