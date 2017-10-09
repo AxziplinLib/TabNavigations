@@ -11,10 +11,18 @@ import UIKit
 private let DefaultTabNavigationBarHeight: CGFloat = 64.0
 
 public extension TabNavigationController {
+    /// A type indicates the selected tab title item storage.
     public struct NavigationTitle {
+        /// The string content of the title.
         let title: String
+        /// The selection range of the title. Default is nil.
         let range: CountableRange<Int>?
-        
+        /// Creates the NavigationTitle struct value with a given title and selection range.
+        ///
+        /// - Parameter title: The title of the NavigationsTitle.
+        /// - Parameter selectedRange: A value of CountableRange<Int> indicates the selection range of the title when title is selected. Default is nil.
+        ///
+        /// - Returns: A NavigationTitle value with the given parameters.
         public init(title: String, selectedRange: CountableRange<Int>? = nil) {
             self.title = title
             range = selectedRange
