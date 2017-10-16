@@ -34,18 +34,33 @@ public extension TabNavigationController {
 }
 
 extension TabNavigationController.NavigationTitle: ExpressibleByStringLiteral {
+    /// Extended grapheme cluster literal type.
     public typealias ExtendedGraphemeClusterLiteralType = Character
+    /// Unicode scalar literal type.
     public typealias UnicodeScalarLiteralType = UnicodeScalar
+    /// String literal type.
     public typealias StringLiteralType = String
-    
+    /// Creates the .NavigationTitle value with a string literal value by conforms to protocol ExpressibleByStringLiteral.
+    ///
+    /// - Parameter stringLiteral: An value of String type to generate the .NavigationTitle value.
+    /// - Return: A new value of .NavigationTitle with the given parameter.
     public init(stringLiteral value: TabNavigationController.NavigationTitle.StringLiteralType) {
         self.init(title: value)
     }
-    
+    /// Creates the .NavigationTitle value with an extended grapheme cluster literal type value by conforms to protocol
+    /// ExpressibleByStringLiteral.
+    ///
+    /// - Parameter extendedGraphemeClusterLiteral: An value of extended grapheme cluster literal type to generate
+    ///                                             the .NavigationTitle value.
+    /// - Return: A new value of .NavigationTitle with the given parameter.
     public init(extendedGraphemeClusterLiteral value: TabNavigationController.NavigationTitle.ExtendedGraphemeClusterLiteralType) {
         self.init(stringLiteral: String(value))
     }
-    
+    /// Creates the .NavigationTitle value with an unicode scalar literal type value by conforms to protocol
+    /// ExpressibleByStringLiteral.
+    ///
+    /// - Parameter unicodeScalarLiteral: An value of unicode scalar literal type to generate the .NavigationTitle value.
+    /// - Return: A new value of .NavigationTitle with the given parameter.
     public init(unicodeScalarLiteral value: TabNavigationController.NavigationTitle.UnicodeScalarLiteralType) {
         self.init(extendedGraphemeClusterLiteral: Character(value))
     }
