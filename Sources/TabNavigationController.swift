@@ -12,7 +12,7 @@ internal extension _TabNavigationConfig {
     /// The default height of the tab navigation bar.
     var tabNavigationBarHeight: CGFloat { return 64.0 }
 }
-
+// MARK: NavigationTitle.
 public extension TabNavigationController {
     /// A type indicates the selected tab title item storage.
     public struct NavigationTitle {
@@ -32,7 +32,7 @@ public extension TabNavigationController {
         }
     }
 }
-
+// MARK: Conforming of ExpressibleByStringLiteral.
 extension TabNavigationController.NavigationTitle: ExpressibleByStringLiteral {
     /// Extended grapheme cluster literal type.
     public typealias ExtendedGraphemeClusterLiteralType = Character
@@ -50,8 +50,7 @@ extension TabNavigationController.NavigationTitle: ExpressibleByStringLiteral {
     /// Creates the .NavigationTitle value with an extended grapheme cluster literal type value by conforms to protocol
     /// ExpressibleByStringLiteral.
     ///
-    /// - Parameter extendedGraphemeClusterLiteral: An value of extended grapheme cluster literal type to generate
-    ///                                             the .NavigationTitle value.
+    /// - Parameter value: An value of extended grapheme cluster literal type to generate the .NavigationTitle value.
     /// - Return: A new value of .NavigationTitle with the given parameter.
     public init(extendedGraphemeClusterLiteral value: TabNavigationController.NavigationTitle.ExtendedGraphemeClusterLiteralType) {
         self.init(stringLiteral: String(value))
@@ -59,17 +58,24 @@ extension TabNavigationController.NavigationTitle: ExpressibleByStringLiteral {
     /// Creates the .NavigationTitle value with an unicode scalar literal type value by conforms to protocol
     /// ExpressibleByStringLiteral.
     ///
-    /// - Parameter unicodeScalarLiteral: An value of unicode scalar literal type to generate the .NavigationTitle value.
+    /// - Parameter value: An value of unicode scalar literal type to generate the .NavigationTitle value.
     /// - Return: A new value of .NavigationTitle with the given parameter.
     public init(unicodeScalarLiteral value: TabNavigationController.NavigationTitle.UnicodeScalarLiteralType) {
         self.init(extendedGraphemeClusterLiteral: Character(value))
     }
 }
-
+// MARK: Conforming of ExpressibleByDictionaryLiteral.
 extension TabNavigationController.NavigationTitle: ExpressibleByDictionaryLiteral {
+    /// The type of the Key of the dictionary literal.
     public typealias Key = String
+    /// The type of the Value of the dictionary literal.
     public typealias Value = Any
-    
+    /// Creates an new .NavigationTitle value with a given dictionary literal.
+    ///
+    /// - Parameter elements: The required key-value pairs to generate the .NavigationTitle value.
+    ///                       - field `title` means the title content of the .NavigationTitle type.
+    ///                       - field `range` means the selection range of the .Navigation type.
+    /// - Returns: A new value of .NavigationTItle with the given key-value pairs.
     public init(dictionaryLiteral elements: (String, Any)...) {
         var _title: String?
         var _range: CountableRange<Int>?
@@ -83,6 +89,7 @@ extension TabNavigationController.NavigationTitle: ExpressibleByDictionaryLitera
                 break
             }
         }
+        // Call the destinied init.
         self.init(title: _title ?? "", selectedRange: _range)
     }
 }
