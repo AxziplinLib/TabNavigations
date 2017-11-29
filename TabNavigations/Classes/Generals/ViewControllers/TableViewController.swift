@@ -34,7 +34,8 @@ class TableViewController: UITableViewController {
         _backgroundFilterView.backgroundColor = .white
         tabNavigationController?.tabNavigationBar.isTranslucent = true
     }
-    
+    #if swift(>=4.0)
+    #else
     override func viewWillBeginInteractiveTransition() {
         print(String(describing: type(of: self)) + "     " + #function)
     }
@@ -42,6 +43,7 @@ class TableViewController: UITableViewController {
     override func viewDidEndInteractiveTransition(appearing: Bool) {
         print(String(describing: type(of: self)) + "     " + #function + "     " + String(describing: appearing))
     }
+    #endif
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
