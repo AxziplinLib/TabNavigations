@@ -319,14 +319,20 @@ open class TabNavigationController: UIViewController {
             tabNavigationBar.navigationTitleActionItems = tabNavigationTitleActionItems
         }
     }
+    #if swift(>=4.0)
+    #else
     override public var tabNavigationTitleActionItemsWhenPushed: [TabNavigationTitleActionItem] {
         get { return tabNavigationTitleActionItems }
         set { tabNavigationTitleActionItems = newValue }
     }
+    #endif
     
     lazy private var _tabNavigationBar: TabNavigationBar = _createGeneralTabNavigationBar()
     
+    #if swift(>=4.0)
+    #else
     public override var keyboardAlignmentLayoutGuide: UILayoutSupport { return _keyboardAlignmentView }
+    #endif
     lazy fileprivate var _keyboardAlignmentView: _TabNavigationKeyboardAlignmentLayoutView = _createGeneralAlignmentView()
     fileprivate var _keyboardAlignmentViewHeightConstraint: NSLayoutConstraint!
     

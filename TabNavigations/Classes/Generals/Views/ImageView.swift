@@ -16,7 +16,10 @@ extension ImageView {
 }
 @IBDesignable
 public class ImageView: UIImageView {
+    #if swift(>=4.0)
+    #else
     @IBInspectable
+    #endif
     public var contentFits: ContentFits = .width {
         didSet {
             invalidateIntrinsicContentSize()
