@@ -294,8 +294,8 @@ private func _createGeneralTabNavigationBar() -> TabNavigationBar {
     return bar
 }
 
-private func _createGeneralAlignmentView<T>() -> T where T: UIView {
-    let view = T()
+private func _createGeneralAlignmentView() -> TabNavigationController._TabNavigationKeyboardAlignmentLayoutView {
+    let view = TabNavigationController._TabNavigationKeyboardAlignmentLayoutView()
     view.translatesAutoresizingMaskIntoConstraints = false
     view.backgroundColor = .clear
     view.clipsToBounds = true
@@ -329,12 +329,12 @@ open class TabNavigationController: UIViewController {
     
     lazy private var _tabNavigationBar: TabNavigationBar = _createGeneralTabNavigationBar()
     
-    #if swift(>=4.0)
-    #else
-    public override var keyboardAlignmentLayoutGuide: UILayoutSupport { return _keyboardAlignmentView }
-    #endif
-    lazy fileprivate var _keyboardAlignmentView: _TabNavigationKeyboardAlignmentLayoutView = _createGeneralAlignmentView()
-    fileprivate var _keyboardAlignmentViewHeightConstraint: NSLayoutConstraint!
+    // #if swift(>=4.0)
+    // #else
+    // public override var keyboardAlignmentLayoutGuide: UILayoutSupport { return _keyboardAlignmentView }
+    // #endif
+    // lazy fileprivate var _keyboardAlignmentView: _TabNavigationKeyboardAlignmentLayoutView = _createGeneralAlignmentView()
+    // fileprivate var _keyboardAlignmentViewHeightConstraint: NSLayoutConstraint!
     
     public var interactivePopGestureRecognizer: UIPanGestureRecognizer { return _panGestureRecognizer }
     fileprivate var _panGestureRecognizer: UIPanGestureRecognizer!
@@ -388,8 +388,8 @@ open class TabNavigationController: UIViewController {
         _panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(_handlePanGestureRecognizer(_:)))
         _panGestureRecognizer.isEnabled = false
         _panGestureRecognizer.maximumNumberOfTouches = 1
-        _keyboardAlignmentViewHeightConstraint = _keyboardAlignmentView.heightAnchor.constraint(equalToConstant: 0.0)
-        _keyboardAlignmentViewHeightConstraint.isActive = true
+        // _keyboardAlignmentViewHeightConstraint = _keyboardAlignmentView.heightAnchor.constraint(equalToConstant: 0.0)
+        // _keyboardAlignmentViewHeightConstraint.isActive = true
         // NotificationCenter.default.addObserver(self, selector: #selector(_handleKeyboardWillChangeFrameNotification(_:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(_handleKeyboardWillChangeFrameNotification(_:)), name: NSNotification.Name.UIKeyboardWillChangeFrame, object: nil)
         // NotificationCenter.default.addObserver(self, selector: #selector(_handleKeyboardWillChangeFrameNotification(_:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
@@ -551,10 +551,10 @@ open class TabNavigationController: UIViewController {
     }
     
     private func _setupKeyboardAlignmentView() {
-        view.insertSubview(_keyboardAlignmentView, belowSubview: _contentScrollView)
-        _keyboardAlignmentView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-        _keyboardAlignmentView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-        _keyboardAlignmentView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        // view.insertSubview(_keyboardAlignmentView, belowSubview: _contentScrollView)
+        // _keyboardAlignmentView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        // _keyboardAlignmentView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        // _keyboardAlignmentView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
     }
     
     private func _transitionTabNavigationBarWithPercent(_ perecent: CGFloat, transition views: TabNavigationBar.TabNavigationTransitionContext?) {
@@ -1093,7 +1093,7 @@ extension TabNavigationController {
     fileprivate func _handleKeyboardWillChangeFrameNotification(_ notification: NSNotification) {
         if let keyboardFrame = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue, let duration = notification.userInfo?[UIKeyboardAnimationDurationUserInfoKey] as? TimeInterval, let curve = notification.userInfo?[UIKeyboardAnimationCurveUserInfoKey] as? UInt {
             // print("Keyboard height: \(keyboardFrame.height)")
-            self._keyboardAlignmentViewHeightConstraint.constant = keyboardFrame.height
+            // self._keyboardAlignmentViewHeightConstraint.constant = keyboardFrame.height
             UIView.animate(withDuration: duration, delay: 0.0, options: UIViewAnimationOptions(rawValue: curve), animations: { [unowned self] in
                 self.view.layoutIfNeeded()
             }, completion: nil)
@@ -1105,7 +1105,7 @@ extension TabNavigationController {
     // MARK: - Public.
     // MARK: Tab view controllers.
     
-    public func setViewControllers<T>(_ viewControllers: Array<T>) where T: UIViewController, T: TabNavigationReadable {
+    public func setViewControllers<T>(_ viewControllers: Array<T>) where T: UIViewController {
         guard _viewControllersStack.isEmpty else {
             _rootViewControllersContext.viewControllers = viewControllers
             return
@@ -1129,7 +1129,7 @@ extension TabNavigationController {
         _setSelectedViewController(at: index, updateNavigationBar: true, updateNavigationItems: !isTabNavigationItemsUpdatingDisabledInRootViewControllers, animated: animated)
     }
     
-    public func addViewController<T>(_ viewController: T) where T: UIViewController, T: TabNavigationReadable {
+    public func addViewController<T>(_ viewController: T) where T: UIViewController {
         if isViewLoaded {
             // Add view controller as child view controller if view of tab-navigation controller loaded.
             _addViewControllerWithoutUpdatingNavigationTitle(viewController)
@@ -1139,7 +1139,7 @@ extension TabNavigationController {
         }
     }
     @discardableResult
-    public func removeViewController<T>(_ viewController: T) -> (Bool, UIViewController?) where T: UIViewController, T:TabNavigationReadable {
+    public func removeViewController<T>(_ viewController: T) -> (Bool, UIViewController?) where T: UIViewController {
         guard let index = _rootViewControllersContext.viewControllers.index(of: viewController) else {
             return (false, nil)
         }
