@@ -17,7 +17,7 @@ extension AppDelegate {
     public func loadViewControllers() {
         tabNavigationController?.tabNavigationBar.isTranslucent = false
         tabNavigationController?.isTabNavigationItemsUpdatingDisabledInRootViewControllers = true
-        tabNavigationController?.tabNavigationBar.navigationItems = [TabNavigationItem(title: "item")]
+        tabNavigationController?.tabNavigationBar.navigationItems = [TabNavigationItem(title: "Settings", target: self, selector: #selector(_handleShowingSettingsViewController(_:)))]
         let cities: [String] = ["BeiJing", "ShangHai", "ShenZhen", "GuangZhou", "ChengDu", "HongKong", "TaiWan", "LaSa", "KunMing", "GuiZhou", "HeFei", "ShiJiaZhuang"]
         for i in 0..<12 {
             let viewController = ViewController()
