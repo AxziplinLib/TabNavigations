@@ -85,8 +85,11 @@ internal class _TabNavigationItemView: UIView {
         addSubview(_button)
         addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-(margin)-[_button]-(margin)-|", options: [], metrics: ["margin": _TabNavigationConfig.edgeMarginForItemView], views: ["_button":_button]))
         addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-(>=0)-[_button]-(>=0)-|", options: [], metrics: nil, views: ["_button":_button]))
-        
+    #if swift(>=4.0)
+        _button.setContentHuggingPriority(UILayoutPriority(rawValue: 1000.0), for: .horizontal)
+    #else
         _button.setContentHuggingPriority(1000.0, for: .horizontal)
+    #endif
     }
 }
 /// A type representing the navigation item on the right top corner of TabNavigationBar.
@@ -124,8 +127,13 @@ public class TabNavigationItem: NSObject {
         button.translatesAutoresizingMaskIntoConstraints = false
         button.widthAnchor.constraint(greaterThanOrEqualToConstant : _TabNavigationConfig.default.itemWidthThreshold).isActive = true
         button.heightAnchor.constraint(greaterThanOrEqualToConstant: _TabNavigationConfig.default.itemHeight).isActive         = true
+    #if swift(>=4.0)
+        button.setContentHuggingPriority(UILayoutPriority(rawValue: 1000.0), for: .horizontal)
+        button.setContentHuggingPriority(UILayoutPriority(rawValue: 998.0),  for: .vertical)
+    #else
         button.setContentHuggingPriority(1000.0, for: .horizontal)
         button.setContentHuggingPriority(998.0,  for: .vertical)
+    #endif
         button.contentEdgeInsets = UIEdgeInsets(top: 0.0, left: 6.0, bottom: 0.0, right: 6.0)
         return button
     }()
@@ -190,7 +198,11 @@ public class TabNavigationTitleItem: NSObject {
             if let range = selectedRange {
                 let attributedTitle = NSMutableAttributedString(attributedString: self._button.attributedTitle(for: .normal)!)
                 let _ns_range = NSMakeRange(range.lowerBound, range.upperBound - range.lowerBound)
+            #if swift(>=4.0)
+                attributedTitle.addAttributes([NSAttributedStringKey.font: titleFont(whenSelected: selected), NSAttributedStringKey.foregroundColor: titleColor(whenSelected: selected)], range: _ns_range)
+            #else
                 attributedTitle.addAttributes([NSFontAttributeName: titleFont(whenSelected: selected), NSForegroundColorAttributeName: titleColor(whenSelected: selected)], range: _ns_range)
+            #endif
                 self._button.setAttributedTitle(attributedTitle, for: .normal)
             } else {
                 self._button.titleLabel?.font = _selectionTitleFonts[selected]
@@ -203,7 +215,11 @@ public class TabNavigationTitleItem: NSObject {
     public var selectedRange: CountableRange<Int>? {
         didSet {
             if let _ = selectedRange {
+            #if swift(>=4.0)
+                let attributedTitle = NSMutableAttributedString(string: _button.title(for: .normal)!, attributes: [NSAttributedStringKey.font: titleFont(whenSelected: false), NSAttributedStringKey.foregroundColor: titleColor(whenSelected: false)])
+            #else
                 let attributedTitle = NSMutableAttributedString(string: _button.title(for: .normal)!, attributes: [NSFontAttributeName: titleFont(whenSelected: false), NSForegroundColorAttributeName: titleColor(whenSelected: false)])
+            #endif
                 self._button.setAttributedTitle(attributedTitle, for: .normal)
             } else {
                 self._button.setAttributedTitle(nil, for: .normal)
@@ -266,8 +282,13 @@ public class TabNavigationTitleItem: NSObject {
                         
                         if let range = self.selectedRange {
                             let _ns_range = NSMakeRange(range.lowerBound, range.upperBound - range.lowerBound)
+                        #if swift(>=4.0)
+                            let attributedTitle = NSMutableAttributedString(string: self._titleStorage, attributes: [NSAttributedStringKey.font: self._selectionTitleFonts[false]!, NSAttributedStringKey.foregroundColor: self._selectionTitleColors[false]!])
+                            attributedTitle.addAttributes([NSAttributedStringKey.font: UIFont(name: self._selectionTitleFonts[true]!.fontName, size: fontSize)!, NSAttributedStringKey.foregroundColor: tintColor], range: _ns_range)
+                        #else
                             let attributedTitle = NSMutableAttributedString(string: self._titleStorage, attributes: [NSFontAttributeName: self._selectionTitleFonts[false]!, NSForegroundColorAttributeName: self._selectionTitleColors[false]!])
                             attributedTitle.addAttributes([NSFontAttributeName: UIFont(name: self._selectionTitleFonts[true]!.fontName, size: fontSize)!, NSForegroundColorAttributeName: tintColor], range: _ns_range)
+                        #endif
                             self._button.setAttributedTitle(attributedTitle, for: .normal)
                         } else {
                             self._button.titleLabel?.font = UIFont(name: self._selectionTitleFonts[true]!.fontName, size: fontSize)!
@@ -283,7 +304,11 @@ public class TabNavigationTitleItem: NSObject {
             if let range = selectedRange {
                 let attributedTitle = NSMutableAttributedString(attributedString: self._button.attributedTitle(for: .normal)!)
                 let _ns_range = NSMakeRange(range.lowerBound, range.upperBound - range.lowerBound)
+            #if swift(>=4.0)
+                attributedTitle.addAttributes([NSAttributedStringKey.font: titleFont(whenSelected: selected), NSAttributedStringKey.foregroundColor: titleColor(whenSelected: selected)], range: _ns_range)
+            #else
                 attributedTitle.addAttributes([NSFontAttributeName: titleFont(whenSelected: selected), NSForegroundColorAttributeName: titleColor(whenSelected: selected)], range: _ns_range)
+            #endif
                 self._button.setAttributedTitle(attributedTitle, for: .normal)
             } else {
                 self._button.titleLabel?.font = _selectionTitleFonts[selected]
@@ -323,7 +348,11 @@ public class TabNavigationTitleItem: NSObject {
         self.init(title: title)
         self.selectedRange = selectedRange
         if let _ = selectedRange {
+        #if swift(>=4.0)
+            let attributedTitle = NSMutableAttributedString(string: _button.title(for: .normal)!, attributes: [NSAttributedStringKey.font: titleFont(whenSelected: false), NSAttributedStringKey.foregroundColor: titleColor(whenSelected: false)])
+        #else
             let attributedTitle = NSMutableAttributedString(string: _button.title(for: .normal)!, attributes: [NSFontAttributeName: titleFont(whenSelected: false), NSForegroundColorAttributeName: titleColor(whenSelected: false)])
+        #endif
             self._button.setAttributedTitle(attributedTitle, for: .normal)
         } else {
             self._button.setAttributedTitle(nil, for: .normal)

@@ -10,6 +10,7 @@ import UIKit
 
 class TableViewCell: UITableViewCell {
 
+    @objc
     dynamic
     public class var reusedIdentifier: String { return "_TableViewCell" }
     

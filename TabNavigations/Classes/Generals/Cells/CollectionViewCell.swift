@@ -9,6 +9,7 @@
 import UIKit
 
 class CollectionViewCell: UICollectionViewCell {
+    @objc
     dynamic
     public class var reusedIdentifier: String { return "_CollectionViewCell" }
 }

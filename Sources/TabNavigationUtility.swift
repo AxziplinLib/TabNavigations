@@ -42,7 +42,11 @@ extension UIImage {
     ///
     /// - Returns: A `String` contents image created with specific font and color.
     internal class func _generateImage(from content: String, using font: UIFont = .systemFont(ofSize: 17), tint color: UIColor = .black) -> UIImage! {
+    #if swift(>=4.0)
+        let ligature = NSMutableAttributedString(string: content, attributes: [NSAttributedStringKey(rawValue: (kCTFontAttributeName as String)): font])
+    #else
         let ligature = NSMutableAttributedString(string: content, attributes: [(kCTFontAttributeName as String): font])
+    #endif
         
         return _generateImage(from: ligature, tint: color)
     }
@@ -57,7 +61,11 @@ extension UIImage {
     /// - Returns: A `NSAttributedString` contents image created with specific font and color.
     internal class func _generateImage(from attributedContent: NSAttributedString, tint color: UIColor = .black) -> UIImage! {
         let ligature = NSMutableAttributedString(attributedString: attributedContent)
+    #if swift(>=4.0)
+        ligature.addAttributes([NSAttributedStringKey(rawValue: (kCTLigatureAttributeName as String)): 2], range: NSMakeRange(0, (attributedContent.string as NSString).length))
+    #else
         ligature.addAttributes([(kCTLigatureAttributeName as String): 2], range: NSMakeRange(0, (attributedContent.string as NSString).length))
+    #endif
         
         var imageSize    = ligature.size()
         imageSize.width  = ceil(imageSize.width)

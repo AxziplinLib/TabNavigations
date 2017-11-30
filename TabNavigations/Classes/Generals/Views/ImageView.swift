@@ -17,14 +17,19 @@ extension ImageView {
 @IBDesignable
 public class ImageView: UIImageView {
     #if swift(>=4.0)
-    #else
-    @IBInspectable
-    #endif
     public var contentFits: ContentFits = .width {
         didSet {
             invalidateIntrinsicContentSize()
         }
     }
+    #else
+    @IBInspectable
+    public var contentFits: ContentFits = .width {
+        didSet {
+            invalidateIntrinsicContentSize()
+        }
+    }
+    #endif
     
     public override var intrinsicContentSize: CGSize {
         guard let img = image else {

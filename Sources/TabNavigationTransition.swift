@@ -79,8 +79,13 @@ extension TabNavigationTitleItemTransition: UIScrollViewDelegate {
                 let _ns_range = NSMakeRange(range.lowerBound, range.upperBound - range.lowerBound)
                 let
                 attributedTitle = NSMutableAttributedString(attributedString: titleItem.underlyingButton.attributedTitle(for: .normal)!)
+            #if swift(>=4.0)
+                attributedTitle.addAttributes([NSAttributedStringKey.font: font], range: _ns_range)
+                attributedTitle.addAttributes([NSAttributedStringKey.foregroundColor: color], range: _ns_range)
+            #else
                 attributedTitle.addAttributes([NSFontAttributeName: font], range: _ns_range)
                 attributedTitle.addAttributes([NSForegroundColorAttributeName: color], range: _ns_range)
+            #endif
                 
                 titleItem.underlyingButton.setAttributedTitle(attributedTitle, for: .normal)
             } else {

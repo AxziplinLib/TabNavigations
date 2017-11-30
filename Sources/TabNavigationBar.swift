@@ -453,7 +453,11 @@ public class TabNavigationBar: UIView, UIBarPositioning {
         }
         
         let widthc = itemsContainerView.widthAnchor.constraint(equalTo: navigationItemView.widthAnchor)
+    #if swift(>=4.0)
+        widthc.priority = UILayoutPriority.defaultHigh
+    #else
         widthc.priority = UILayoutPriorityDefaultHigh
+    #endif
         widthc.isActive = true
     }
     
@@ -962,15 +966,24 @@ public class TabNavigationBar: UIView, UIBarPositioning {
             // Using the attributed string to bounding size if the selected range is not nil and the title item is selected.
             if selected && item.selectedRange != nil && item.underlyingButton.currentAttributedTitle != nil {
                 let range = item.selectedRange!
+            #if swift(>=4.0)
+                let attributedString = NSMutableAttributedString(string: item.underlyingButton.currentAttributedTitle!.string, attributes: [NSAttributedStringKey.font: item.titleFont(whenSelected: false)])
+                attributedString.addAttributes([NSAttributedStringKey.font: item.titleFont(whenSelected: true)], range: NSMakeRange(range.lowerBound, range.upperBound - range.lowerBound))
+            #else
                 let attributedString = NSMutableAttributedString(string: item.underlyingButton.currentAttributedTitle!.string, attributes: [NSFontAttributeName: item.titleFont(whenSelected: false)])
                 attributedString.addAttributes([NSFontAttributeName: item.titleFont(whenSelected: true)], range: NSMakeRange(range.lowerBound, range.upperBound - range.lowerBound))
+            #endif
                 s = attributedString.boundingRect(with: CGSize(width: CGFloat.greatestFiniteMagnitude, height: self.bounds.height), options: [.usesLineFragmentOrigin, .usesFontLeading], context: nil).size
             } else {
                 var titleString = item.underlyingButton.currentTitle
                 if  item.selectedRange != nil {
                     titleString = item.underlyingButton.currentAttributedTitle?.string
                 }
+            #if swift(>=4.0)
+                s = (titleString as NSString?)?.boundingRect(with: CGSize(width: CGFloat.greatestFiniteMagnitude, height: self.bounds.height), options: [.usesLineFragmentOrigin, .usesFontLeading], attributes: [NSAttributedStringKey.font:item.titleFont(whenSelected: false)], context: nil).size ?? .zero
+            #else
                 s = (titleString as NSString?)?.boundingRect(with: CGSize(width: CGFloat.greatestFiniteMagnitude, height: self.bounds.height), options: [.usesLineFragmentOrigin, .usesFontLeading], attributes: [NSFontAttributeName:item.titleFont(whenSelected: false)], context: nil).size ?? .zero
+            #endif
             }
             return s
         }()
