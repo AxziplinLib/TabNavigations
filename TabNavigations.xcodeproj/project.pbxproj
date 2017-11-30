@@ -34,8 +34,6 @@
 		DCCFDD041F1CB77F007CC8A0 /* AxTabNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCCFDD031F1CB77F007CC8A0 /* AxTabNavigationController.swift */; };
 		DCCFDD0C1F1DA2DD007CC8A0 /* TextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCCFDD0B1F1DA2DD007CC8A0 /* TextView.swift */; };
 		DCCFDD101F1DE3EB007CC8A0 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCCFDD0F1F1DE3EB007CC8A0 /* MapKit.framework */; };
-		DCDAC75D1F7B4FE2005DC24E /* TabNavigations.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCDAC7541F7B4FE2005DC24E /* TabNavigations.framework */; };
-		DCDAC7641F7B4FE2005DC24E /* TabNavigationsFrameworkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCDAC7631F7B4FE2005DC24E /* TabNavigationsFrameworkTests.swift */; };
 		DCDAC7661F7B4FE2005DC24E /* TabNavigationsFramework.h in Headers */ = {isa = PBXBuildFile; fileRef = DCDAC7561F7B4FE2005DC24E /* TabNavigationsFramework.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DCDAC7691F7B4FE2005DC24E /* TabNavigations.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCDAC7541F7B4FE2005DC24E /* TabNavigations.framework */; };
 		DCDAC76A1F7B4FE2005DC24E /* TabNavigations.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DCDAC7541F7B4FE2005DC24E /* TabNavigations.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -50,34 +48,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		DC8DD7C71F00D6C9006D9706 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = DC8DD7A71F00D6C9006D9706 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = DC8DD7AE1F00D6C9006D9706;
-			remoteInfo = AxReminder;
-		};
-		DC8DD7D21F00D6C9006D9706 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = DC8DD7A71F00D6C9006D9706 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = DC8DD7AE1F00D6C9006D9706;
-			remoteInfo = AxReminder;
-		};
-		DCDAC75E1F7B4FE2005DC24E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = DC8DD7A71F00D6C9006D9706 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = DCDAC7531F7B4FE2005DC24E;
-			remoteInfo = TabNavigationsFramework;
-		};
-		DCDAC7601F7B4FE2005DC24E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = DC8DD7A71F00D6C9006D9706 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = DC8DD7AE1F00D6C9006D9706;
-			remoteInfo = TabNavigations;
-		};
 		DCDAC7671F7B4FE2005DC24E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = DC8DD7A71F00D6C9006D9706 /* Project object */;
@@ -112,18 +82,12 @@
 		DC2B717B1F79F93000184BCC /* TabNavigationUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabNavigationUtility.swift; sourceTree = "<group>"; };
 		DC2B71831F79FAC200184BCC /* Colours-5.14.0.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Colours-5.14.0.swift"; sourceTree = "<group>"; };
 		DC2B71851F79FFAC00184BCC /* Resources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Resources.bundle; sourceTree = "<group>"; };
-		DC2B71881F7A29C800184BCC /* AxReminderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AxReminderTests.swift; sourceTree = "<group>"; };
-		DC2B71891F7A29C800184BCC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		DC2B718B1F7A29C800184BCC /* AxReminderUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AxReminderUITests.swift; sourceTree = "<group>"; };
-		DC2B718C1F7A29C800184BCC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DC3373FF1F274AB900C27923 /* CollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionViewCell.swift; sourceTree = "<group>"; };
 		DC3374031F274BEA00C27923 /* CollectionReusableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionReusableView.swift; sourceTree = "<group>"; };
 		DC65E1981F274773009F0312 /* CollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionViewController.swift; sourceTree = "<group>"; };
 		DC6A9ACD1F1898BD00F63525 /* Colors.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Colors.plist; sourceTree = "<group>"; };
 		DC8DD7AF1F00D6C9006D9706 /* TabNavigations.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TabNavigations.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DC8DD7BC1F00D6C9006D9706 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		DC8DD7C61F00D6C9006D9706 /* TabNavigationsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TabNavigationsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		DC8DD7D11F00D6C9006D9706 /* TabNavigationsUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TabNavigationsUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		DC8DD7E51F00DE7B006D9706 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DC8DD7EB1F00DE8B006D9706 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		DC8DD7ED1F00DE8B006D9706 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -144,9 +108,6 @@
 		DCDAC7541F7B4FE2005DC24E /* TabNavigations.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = TabNavigations.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DCDAC7561F7B4FE2005DC24E /* TabNavigationsFramework.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TabNavigationsFramework.h; sourceTree = "<group>"; };
 		DCDAC7571F7B4FE2005DC24E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		DCDAC75C1F7B4FE2005DC24E /* TabNavigationsFrameworkTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TabNavigationsFrameworkTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		DCDAC7631F7B4FE2005DC24E /* TabNavigationsFrameworkTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabNavigationsFrameworkTests.swift; sourceTree = "<group>"; };
-		DCDAC7651F7B4FE2005DC24E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DCF9D8701F170D270058B19C /* ImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -160,32 +121,10 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		DC8DD7C31F00D6C9006D9706 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		DC8DD7CE1F00D6C9006D9706 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		DCDAC7501F7B4FE2005DC24E /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		DCDAC7591F7B4FE2005DC24E /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				DCDAC75D1F7B4FE2005DC24E /* TabNavigations.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -223,34 +162,13 @@
 			path = Sources;
 			sourceTree = "<group>";
 		};
-		DC2B71871F7A29C800184BCC /* TabNavigationsTests */ = {
-			isa = PBXGroup;
-			children = (
-				DC2B71881F7A29C800184BCC /* AxReminderTests.swift */,
-				DC2B71891F7A29C800184BCC /* Info.plist */,
-			);
-			path = TabNavigationsTests;
-			sourceTree = "<group>";
-		};
-		DC2B718A1F7A29C800184BCC /* TabNavigationsUITests */ = {
-			isa = PBXGroup;
-			children = (
-				DC2B718B1F7A29C800184BCC /* AxReminderUITests.swift */,
-				DC2B718C1F7A29C800184BCC /* Info.plist */,
-			);
-			path = TabNavigationsUITests;
-			sourceTree = "<group>";
-		};
 		DC8DD7A61F00D6C9006D9706 = {
 			isa = PBXGroup;
 			children = (
 				DCDAC6BD1F7A41B9005DC24E /* Package.swift */,
 				DC2B71741F79F93000184BCC /* Sources */,
 				DC8DD7B11F00D6C9006D9706 /* TabNavigations */,
-				DC2B71871F7A29C800184BCC /* TabNavigationsTests */,
-				DC2B718A1F7A29C800184BCC /* TabNavigationsUITests */,
 				DCDAC7551F7B4FE2005DC24E /* TabNavigationsFramework */,
-				DCDAC7621F7B4FE2005DC24E /* TabNavigationsFrameworkTests */,
 				DC8DD7B01F00D6C9006D9706 /* Products */,
 				5677251C476F856501BFFF86 /* Frameworks */,
 			);
@@ -260,10 +178,7 @@
 			isa = PBXGroup;
 			children = (
 				DC8DD7AF1F00D6C9006D9706 /* TabNavigations.app */,
-				DC8DD7C61F00D6C9006D9706 /* TabNavigationsTests.xctest */,
-				DC8DD7D11F00D6C9006D9706 /* TabNavigationsUITests.xctest */,
 				DCDAC7541F7B4FE2005DC24E /* TabNavigations.framework */,
-				DCDAC75C1F7B4FE2005DC24E /* TabNavigationsFrameworkTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -368,15 +283,6 @@
 			path = TabNavigationsFramework;
 			sourceTree = "<group>";
 		};
-		DCDAC7621F7B4FE2005DC24E /* TabNavigationsFrameworkTests */ = {
-			isa = PBXGroup;
-			children = (
-				DCDAC7631F7B4FE2005DC24E /* TabNavigationsFrameworkTests.swift */,
-				DCDAC7651F7B4FE2005DC24E /* Info.plist */,
-			);
-			path = TabNavigationsFrameworkTests;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -418,42 +324,6 @@
 			productReference = DC8DD7AF1F00D6C9006D9706 /* TabNavigations.app */;
 			productType = "com.apple.product-type.application";
 		};
-		DC8DD7C51F00D6C9006D9706 /* TabNavigationsTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = DC8DD7DD1F00D6C9006D9706 /* Build configuration list for PBXNativeTarget "TabNavigationsTests" */;
-			buildPhases = (
-				DC8DD7C21F00D6C9006D9706 /* Sources */,
-				DC8DD7C31F00D6C9006D9706 /* Frameworks */,
-				DC8DD7C41F00D6C9006D9706 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				DC8DD7C81F00D6C9006D9706 /* PBXTargetDependency */,
-			);
-			name = TabNavigationsTests;
-			productName = AxReminderTests;
-			productReference = DC8DD7C61F00D6C9006D9706 /* TabNavigationsTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
-		DC8DD7D01F00D6C9006D9706 /* TabNavigationsUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = DC8DD7E01F00D6C9006D9706 /* Build configuration list for PBXNativeTarget "TabNavigationsUITests" */;
-			buildPhases = (
-				DC8DD7CD1F00D6C9006D9706 /* Sources */,
-				DC8DD7CE1F00D6C9006D9706 /* Frameworks */,
-				DC8DD7CF1F00D6C9006D9706 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				DC8DD7D31F00D6C9006D9706 /* PBXTargetDependency */,
-			);
-			name = TabNavigationsUITests;
-			productName = AxReminderUITests;
-			productReference = DC8DD7D11F00D6C9006D9706 /* TabNavigationsUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
-		};
 		DCDAC7531F7B4FE2005DC24E /* TabNavigationsFramework */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = DCDAC76F1F7B4FE2005DC24E /* Build configuration list for PBXNativeTarget "TabNavigationsFramework" */;
@@ -472,25 +342,6 @@
 			productReference = DCDAC7541F7B4FE2005DC24E /* TabNavigations.framework */;
 			productType = "com.apple.product-type.framework";
 		};
-		DCDAC75B1F7B4FE2005DC24E /* TabNavigationsFrameworkTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = DCDAC7711F7B4FE2005DC24E /* Build configuration list for PBXNativeTarget "TabNavigationsFrameworkTests" */;
-			buildPhases = (
-				DCDAC7581F7B4FE2005DC24E /* Sources */,
-				DCDAC7591F7B4FE2005DC24E /* Frameworks */,
-				DCDAC75A1F7B4FE2005DC24E /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				DCDAC75F1F7B4FE2005DC24E /* PBXTargetDependency */,
-				DCDAC7611F7B4FE2005DC24E /* PBXTargetDependency */,
-			);
-			name = TabNavigationsFrameworkTests;
-			productName = TabNavigationsFrameworkTests;
-			productReference = DCDAC75C1F7B4FE2005DC24E /* TabNavigationsFrameworkTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -506,22 +357,9 @@
 						LastSwiftMigration = 0830;
 						ProvisioningStyle = Automatic;
 					};
-					DC8DD7C51F00D6C9006D9706 = {
-						CreatedOnToolsVersion = 9.0;
-						TestTargetID = DC8DD7AE1F00D6C9006D9706;
-					};
-					DC8DD7D01F00D6C9006D9706 = {
-						CreatedOnToolsVersion = 9.0;
-						TestTargetID = DC8DD7AE1F00D6C9006D9706;
-					};
 					DCDAC7531F7B4FE2005DC24E = {
 						CreatedOnToolsVersion = 9.0;
 						ProvisioningStyle = Automatic;
-					};
-					DCDAC75B1F7B4FE2005DC24E = {
-						CreatedOnToolsVersion = 9.0;
-						ProvisioningStyle = Automatic;
-						TestTargetID = DC8DD7AE1F00D6C9006D9706;
 					};
 				};
 			};
@@ -540,10 +378,7 @@
 			projectRoot = "";
 			targets = (
 				DC8DD7AE1F00D6C9006D9706 /* TabNavigations */,
-				DC8DD7C51F00D6C9006D9706 /* TabNavigationsTests */,
-				DC8DD7D01F00D6C9006D9706 /* TabNavigationsUITests */,
 				DCDAC7531F7B4FE2005DC24E /* TabNavigationsFramework */,
-				DCDAC75B1F7B4FE2005DC24E /* TabNavigationsFrameworkTests */,
 			);
 		};
 /* End PBXProject section */
@@ -562,32 +397,11 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		DC8DD7C41F00D6C9006D9706 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		DC8DD7CF1F00D6C9006D9706 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		DCDAC7521F7B4FE2005DC24E /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				DCDAC7781F7B5007005DC24E /* Resources.bundle in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		DCDAC75A1F7B4FE2005DC24E /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -622,20 +436,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		DC8DD7C21F00D6C9006D9706 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		DC8DD7CD1F00D6C9006D9706 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		DCDAC74F1F7B4FE2005DC24E /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -649,37 +449,9 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		DCDAC7581F7B4FE2005DC24E /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				DCDAC7641F7B4FE2005DC24E /* TabNavigationsFrameworkTests.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		DC8DD7C81F00D6C9006D9706 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = DC8DD7AE1F00D6C9006D9706 /* TabNavigations */;
-			targetProxy = DC8DD7C71F00D6C9006D9706 /* PBXContainerItemProxy */;
-		};
-		DC8DD7D31F00D6C9006D9706 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = DC8DD7AE1F00D6C9006D9706 /* TabNavigations */;
-			targetProxy = DC8DD7D21F00D6C9006D9706 /* PBXContainerItemProxy */;
-		};
-		DCDAC75F1F7B4FE2005DC24E /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = DCDAC7531F7B4FE2005DC24E /* TabNavigationsFramework */;
-			targetProxy = DCDAC75E1F7B4FE2005DC24E /* PBXContainerItemProxy */;
-		};
-		DCDAC7611F7B4FE2005DC24E /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = DC8DD7AE1F00D6C9006D9706 /* TabNavigations */;
-			targetProxy = DCDAC7601F7B4FE2005DC24E /* PBXContainerItemProxy */;
-		};
 		DCDAC7681F7B4FE2005DC24E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = DCDAC7531F7B4FE2005DC24E /* TabNavigationsFramework */;
@@ -883,72 +655,6 @@
 			};
 			name = Release;
 		};
-		DC8DD7DE1F00D6C9006D9706 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				DEVELOPMENT_TEAM = 67DW4J3U7D;
-				INFOPLIST_FILE = AxReminderTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = devedbox.AxReminderTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 3.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TabNavigations.app/TabNavigations";
-			};
-			name = Debug;
-		};
-		DC8DD7DF1F00D6C9006D9706 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				DEVELOPMENT_TEAM = 67DW4J3U7D;
-				INFOPLIST_FILE = AxReminderTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = devedbox.AxReminderTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 3.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TabNavigations.app/TabNavigations";
-			};
-			name = Release;
-		};
-		DC8DD7E11F00D6C9006D9706 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				DEVELOPMENT_TEAM = 67DW4J3U7D;
-				INFOPLIST_FILE = AxReminderUITests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = devedbox.AxReminderUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 3.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = AxReminder;
-			};
-			name = Debug;
-		};
-		DC8DD7E21F00D6C9006D9706 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				DEVELOPMENT_TEAM = 67DW4J3U7D;
-				INFOPLIST_FILE = AxReminderUITests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = devedbox.AxReminderUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 3.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = AxReminder;
-			};
-			name = Release;
-		};
 		DCDAC76B1F7B4FE2005DC24E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1007,44 +713,6 @@
 			};
 			name = Release;
 		};
-		DCDAC76D1F7B4FE2005DC24E /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = TKA48YVS5T;
-				INFOPLIST_FILE = TabNavigationsFrameworkTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = devedbox.TabNavigationsFrameworkTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TabNavigations.app/TabNavigations";
-			};
-			name = Debug;
-		};
-		DCDAC76E1F7B4FE2005DC24E /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = TKA48YVS5T;
-				INFOPLIST_FILE = TabNavigationsFrameworkTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = devedbox.TabNavigationsFrameworkTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TabNavigations.app/TabNavigations";
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1066,38 +734,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		DC8DD7DD1F00D6C9006D9706 /* Build configuration list for PBXNativeTarget "TabNavigationsTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				DC8DD7DE1F00D6C9006D9706 /* Debug */,
-				DC8DD7DF1F00D6C9006D9706 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		DC8DD7E01F00D6C9006D9706 /* Build configuration list for PBXNativeTarget "TabNavigationsUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				DC8DD7E11F00D6C9006D9706 /* Debug */,
-				DC8DD7E21F00D6C9006D9706 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		DCDAC76F1F7B4FE2005DC24E /* Build configuration list for PBXNativeTarget "TabNavigationsFramework" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				DCDAC76B1F7B4FE2005DC24E /* Debug */,
 				DCDAC76C1F7B4FE2005DC24E /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		DCDAC7711F7B4FE2005DC24E /* Build configuration list for PBXNativeTarget "TabNavigationsFrameworkTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				DCDAC76D1F7B4FE2005DC24E /* Debug */,
-				DCDAC76E1F7B4FE2005DC24E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
